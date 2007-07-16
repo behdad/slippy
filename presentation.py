@@ -245,10 +245,11 @@ def main():
 	import slides
 	all_slides = slides.slides
 
-	viewer = ViewerPDF ("slides.pdf")
-	viewer.run (Renderer, all_slides)
+	if len(sys.argv) == 2:
+		viewer = ViewerPDF (sys.argv[1])
+	else:
+		viewer = ViewerGTK ()
 
-	viewer = ViewerGTK ()
 	viewer.run (Renderer, all_slides)
 
 if __name__ == "__main__":
