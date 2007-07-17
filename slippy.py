@@ -141,10 +141,11 @@ class Slide:
 		items = self.slide
 		if isinstance (items, types.FunctionType):
 			items = items(renderer)
-		if items == None or items == "":
-			items = (" ",)
+		if items == None:
+			items = ("",)
 		if isinstance (items, str):
 			items = (items,)
+		items = [item + " "*int(item == "" or item == None) for item in items]
 		return items
 
 	def __len__ (self):
