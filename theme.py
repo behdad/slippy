@@ -72,12 +72,12 @@ def prepare_page (renderer):
 	cr.move_to (width-p, height-p)
 	renderer.put_image ("cworth.svg", width = s-p2, valign=-1, halign=-1)
 
+	# Compute rectangle available for slide content
 	w = width - s - s - p * 6
 	x = s + p * 3
 	h = height - l - f - p * 6
 	y = l + p * 3
 
-	# Compute rectangle available for slide content
 	return x, y, w, h
 
 def draw_bubble (renderer, x, y, w, h):
