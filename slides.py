@@ -252,7 +252,6 @@ def geotv (r):
 	r.put_image ("geotv.jpg", width=900)
 	yield "foo"
 	yield "bar"
-	print r.viewer
 	if r.viewer:
 		cmd = "mplayer -wid %d geotv.mpg" % r.viewer.window.xid
 		print cmd

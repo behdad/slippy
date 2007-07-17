@@ -145,8 +145,7 @@ class Slide:
 			items = ("",)
 		if isinstance (items, str):
 			items = (items,)
-		items = [item + " "*int(item == "" or item == None) for item in items]
-		return items
+		return (item + " "*int(item == "" or item == None) for item in items)
 
 	def __len__ (self):
 		return len (self.texts)
