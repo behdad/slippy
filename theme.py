@@ -80,7 +80,7 @@ def prepare_page (renderer):
 
 	return x, y, w, h
 
-def draw_bubble (renderer, x, y, w, h):
+def draw_bubble (renderer, x, y, w, h, who=None):
 	# Fancy speech bubble!
 	cr = renderer.cr
 	width = renderer.width
@@ -98,7 +98,13 @@ def draw_bubble (renderer, x, y, w, h):
 	y -= 3 * p
 	w += 6 * p
 	h += 6 * p
-	bubble (cr, s * .9, height - .7 * s, x, y, w, h)
+	if not who:
+		xc, yc = x + w*.5, y + h*.5
+	elif who < 0:
+		xc, yc = s * .9, height - .7 * s
+	else:
+		xc, yc = width - s * .9, height - .7 * s
+	bubble (cr, xc, yc, x, y, w, h)
 	cr.set_source_rgb (0, 0, 0)
 	cr.set_line_width (p)
 	cr.set_miter_limit (30)

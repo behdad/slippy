@@ -132,7 +132,7 @@ class Slide:
 
 	def __init__ (self, slide):
 		renderer = Renderer ()
-		self.slide = slide
+		self.slide, self.who = slide
 		self.texts = [x for x in self.get_items (renderer)]
 		self.extents = renderer.extents
 		self.text = ''.join (self.texts)
@@ -190,7 +190,7 @@ class Slide:
 		#ex, ey, ew, eh = self.extents
 		#ex, ey = cr.device_to_user (ex, ey)
 		#ew, eh = cr.device_to_user_distance (ew, eh)
-		renderer.theme.draw_bubble (renderer, *ext)
+		renderer.theme.draw_bubble (renderer, who=self.who, *ext)
 
 		text = ""
 		i = 0;

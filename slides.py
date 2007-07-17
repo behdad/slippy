@@ -2,11 +2,26 @@
 
 import pango, pangocairo, cairo
 slides = []
+behdad = -1
+cworth = +1
+whois = None
+def who(name):
+	global whois
+	whois = name
 def slide(f):
-	slides.append (f)
+	slides.append ((f, whois))
+	return f
+def slide_noone(f):
+	slides.append ((f, None))
+	return f
+def slide_cworth(f):
+	slides.append ((f, cworth))
+	return f
+def slide_behdad(f):
+	slides.append ((f, behdad))
 	return f
 
-@slide
+@slide_noone
 def title_slide (r):
 	r.move_to (400, 100)
 	r.put_text (
@@ -21,6 +36,8 @@ cool code""", desc="50", valign=1)
 	r.move_to (800, 450)
 	r.put_text ("""Carl Worth\n<span font_desc="16">cworth@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=-1, valign=-1)
+
+who (cworth)
 
 slide("A <i>very</i> brief\nintroduction to cairo")
 
@@ -234,6 +251,10 @@ def geotv (r):
 	r.move_to (400, 300)
 	r.put_image ("geotv.jpg", width=900)
 
+	yield ""
+
 slide("Cairo finds Behdad")
+
+who (behdad)
 
 slide("Cairo finds «ickle»")
