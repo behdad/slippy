@@ -246,6 +246,54 @@ slide("Cairo finds Carl")
 
 slide(("2002\n", "Pre-history"))
 
+@slide
+def trapezoid (r):
+	r.set_line_width (1)
+	r.set_source_rgb (0, 0, 0)
+	pixel_size = 800 / 10
+	for x in range(0 - 50, 800 + 50, pixel_size):
+		r.move_to (x, -50)
+		r.line_to (x, 600 + 50)
+		r.stroke ()
+	for y in range(0 - 50, 600 + 50, pixel_size):
+		r.move_to (-50, y)
+		r.line_to (800 + 50, y)
+		r.stroke ()
+	r.scale (pixel_size / 10, pixel_size / 10)
+
+	# top
+	r.set_source_rgb (0, 0, 0)
+	r.move_to (0, 25)
+	r.put_text ("top", desc="5", halign=1, valign=-1)
+	r.move_to (0, 25)
+	r.line_to (100, 25)
+	r.stroke ()
+
+	# bottom
+	r.move_to (100, 50)
+	r.put_text ("bottom", desc="5", halign=-1, valign=-1)
+	r.move_to (0, 50)
+	r.line_to (100, 50)
+	r.stroke ()
+
+	# left
+	r.set_source_rgb (.2, .6, .2)	
+	r.move_to (30, 20)
+	r.put_text ("left", desc="5", halign=1, valign=-1)
+	r.move_to (30, 20)
+	r.line_to (10, 60)
+	r.stroke ()
+
+	# right
+	r.set_source_rgb (.8, .2, .2)
+	r.move_to (65, 15)
+	r.put_text ("right", desc="5", halign=-1, valign=-1)
+	r.move_to (65, 15)
+	r.line_to (75, 55)
+	r.stroke ()
+
+	r.allocate (0, 0, 100, 60)
+
 pid = None
 
 @slide
@@ -261,9 +309,9 @@ def geotv (r):
 	yield ""
 	pid = None
 
-slide("Cairo finds Behdad")
-
 who (behdad)
+
+slide("Cairo finds Behdad")
 
 slide("Cairo finds «ickle»")
 
