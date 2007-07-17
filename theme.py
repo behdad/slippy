@@ -1,3 +1,5 @@
+import cairo
+
 side_margin = .07
 logo_margin = .09
 footer_margin = .05
@@ -36,24 +38,34 @@ def prepare_page (renderer):
 	p = padding * min (width, height)
 	p2 = 2 * p
 
-	cr.set_source_rgb (.8, .85, 1)
+	# Blue sky (first white, then gradient)
+	cr.set_source_rgb (1, 1, 1)
+	sky = cairo.LinearGradient (0, 0, 0, height)
+	sky.add_color_stop_rgba (0, .6, .65, 1, 1.0)
+	sky.add_color_stop_rgba (1, .6, .65, 1, 0.2)
+	cr.set_source (sky)
 	cr.paint ()
 
+	# Brown earth
 	cr.set_source_rgb (158/255., 87/255., 0/255.)
 	cr.rectangle (0, height, width, -p2)
 	cr.fill ()
+
+	# GUADEC logo on the bottom
 	cr.move_to (.5 * width, height-p2)
 	cr.set_source_rgb (0x03/255., 0x40/255., 0x79/255.)
 	fw, fh = renderer.put_text ("GUADEC 2007, Birmingham, UK", height=f-p2, valign=-1)
 	cr.move_to (.5 * (width - fw), height-p2)
 	renderer.put_image ("guadec.svg", height=f-p2, valign=-1, halign=-1)
 
+	# Red Hat/cairo logos at the top
 	cr.move_to (p, p)
 	renderer.put_image ("redhat.svg", height = l-p2, valign=+1, halign=+1)
 
 	cr.move_to (width-p, p)
 	renderer.put_image ("cairo.svg", height = l-p2, valign=+1, halign=-1)
 
+	# Cartoon icons for speakers
 	cr.move_to (p, height-p)
 	renderer.put_image ("behdad.svg", width = s-p2, valign=-1, halign=+1)
 
@@ -65,10 +77,11 @@ def prepare_page (renderer):
 	h = height - l - f - p * 6
 	y = l + p * 3
 
-	#draw_bubble (renderer, x, y, w, h)
+	# Compute rectangle available for slide content
 	return x, y, w, h
 
 def draw_bubble (renderer, x, y, w, h):
+	# Fancy speech bubble!
 	cr = renderer.cr
 	width = renderer.width
 	height = renderer.height
