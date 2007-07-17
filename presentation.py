@@ -171,7 +171,7 @@ class Slide:
 		cr.show_page()
 		
 
-class Renderer():
+class Renderer:
 	
 	def __init__ (self, theme=None, cr=None, width=0, height=0):
 		if not theme:
