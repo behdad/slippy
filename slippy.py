@@ -145,7 +145,7 @@ class Slide:
 			items = ("",)
 		if isinstance (items, str):
 			items = (items,)
-		return (item + " "*int(item == "" or item == None) for item in items)
+		return items
 
 	def __len__ (self):
 		return len (self.texts)
@@ -188,7 +188,7 @@ class Slide:
 		#	ex, ey = cr.device_to_user (ex, ey)
 		#	ew, eh = cr.device_to_user_distance (ew, eh)
 		#	ext = [ex, ey, ew, eh]
-		if self.text != " ":
+		if self.text:
 			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
 		ext = extents_intersect (ext, [0, 0, w, h])
 		renderer.theme.draw_bubble (renderer, who=self.who, *ext)
