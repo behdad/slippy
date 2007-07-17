@@ -1,6 +1,6 @@
 # -*- coding:utf8 -*-
 
-import pango, pangocairo, cairo
+import pango, pangocairo, cairo, os
 slides = []
 behdad = -1
 cworth = +1
@@ -250,6 +250,14 @@ slide(("2002\n", "Pre-history"))
 def geotv (r):
 	r.move_to (400, 300)
 	r.put_image ("geotv.jpg", width=900)
+	yield "foo"
+	yield "bar"
+	print r.viewer
+	if r.viewer:
+		cmd = "mplayer -wid %d geotv.mpg" % r.viewer.window.xid
+		print cmd
+		os.system(cmd)
+	yield "done"
 
 	yield ""
 
@@ -258,3 +266,4 @@ slide("Cairo finds Behdad")
 who (behdad)
 
 slide("Cairo finds «ickle»")
+
