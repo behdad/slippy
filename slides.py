@@ -321,6 +321,9 @@ def geotv (r):
 	global pid
 	r.move_to (400, 300)
 	r.put_image ("geotv.jpg", width=900)
+	r.move_to (100, 400)
+	r.set_source_rgb (1, 1, 1)
+	r.put_text ("April 2002", desc="40", halign=1)
 	yield ""
 	if r.viewer:
 		if not pid:
