@@ -22,8 +22,6 @@ cool code""", desc="50", valign=1)
 	r.put_text ("""Carl Worth\n<span font_desc="16">cworth@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=-1, valign=-1)
 
-slide("Community == People")
-
 slide("A <i>very</i> brief\nintroduction to cairo")
 
 def paint_checkers (cr):
@@ -224,7 +222,16 @@ def imaging_model (r):
 
 	return " "
 
+slide("Community == People")
+
 slide("Cairo finds Carl")
+
+slide(("2002", "Pre-history"))
+
+@slide
+def geotv (r):
+	r.move_to (400, 300)
+	r.put_image ("geotv.png", width=900)
 
 slide("Cairo finds Behdad")
 
