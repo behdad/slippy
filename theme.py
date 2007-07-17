@@ -1,4 +1,4 @@
-side_margin = .06
+side_margin = .07
 logo_margin = .09
 footer_margin = .03
 
@@ -10,7 +10,7 @@ def prepare_page (renderer):
 	cr.set_source_rgb (0, 0, 0)
 	cr.paint ()
 
-	s = side_margin * width * .5
+	s = side_margin * width
 	l = logo_margin * height
 
 	cr.rectangle (0, 0, s, height)
@@ -18,16 +18,11 @@ def prepare_page (renderer):
 	cr.set_source_rgb (1, 1, 1)
 	cr.fill ()
 
-	cr.rectangle (0, 0, s, l)
-	cr.rectangle (width, 0, -s, l)
-	cr.set_source_rgb (.8, 0, 0)
-	cr.fill ()
-
-	cr.move_to (s, 0)
+	cr.move_to (0, 0)
 	renderer.put_image ("redhat.svg", height = l, valign=+1, halign=+1)
 
-	cr.move_to (width - s, 0)
-	renderer.put_image ("cairo-banner.svg", height = l, valign=+1, halign=-1)
+	cr.move_to (width, 0)
+	renderer.put_image ("cairo.svg", height = l, valign=+1, halign=-1)
 
 	cr.move_to (width * .5, 0)
 	renderer.put_image ("cworth.png", height = l, valign=+1)
