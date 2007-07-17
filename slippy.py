@@ -183,12 +183,15 @@ class Slide:
 		lw, lh = renderer.fit_layout (layout, w, h)
 
 		ext = self.extents
+		#if ext:
+		#	ex, ey, ew, eh = ext
+		#	ex, ey = cr.device_to_user (ex, ey)
+		#	ew, eh = cr.device_to_user_distance (ew, eh)
+		#	ext = [ex, ey, ew, eh]
+		print ext
 		if self.text != " ":
 			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
 		ext = extents_intersect (ext, [0, 0, w, h])
-		#ex, ey, ew, eh = self.extents
-		#ex, ey = cr.device_to_user (ex, ey)
-		#ew, eh = cr.device_to_user_distance (ew, eh)
 		renderer.theme.draw_bubble (renderer, who=self.who, *ext)
 
 		text = ""
@@ -373,7 +376,7 @@ class Renderer:
 		else:
 			cr.set_source_surface (pix, 0, 0)
 			cr.paint ()
-		self.allocate (0, 0, w * r, h * r)
+		self.allocate (0, 0, w, h)
 		cr.restore ()
 		return w * r, h * r
 
