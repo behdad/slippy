@@ -184,7 +184,7 @@
   </defs>
 
   <!--use xlink:href="#scarab_and_dung" transform="translate(30.5,0)" /-->
-  <use xlink:href="#cairo_text_small" transform="translate(105, 76) scale (.8, .8)" fill="white" />
+  <use xlink:href="#cairo_text_small" transform="translate(105, 76) scale (.8, .8)" fill="black" />
   <use xlink:href="#scarab_and_dung" transform="translate(245,0) scale(-1,1)" />
 
 </svg>
