@@ -334,7 +334,7 @@ def geotv (r):
 
 @slide
 def first_post (r):
-	r.move_to (0, 300)
+	r.move_to (400, 300)
 	r.put_text("""Subject: Xr API strawman
 To: Keith Packard <keithp@keithp.com>
 Date: Tue, 4 Jun 2002 19:55:06 +0000
@@ -354,11 +354,11 @@ object).
 
 Feedback welcome,
 
--Carl""", desc="Monospace", markup=False, width=800, height=600, halign=1)
+-Carl""", desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
 
 @slide
 def api_strawman (r):
-	r.move_to (0, 300)
+	r.move_to (400, 300)
 	r.put_text("""/* Opaque state structure */
 typedef struct _XrState XrState;
 
@@ -398,7 +398,7 @@ void XrClosePath(XrState *xrs);
 /* Render current path */
 void XrStroke(XrState *xrs);
 void XrFill(XrState *xrs);
-""", desc="Monospace", markup=False, width=800, height=600, halign=1)
+""", desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
 
 who (behdad)
 
