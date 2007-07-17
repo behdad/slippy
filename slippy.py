@@ -161,7 +161,7 @@ class Slide:
 			x, y, w, h = renderer.theme.prepare_page (renderer)
 			viewer.cached_size = (renderer.width, renderer.height)
 			viewer.cached_canvas_size = [x, y, w, h]
-			surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR_ALPHA, *viewer.cached_size)
+			surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR_ALPHA, int(viewer.cached_size[0]), int(viewer.cached_size[1]))
 			ncr = cairo.Context (surface)
 			ncr.set_source_surface (renderer.get_target (), 0, 0)
 			ncr.paint ()
