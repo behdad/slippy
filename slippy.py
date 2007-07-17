@@ -44,10 +44,10 @@ class ViewerGTK(gtk.Widget):
 
 		renderer = Renderer (theme=self.theme, cr=cr, width=self.allocation.width, height=self.allocation.height)
 
-		self.slide.show_page (renderer, self.step)
+		self.slide.show_page (self, renderer, self.step)
 
 		return False
-
+	
 	def go_forward_full(self):
 		if self.slide_no + 1 < len (self.slides):
 			self.slide_no += 1
@@ -91,6 +91,9 @@ class ViewerGTK(gtk.Widget):
 			gtk.main_quit()
 
 	def run (self, theme, slides):
+		self.cache = True
+		self.cached = False
+
 		self.theme = theme
 		self.slides = slides
 
@@ -116,12 +119,13 @@ class ViewerPDF:
 		self.surface = cairo.PDFSurface (filename, self.width, self.height)
 
 	def run (self, theme, slides):
+		self.cache = False
 		cr = pangocairo.CairoContext (cairo.Context (self.surface))
 		renderer = Renderer (theme, cr, self.width, self.height)
 		for slide in slides:
 			slide = Slide (slide)
 			for step in range (len (slide)):
-				slide.show_page (renderer, step)
+				slide.show_page (self, renderer, step)
 
 
 class Slide:
@@ -146,10 +150,26 @@ class Slide:
 	def __len__ (self):
 		return len (self.texts)
 	
-	def show_page (self, renderer, pageno):
+	def show_page (self, viewer, renderer, pageno):
 		cr = renderer.cr
 		cr.save ()
-		x, y, w, h = renderer.theme.prepare_page (renderer)
+		if viewer.cache and viewer.cached and (renderer.width, renderer.height) == viewer.cached_size:
+			x, y, w, h = viewer.cached_canvas_size
+			renderer.set_source_surface (viewer.cached_surface)
+			renderer.paint ()
+		elif viewer.cache:
+			x, y, w, h = renderer.theme.prepare_page (renderer)
+			viewer.cached_size = (renderer.width, renderer.height)
+			viewer.cached_canvas_size = [x, y, w, h]
+			surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR_ALPHA, *viewer.cached_size)
+			ncr = cairo.Context (surface)
+			ncr.set_source_surface (renderer.get_target (), 0, 0)
+			ncr.paint ()
+			viewer.cached_surface = surface
+			viewer.cached = True
+		else:
+			x, y, w, h = renderer.theme.prepare_page (renderer)
+
 		cr.translate (x, y)
 
 		# normalize canvas size
@@ -308,14 +328,24 @@ class Renderer:
 		return width, height
 
 	def put_image (self, filename, width=0, height=0, halign=0, valign=0):
-		if filename.endswith (".svg"):
-			pix = rsvg.Handle (filename)
+
+		global pixcache
+		pix = pixcache.get (filename, None)
+
+		svg = filename.endswith (".svg")
+
+		if not pix:
+			if svg:
+				pix = rsvg.Handle (filename)
+			else:
+				pix = gtk.gdk.pixbuf_new_from_file (filename)
+
+		pixcache[filename] = pix
+
+		if svg:
 			w, h = pix.get_dimension_data()[2:4]
-			svg = True
 		else:
-			pix = gtk.gdk.pixbuf_new_from_file (filename)
 			w, h = pix.get_width(), pix.get_height()
-			svg = False
 
 		gcr = gtk.gdk.CairoContext (self.cr)
 		x, y = gcr.get_current_point ()
@@ -344,6 +374,7 @@ class Renderer:
 		gcr.restore ()
 		return w * r, h * r
 
+pixcache = {}
 gobject.type_register(ViewerGTK)
 
 
