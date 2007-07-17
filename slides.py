@@ -332,6 +332,74 @@ def geotv (r):
 	yield ""
 	pid = None
 
+@slide
+def first_post (r):
+	r.move_to (0, 300)
+	r.put_text("""Subject: Xr API strawman
+To: Keith Packard <keithp@keithp.com>
+Date: Tue, 4 Jun 2002 19:55:06 +0000
+
+Hi Keith,
+
+I read up a bit on PostScript. It's the obvious source of the
+proposals you were making.
+
+I like it much better than GL as a model for Xr. It's cleaner in
+general, (IMHO). And PS has larger overlap with the primitives we want
+in Xr, (eg. bezier curves as opposed to just triangle meshes).
+
+So, here's what I'm thinking of so far. This sticks fairly close to
+PostScript, (but with an explicit rather than an implicit state
+object).
+
+Feedback welcome,
+
+-Carl""", desc="Monospace", markup=False, width=800, height=600, halign=1)
+
+@slide
+def api_strawman (r):
+	r.move_to (0, 300)
+	r.put_text("""/* Opaque state structure */
+typedef struct _XrState XrState;
+
+/* Functions for manipulating state objects */
+
+/* XXX: Do we want to add `State' to any of these functions?
+        eg. XrStateCreate, XrStateClone? */
+XrState *XrCreate(void);
+void XrDestroy(XrState *xrs);
+
+void XrSave(XrState *xrs);
+void XrRestore(XrState *xrs);
+
+XrState *XrClone(XrState *xrs);
+
+/* Modify state */
+void XrSetPicture(XrState *xrs, XrPicture)
+void XrSetColor(XrState *xrs, XrColor);
+
+/* XXX: XrSetLineWidth, XrSetLineCap, XrSetLineJoin, XrSetDash, ... */
+
+/* Path creation */
+
+/* XXX: I'm thinking that it might make sense to do away with the
+        notion of a "current path" in the state object and instead
+        provide functions to manipulate an opaque XrPath object. This
+        would add one more argument to XrStroke/XrFill, but it would
+        unify support for PS "user paths" */
+
+void XrNewPath(XrState *xrs);
+void XrMoveTo(XrState *xrs, double x, double y);
+void XrLineTo(XrState *xrs, double x, double y);
+void XrClosePath(XrState *xrs);
+
+/* XXX: XrRLineTo, XrArc, XrCurveTo, XrRCurveTo, ... */
+
+/* Render current path */
+void XrStroke(XrState *xrs);
+void XrFill(XrState *xrs);
+""", desc="Monospace", markup=False, width=800, height=600, halign=1)
+
 who (behdad)
 
 slide("Cairo finds Behdad")
