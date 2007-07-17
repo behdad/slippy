@@ -39,7 +39,7 @@ cool code""", desc="50", valign=1)
 
 who (cworth)
 
-slide("Intro")
+slide_noone("Intro")
 
 slide("Rendering model")
 
@@ -244,7 +244,7 @@ def imaging_model (r):
 
 who (cworth)
 
-slide("History")
+slide_noone("History")
 
 @slide
 def trapezoid (r):
@@ -461,12 +461,21 @@ who (behdad)
 
 @slide
 def git (r):
-	yield "If you don't <i>git,</i> it,\nyou don't get it"
+	yield "If you don't <i>git</i> it,\nyou don't get it"
 
 	yield "\n\nIt's the\nRight Thing To Do"
 	r.move_to (400, 300)
 	r.put_image ("street.jpg", height=650)
 	r.set_allocation (50, 0, 800, 550)
+	yield ""
+
+@slide
+def git2 (r):
+	yield "Tiny commits"
+
+	yield "\n\n<i>Earn points faster</i>"
+	r.move_to (400, 300)
+	r.put_image ("apply-now.png", height=50)
 	yield ""
 
 who (cworth)
@@ -475,10 +484,12 @@ slide ("Commit-access\nfor everyone!")
 
 who (behdad)
 
-slide ("Tricking others\ninto doing their work")
+slide ("Tricking others\ninto doing <i>their</i> work")
 
 who (cworth)
 
 slide ("Don't go AWOL")
 
-slide ("Why do we\nlove cairo?")
+slide_noone ("Why do we\nlove cairo?")
+
+slide_noone ('Why do <span foreground="#c00"><i>you</i></span>\nlove cairo?')
