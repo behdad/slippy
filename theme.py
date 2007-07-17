@@ -1,3 +1,5 @@
+import cairo
+
 side_margin = .07
 logo_margin = .09
 footer_margin = .05
@@ -36,8 +38,12 @@ def prepare_page (renderer):
 	p = padding * min (width, height)
 	p2 = 2 * p
 
-	# Blue sky
-	cr.set_source_rgb (.8, .85, 1)
+	# Blue sky (first white, then gradient)
+	cr.set_source_rgb (1, 1, 1)
+	sky = cairo.LinearGradient (0, 0, 0, height)
+	sky.add_color_stop_rgba (0, .6, .65, 1, 1.0)
+	sky.add_color_stop_rgba (1, .6, .65, 1, 0.2)
+	cr.set_source (sky)
 	cr.paint ()
 
 	# Brown earth
