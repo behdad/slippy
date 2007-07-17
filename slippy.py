@@ -179,7 +179,8 @@ class Slide:
 		cr.move_to (0, 0)
 
 		layout = renderer.create_layout (self.text)
-		layout.set_alignment (pango.ALIGN_CENTER)
+		if self.text.find ('\t') == -1:
+			layout.set_alignment (pango.ALIGN_CENTER)
 		lw, lh = renderer.fit_layout (layout, w, h)
 
 		ext = self.extents
