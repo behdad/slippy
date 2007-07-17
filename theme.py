@@ -30,14 +30,23 @@ def prepare_page (renderer):
 	width = renderer.width
 	height = renderer.height
 	
-	cr.set_source_rgb (1, 1, 1)
-	cr.paint ()
-
 	s = side_margin * width
 	l = logo_margin * height
 	f = footer_margin * height
 	p = padding * min (width, height)
 	p2 = 2 * p
+
+	cr.set_source_rgb (.8, .85, 1)
+	cr.paint ()
+
+	cr.set_source_rgb (158/255., 87/255., 0/255.)
+	cr.rectangle (0, height, width, -p2)
+	cr.fill ()
+	cr.move_to (.5 * width, height-p2)
+	cr.set_source_rgb (0x03/255., 0x40/255., 0x79/255.)
+	fw, fh = renderer.put_text ("GUADEC 2007, Birmingham, UK", height=f-p2, valign=-1)
+	cr.move_to (.5 * (width - fw), height-p2)
+	renderer.put_image ("guadec.svg", height=f-p2, valign=-1, halign=-1)
 
 	cr.move_to (p, p)
 	renderer.put_image ("redhat.svg", height = l-p2, valign=+1, halign=+1)
@@ -50,13 +59,6 @@ def prepare_page (renderer):
 
 	cr.move_to (width-p, height-p)
 	renderer.put_image ("cworth.svg", width = s-p2, valign=-1, halign=-1)
-
-	cr.set_source_rgb (0x03/255., 0x40/255., 0x79/255.)
-
-	cr.move_to (.5 * width, height-p)
-	fw, fh = renderer.put_text ("GUADEC 2007, Birmingham, UK", height=f-p2, valign=-1)
-	cr.move_to (.5 * (width - fw), height-p)
-	renderer.put_image ("guadec.svg", height=f-p2, valign=-1, halign=-1)
 
 	w = width - s - s - p2
 	x = s + p
