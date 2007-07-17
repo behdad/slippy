@@ -443,9 +443,21 @@ def bindings (r):
 	for b in binds:
 		yield "\n"+b
 
-slide ("News")
+slide_noone ("News")
 
-slide ("Lessons")
+slide_behdad ("Mutex rework")
+
+slide_cworth ("Error-handling")
+
+slide_behdad ("Great malloc hunt")
+
+slide_cworth ("PDF hotness")
+
+slide_behdad ("Xlib work queue")
+
+slide_noone ("Lessons")
+
+who (behdad)
 
 @slide
 def git (r):
@@ -456,3 +468,17 @@ def git (r):
 	r.put_image ("street.jpg", height=650)
 	r.set_allocation (50, 0, 800, 550)
 	yield ""
+
+who (cworth)
+
+slide ("Commit-access\nfor everyone!")
+
+who (behdad)
+
+slide ("Tricking others\ninto doing their work")
+
+who (cworth)
+
+slide ("Don't go AWOL")
+
+slide ("Why do we\nlove cairo?")
