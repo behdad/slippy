@@ -188,6 +188,9 @@ class Renderer:
 		self.theme = theme
 		self.width, self.height = float (width), float (height)
 
+	def __getattr__ (self, arg):
+		return eval ("self.cr." + arg)
+
 	def create_layout (self, text, markup=True):
 
 		cr = self.cr
