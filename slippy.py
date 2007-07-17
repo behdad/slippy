@@ -188,7 +188,6 @@ class Slide:
 		#	ex, ey = cr.device_to_user (ex, ey)
 		#	ew, eh = cr.device_to_user_distance (ew, eh)
 		#	ext = [ex, ey, ew, eh]
-		print ext
 		if self.text != " ":
 			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
 		ext = extents_intersect (ext, [0, 0, w, h])
