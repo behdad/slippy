@@ -294,8 +294,8 @@ class Renderer:
 			desc.set_size (36 * pango.SCALE)
 		layout.set_font_description (desc)
 
-		if s:
-			w,h = layout.get_size ()
+		w,h = layout.get_size ()
+		if s and w and h:
 			if width > 0:
 				size = float (width) / w
 				if height > 0:
@@ -306,8 +306,7 @@ class Renderer:
 				size = 1
 
 			desc.set_size (int (s * size)) 
-
-		layout.set_font_description (desc)
+			layout.set_font_description (desc)
 
 		return layout.get_pixel_size ()
 
