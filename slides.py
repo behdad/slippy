@@ -37,9 +37,11 @@ cool code""", desc="50", valign=1)
 	r.put_text ("""Carl Worth\n<span font_desc="16">cworth@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=-1, valign=-1)
 
-who (behdad)
+who (cworth)
 
-slide("A <i>very</i> brief\nintroduction to cairo")
+slide("Intro")
+
+slide("Rendering model")
 
 def paint_checkers (cr):
 	image = cairo.ImageSurface (cairo.FORMAT_RGB24, 30, 30)
@@ -444,9 +446,9 @@ def bindings (r):
 	for b in binds:
 		yield "\n"+b
 
-slide("Cairo finds Behdad")
+slide ("News")
 
-slide("Cairo finds «ickle»")
+slide ("Lessons")
 
 @slide
 def git (r):
