@@ -4,6 +4,7 @@
 import sys
 import types
 import cairo
+import rsvg
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -238,26 +239,40 @@ class Renderer():
 		return width, height
 
 	def put_image (self, filename, width=0, height=0, halign=0, valign=0):
-		pix = gtk.gdk.pixbuf_new_from_file (filename)
+		if filename.endswith (".svg"):
+			pix = rsvg.Handle (filename)
+			w, h = pix.get_dimension_data()[2:4]
+			svg = True
+		else:
+			pix = gtk.gdk.pixbuf_new_from_file (filename)
+			w, h = pix.get_width(), pix.get_height()
+			svg = False
+
 		gcr = gtk.gdk.CairoContext (self.cr)
 		x, y = gcr.get_current_point ()
 		r = 0
 		width, height = float (width), float (height)
 		if width or height:
 			if width:
-				r = width / pix.get_width ()
+				r = width / w
 				if height:
-					r = min (r, height / pix.get_height ())
+					r = min (r, height / h)
 			elif height:
-				r = height / pix.get_height ()
-		width, height = pix.get_width (), pix.get_height ()
+				r = height / h
 		gcr.save ()
 		gcr.translate (x, y)
 		if r:
 			gcr.scale (r, r)
-		gcr.set_source_pixbuf (pix, (halign - 1) * width / 2., (valign - 1) * height / 2.)
-		gcr.paint ()
+		gcr.translate ((halign - 1) * w / 2., (valign - 1) * h / 2.)
+		gcr.move_to (0, 0)
+
+		if svg:
+			pix.render_cairo (gcr)
+		else:
+			gcr.set_source_pixbuf (pix, 0, 0)
+			gcr.paint ()
 		gcr.restore ()
+		return w * r, h * r
 
 gobject.type_register(ViewerGTK)
 
