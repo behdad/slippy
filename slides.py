@@ -37,7 +37,7 @@ cool code""", desc="50", valign=1)
 	r.put_text ("""Carl Worth\n<span font_desc="16">cworth@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=-1, valign=-1)
 
-who (cworth)
+who (behdad)
 
 slide("A <i>very</i> brief\nintroduction to cairo")
 
@@ -240,11 +240,9 @@ def imaging_model (r):
 
 	return " "
 
-slide("Community == People")
+who (cworth)
 
-slide("Cairo finds Carl")
-
-slide(("2002\n", "Pre-history"))
+slide("History")
 
 @slide
 def trapezoid (r):
