@@ -165,7 +165,7 @@ class Slide:
 		ext = self.extents
 		if self.text != " ":
 			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
-		#ext = extents_intersect (ext, [0, 0, w, h])
+		ext = extents_intersect (ext, [0, 0, w, h])
 		#ex, ey, ew, eh = self.extents
 		#ex, ey = cr.device_to_user (ex, ey)
 		#ew, eh = cr.device_to_user_distance (ew, eh)
