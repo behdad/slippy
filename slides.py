@@ -14,11 +14,13 @@ def title_slide (r):
 cool community
 cool code""", desc="50", valign=1)
 
-	r.move_to (800, 500)
-	r.set_source_rgb (.25, .25, .25)
-	r.put_text (
-"""Carl Worth &lt;cworth@redhat.com&gt;
-Behdad Esfahbod &lt;behdad@redhat.com&gt;""", desc="20", halign=-1, valign=-1)
+	r.move_to (0, 600)
+	r.put_text ("""Behdad Esfahbod\n<span font_desc="16">behdad@<span foreground="#c00">redhat</span>.com</span>""",
+		    desc="20", halign=1, valign=-1)
+
+	r.move_to (800, 600)
+	r.put_text ("""Carl Worth\n<span font_desc="16">cworth@<span foreground="#c00">redhat</span>.com</span>""",
+		    desc="20", halign=-1, valign=-1)
 
 slide("Community == People")
 
