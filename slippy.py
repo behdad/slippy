@@ -331,25 +331,27 @@ class Renderer:
 	def put_image (self, filename, width=0, height=0, halign=0, valign=0):
 
 		global pixcache
-		pix = pixcache.get (filename, None)
+		pix, w, h = pixcache.get (filename, (None, 0, 0))
 
 		svg = filename.endswith (".svg")
 
 		if not pix:
 			if svg:
 				pix = rsvg.Handle (filename)
+				w, h = pix.get_dimension_data()[2:4]
 			else:
 				pix = gtk.gdk.pixbuf_new_from_file (filename)
+				w, h = pix.get_width(), pix.get_height()
+				surface = self.get_target().create_similar (cairo.CONTENT_COLOR_ALPHA, w, h)
+				gcr = gtk.gdk.CairoContext (cairo.Context (surface))
+				gcr.set_source_pixbuf (pix, 0, 0)
+				gcr.paint ()
+				pix = surface
 
-		pixcache[filename] = pix
+		pixcache[filename] = (pix, w, h)
 
-		if svg:
-			w, h = pix.get_dimension_data()[2:4]
-		else:
-			w, h = pix.get_width(), pix.get_height()
-
-		gcr = gtk.gdk.CairoContext (self.cr)
-		x, y = gcr.get_current_point ()
+		cr = self.cr
+		x, y = cr.get_current_point ()
 		r = 0
 		width, height = float (width), float (height)
 		if width or height:
@@ -359,20 +361,20 @@ class Renderer:
 					r = min (r, height / h)
 			elif height:
 				r = height / h
-		gcr.save ()
-		gcr.translate (x, y)
+		cr.save ()
+		cr.translate (x, y)
 		if r:
-			gcr.scale (r, r)
-		gcr.translate ((halign - 1) * w / 2., (valign - 1) * h / 2.)
-		gcr.move_to (0, 0)
+			cr.scale (r, r)
+		cr.translate ((halign - 1) * w / 2., (valign - 1) * h / 2.)
+		cr.move_to (0, 0)
 
 		if svg:
-			pix.render_cairo (gcr)
+			pix.render_cairo (cr)
 		else:
-			gcr.set_source_pixbuf (pix, 0, 0)
-			gcr.paint ()
+			cr.set_source_surface (pix, 0, 0)
+			cr.paint ()
 		self.allocate (0, 0, w * r, h * r)
-		gcr.restore ()
+		cr.restore ()
 		return w * r, h * r
 
 pixcache = {}
