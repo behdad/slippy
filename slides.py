@@ -232,7 +232,7 @@ slide(("2002", "Pre-history"))
 @slide
 def geotv (r):
 	r.move_to (400, 300)
-	r.put_image ("geotv.png", width=900)
+	r.put_image ("geotv.jpg", width=900)
 
 slide("Cairo finds Behdad")
 
