@@ -28,6 +28,9 @@ def prepare_page (renderer):
 
 	cr.move_to (width - s, 0)
 	renderer.put_image ("cairo-banner.svg", height = l, valign=+1, halign=-1)
+
+	cr.move_to (width * .5, 0)
+	renderer.put_image ("cworth.png", height = l, valign=+1)
 	
 
 	cr.set_source_rgb (1, 1, 1)
