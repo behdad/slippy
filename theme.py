@@ -21,8 +21,8 @@ def bubble (cr, x0, y0, x, y, w, h):
 
 	xc, yc = .5 * (x1 + x2), .5 * (y1 + y2)
 	cr.move_to (xc+r, yc)
-	cr.curve_to (xc+r, y0, .5 * (xc+r+x0), .5 * (yc+y0), x0, y0)
-	cr.curve_to (.5 * (xc-r+x0), .5 * (yc+y0), xc-r, y0, xc-r, yc)
+	cr.curve_to (xc+r, y0, .5 * (xc+r+x0), (yc+y0*2)/3, x0, y0)
+	cr.curve_to (.5 * (xc-r+x0), (yc+y0*2)/3, xc-r, y0, xc-r, yc)
 
 	
 def prepare_page (renderer):
@@ -63,14 +63,19 @@ def prepare_page (renderer):
 	h = height - l - f - p2
 	y = l + p
 
-	bubble (cr, s * .5, height - .5 * s, x, y, w, h)
+	bubble (cr, s * .9, height - .7 * s, x, y, w, h)
 	cr.set_source_rgb (0, 0, 0)
-	cr.set_line_width (4)
+	cr.save()
+	cr.set_line_width (p)
+	cr.set_miter_limit (20)
 	cr.stroke_preserve ()
+	cr.restore()
 	cr.clip ()
 	cr.set_source_rgb (1, 1, 1)
 	cr.paint ()
 
 	cr.set_source_rgb (0, 0, 0)
 
-	return x, y, w, h
+	p *= 3
+	
+	return x + p, y + p, w - 2 * p, h - 2 * p
