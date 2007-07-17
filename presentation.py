@@ -73,7 +73,7 @@ class ViewerGTK(gtk.Widget):
 			self.cycle_mode_forward()
 		elif event.keyval == gtk.keysyms.BackSpace or event.keyval in [gtk.keysyms.Left, gtk.keysyms.Up, gtk.keysyms.Page_Up]:
 			self.cycle_mode_backward()
-		elif event.string == 'q' or event.keyval == gtk.keysyms.Escape:
+		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
 
 	def run (self, Renderer, slides):
