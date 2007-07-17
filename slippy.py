@@ -263,6 +263,11 @@ class Renderer:
 		w, h = self.cr.user_to_device_distance (w, h)
 		self.extents = extents_union (self.extents, [x, y, w, h])
 
+	def set_allocation (self, x, y, w, h):
+		x, y = self.cr.user_to_device (x, y)
+		w, h = self.cr.user_to_device_distance (w, h)
+		self.extents = [x, y, w, h]
+
 	def create_layout (self, text, markup=True):
 
 		cr = self.cr
@@ -313,7 +318,7 @@ class Renderer:
 
 		return layout.get_pixel_size ()
 
-	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True, desc=None):
+	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True, alloc=True, desc=None):
 		layout = self.create_layout (text, markup=markup)
 		if desc:
 			layout.set_font_description (pango.FontDescription (desc))
@@ -328,10 +333,11 @@ class Renderer:
 		self.cr.rel_move_to ((halign - 1) * width / 2., (valign - 1) * height / 2.)
 		x, y = self.cr.get_current_point ()
 		self.cr.show_layout (layout)
-		self.allocate (x, y, width, height)
+		if alloc:
+			self.allocate (x, y, width, height)
 		return width, height
 
-	def put_image (self, filename, width=0, height=0, halign=0, valign=0):
+	def put_image (self, filename, width=0, height=0, halign=0, valign=0, alloc=True):
 
 		global pixcache
 		pix, w, h = pixcache.get (filename, (None, 0, 0))
@@ -376,7 +382,8 @@ class Renderer:
 		else:
 			cr.set_source_surface (pix, 0, 0)
 			cr.paint ()
-		self.allocate (0, 0, w, h)
+		if alloc:
+			self.allocate (0, 0, w, h)
 		cr.restore ()
 		return w * r, h * r
 
