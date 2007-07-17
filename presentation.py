@@ -47,32 +47,45 @@ class ViewerGTK(gtk.Widget):
 
 		return False
 
-
-	def cycle_mode_forward(self):
-		if self.step + 1 < len (self.slide):
-			self.step += 1
-		elif self.slide_no + 1 < len (self.slides):
+	def go_forward_full(self):
+		if self.slide_no + 1 < len (self.slides):
 			self.slide_no += 1
 			self.slide = Slide (self.slides[self.slide_no])
 			self.step = 0
+			self.queue_draw()
 
-		self.queue_draw()
+	def go_forward(self):
+		if self.step + 1 < len (self.slide):
+			self.step += 1
+			self.queue_draw()
+		else:
+			self.go_forward_full ()
 
-	def cycle_mode_backward(self):
-		if self.step > 0:
-			self.step -= 1
-		elif self.slide_no > 0:
+	def go_backward_full(self):
+		if self.slide_no > 0:
 			self.slide_no -= 1
 			self.slide = Slide (self.slides[self.slide_no])
-			self.step = len (self.slide) - 1
+			self.step = 0
+			self.queue_draw()
 
-		self.queue_draw()
+	def go_backward(self):
+		if self.step > 0:
+			self.step -= 1
+			self.queue_draw()
+		else:
+			self.go_backward_full ()
+			self.step = len (self.slide) - 1
+			self.queue_draw()
 
 	def key_press_event(self, widget, event):
-		if event.string in [' ', '\r'] or event.keyval in [gtk.keysyms.Right, gtk.keysyms.Down, gtk.keysyms.Page_Down]:
-			self.cycle_mode_forward()
-		elif event.keyval == gtk.keysyms.BackSpace or event.keyval in [gtk.keysyms.Left, gtk.keysyms.Up, gtk.keysyms.Page_Up]:
-			self.cycle_mode_backward()
+		if event.string in [' ', '\r'] or event.keyval in [gtk.keysyms.Right, gtk.keysyms.Down]:
+			self.go_forward()
+		elif event.keyval in [gtk.keysyms.Page_Down]:
+			self.go_forward_full()
+		elif event.keyval == gtk.keysyms.BackSpace or event.keyval in [gtk.keysyms.Left, gtk.keysyms.Up]:
+			self.go_backward()
+		elif event.keyval in [gtk.keysyms.Page_Up]:
+			self.go_backward_full()
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
 
