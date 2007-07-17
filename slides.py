@@ -14,11 +14,11 @@ def title_slide (r):
 cool community
 cool code""", desc="50", valign=1)
 
-	r.move_to (0, 600)
+	r.move_to (0, 450)
 	r.put_text ("""Behdad Esfahbod\n<span font_desc="16">behdad@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=1, valign=-1)
 
-	r.move_to (800, 600)
+	r.move_to (800, 450)
 	r.put_text ("""Carl Worth\n<span font_desc="16">cworth@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=-1, valign=-1)
 
@@ -74,6 +74,7 @@ def imaging_model (r):
 
 	paint_checkers (r.cr)
 
+	r.allocate (100, 130, 550, 450)
 	r.cr.translate (200, 130)
 
 	### Column 1

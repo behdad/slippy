@@ -99,6 +99,7 @@ class ViewerGTK(gtk.Widget):
 		window.connect("destroy", gtk.main_quit)
 		window.connect("key-press-event", self.key_press_event)
 		window.set_default_size (800, 600)
+		window.set_default_size (800, 600)
 		window.show_all()
 
 		self.slide_no = 0
@@ -126,8 +127,10 @@ class ViewerPDF:
 class Slide:
 
 	def __init__ (self, slide):
+		renderer = Renderer ()
 		self.slide = slide
-		self.texts = [x for x in self.get_items (Renderer ())]
+		self.texts = [x for x in self.get_items (renderer)]
+		self.extents = renderer.extents
 		self.text = ''.join (self.texts)
 	
 	def get_items (self, renderer):
@@ -148,12 +151,26 @@ class Slide:
 		cr.save ()
 		x, y, w, h = renderer.theme.prepare_page (renderer)
 		cr.translate (x, y)
+
+		# normalize canvas size
 		cr.scale (w / 800., h / 600.)
 		w, h = 800., 600.
+		renderer.w, renderer.h = w,h
 		cr.move_to (0, 0)
 
 		layout = renderer.create_layout (self.text)
+		layout.set_alignment (pango.ALIGN_CENTER)
 		lw, lh = renderer.fit_layout (layout, w, h)
+
+		ext = self.extents
+		if self.text != " ":
+			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
+		ext = extents_intersect (ext, [0, 0, w, h])
+		#ex, ey, ew, eh = self.extents
+		#ex, ey = cr.device_to_user (ex, ey)
+		#ew, eh = cr.device_to_user_distance (ew, eh)
+		renderer.theme.draw_bubble (renderer, *ext)
+
 		text = ""
 		i = 0;
 		for page in self.get_items (renderer):
@@ -161,6 +178,7 @@ class Slide:
 			if i == pageno:
 				break;
 			i += 1
+
 		layout.set_markup (text)
 		cr.move_to ((w - lw) * .5, (h - lh) * .5)
 		cr.show_layout (layout)
@@ -168,6 +186,27 @@ class Slide:
 
 		cr.show_page()
 		
+def extents_union (ex1, ex2):
+	
+	if not ex1:
+		return ex2
+	else:
+		x1 = min (ex1[0], ex2[0])
+		y1 = min (ex1[1], ex2[1])
+		x2 = max (ex1[0] + ex1[2], ex2[0] + ex2[2])
+		y2 = max (ex1[1] + ex1[3], ex2[1] + ex2[3])
+		return [x1, y1, x2 - x1, y2 - y1]
+
+def extents_intersect (ex1, ex2):
+	
+	if not ex1:
+		return ex2
+	else:
+		x1 = max (ex1[0], ex2[0])
+		y1 = max (ex1[1], ex2[1])
+		x2 = min (ex1[0] + ex1[2], ex2[0] + ex2[2])
+		y2 = min (ex1[1] + ex1[3], ex2[1] + ex2[3])
+		return [x1, y1, x2 - x1, y2 - y1]
 
 class Renderer:
 	
@@ -176,6 +215,8 @@ class Renderer:
 			class NullTheme:
 				def prepare_page (renderer):
 					return 0, 0, renderer.width, renderer.height
+				def draw_bubble (renderer):
+					pass
 			theme = NullTheme ()
 		if not cr:
 			cr = pangocairo.CairoContext (cairo.Context (cairo.ImageSurface (0, 0, 0)))
@@ -187,9 +228,15 @@ class Renderer:
 		self.cr = cr
 		self.theme = theme
 		self.width, self.height = float (width), float (height)
+		self.extents = None
 
 	def __getattr__ (self, arg):
 		return eval ("self.cr." + arg)
+	
+	def allocate (self, x, y, w, h):
+		x, y = self.cr.user_to_device (x, y)
+		w, h = self.cr.user_to_device_distance (w, h)
+		self.extents = extents_union (self.extents, [x, y, w, h])
 
 	def create_layout (self, text, markup=True):
 
@@ -255,7 +302,9 @@ class Renderer:
 
 		width, height = self.fit_layout (layout, width, height)
 		self.cr.rel_move_to ((halign - 1) * width / 2., (valign - 1) * height / 2.)
+		x, y = self.cr.get_current_point ()
 		self.cr.show_layout (layout)
+		self.allocate (x, y, width, height)
 		return width, height
 
 	def put_image (self, filename, width=0, height=0, halign=0, valign=0):
@@ -291,6 +340,7 @@ class Renderer:
 		else:
 			gcr.set_source_pixbuf (pix, 0, 0)
 			gcr.paint ()
+		self.allocate (0, 0, w * r, h * r)
 		gcr.restore ()
 		return w * r, h * r
 
