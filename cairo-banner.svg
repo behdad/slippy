@@ -3,7 +3,7 @@
   "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="370" height="81" >
+     width="280" height="81" >
 
   <defs id="cairo-artwork_defs">
     <g id="scarab" fill="#f39914">
@@ -159,7 +159,7 @@
     </g>
 
     <g id="scarab_and_dung">
-      <g id="dung" stroke="#162284" stroke-width="1" fill="none" transform="translate(-12.5,0)">
+      <g id="dung" stroke="white" stroke-width="1" fill="none" transform="translate(-12.5,0)">
 	<circle cx="12.5" cy="12.5" r="12" />
 	<g id="hacker" transform="translate(6,6)" >
 	  <g id="grid"> <!-- (0,0) - (12,12) -->
@@ -167,7 +167,7 @@
 	    <rect x="4.5" y="0.5" width="4"  height="12" />
 	    <rect x="0.5" y="4.5" width="12" height="4"  />
 	  </g>
-	  <g id="glider" fill="#162284" stroke="none">
+	  <g id="glider" fill="white" stroke="none">
 	    <circle cx="6.5"  cy="2.5"  r=".9" />
 	    <circle cx="10.5" cy="6.5"  r=".9" />
 	    <circle cx="2.5"  cy="10.5" r=".9" />
@@ -183,8 +183,8 @@
     
   </defs>
 
-  <use xlink:href="#scarab_and_dung" transform="translate(30.5,0)" />
-  <use xlink:href="#cairo_text_small" transform="translate(185, 86)" fill="#162284" />
-  <use xlink:href="#scarab_and_dung" transform="translate(339.5,0) scale(-1,1)" />
+  <!--use xlink:href="#scarab_and_dung" transform="translate(30.5,0)" /-->
+  <use xlink:href="#cairo_text_small" transform="translate(110, 76) scale (.8, .8)" fill="white" />
+  <use xlink:href="#scarab_and_dung" transform="translate(245,0) scale(-1,1)" />
 
 </svg>

@@ -230,17 +230,34 @@ class Renderer():
 
 		return layout.get_pixel_size ()
 
-	def put_text (self, text, w, h, markup=True):
+	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True):
 		layout = self.create_layout (text, markup=markup)
-		w, h = self.fit_layout (layout, w, h)
+		width, height = self.fit_layout (layout, width, height)
+		self.cr.rel_move_to ((halign - 1) * width / 2., (valign - 1) * height / 2.)
 		self.cr.show_layout (layout)
-		return w, h
+		return width, height
 
-	def put_image (self, filename):
+	def put_image (self, filename, width=0, height=0, halign=0, valign=0):
 		pix = gtk.gdk.pixbuf_new_from_file (filename)
 		gcr = gtk.gdk.CairoContext (self.cr)
-		gcr.set_source_pixbuf (pix, 0, 0)
+		x, y = gcr.get_current_point ()
+		r = 0
+		width, height = float (width), float (height)
+		if width or height:
+			if width:
+				r = width / pix.get_width ()
+				if height:
+					r = min (r, height / pix.get_height ())
+			elif height:
+				r = height / pix.get_height ()
+		width, height = pix.get_width (), pix.get_height ()
+		gcr.save ()
+		gcr.translate (x, y)
+		if r:
+			gcr.scale (r, r)
+		gcr.set_source_pixbuf (pix, (halign - 1) * width / 2., (valign - 1) * height / 2.)
 		gcr.paint ()
+		gcr.restore ()
 
 gobject.type_register(ViewerGTK)
 
