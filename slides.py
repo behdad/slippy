@@ -24,7 +24,7 @@ cool code""", desc="50", valign=1)
 
 slide("Community == People")
 
-slide("A (very) brief introduction to cairo")
+slide("A <i>very</i> brief\nintroduction to cairo")
 
 def paint_checkers (cr):
 	image = cairo.ImageSurface (cairo.FORMAT_RGB24, 30, 30)
