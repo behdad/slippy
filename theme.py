@@ -105,8 +105,8 @@ def draw_bubble (renderer, x, y, w, h):
 	cr.stroke_preserve ()
 
 	cr.restore()
-	cr.clip ()
 	cr.set_source_rgb (1, 1, 1)
+	cr.clip ()
 	cr.paint ()
 
 	cr.set_source_rgb (0, 0, 0)
