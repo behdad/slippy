@@ -227,7 +227,7 @@ slide("Community == People")
 
 slide("Cairo finds Carl")
 
-slide(("2002", "Pre-history"))
+slide(("2002\n", "Pre-history"))
 
 @slide
 def geotv (r):
