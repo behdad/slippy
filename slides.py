@@ -37,7 +37,7 @@ cool code""", desc="50", valign=1)
 	r.put_text ("""Carl Worth\n<span font_desc="16">cworth@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=-1, valign=-1)
 
-who (cworth)
+who (behdad)
 
 slide("A <i>very</i> brief\nintroduction to cairo")
 
@@ -240,11 +240,77 @@ def imaging_model (r):
 
 	return " "
 
-slide("Community == People")
+who (cworth)
 
-slide("Cairo finds Carl")
+slide("History")
 
-slide(("2002\n", "Pre-history"))
+@slide
+def trapezoid (r):
+	r.set_line_width (1)
+	r.set_source_rgb (0, 0, 0)
+	pixel_size = 800 / 10
+	for x in range(0 - 50, 800 + 50, pixel_size):
+		r.move_to (x, -50)
+		r.line_to (x, 600 + 50)
+		r.stroke ()
+	for y in range(0 - 50, 600 + 50, pixel_size):
+		r.move_to (-50, y)
+		r.line_to (800 + 50, y)
+		r.stroke ()
+	r.scale (pixel_size / 10, pixel_size / 10)
+
+	# Interior
+	r.save ()
+	r.move_to (0, 25)
+	r.line_to (100, 25)
+	r.line_to (100, 50)	
+	r.line_to (0, 50)
+	r.close_path ()
+	r.clip ()
+
+	r.move_to (30, 20)
+	r.line_to (10, 60)
+	r.line_to (75, 55)
+	r.line_to (65, 15)
+	r.close_path ()
+	r.clip ()
+
+	r.set_source_rgba (.2, .2, .7, 0.5)
+	r.paint ()
+	r.restore ()
+
+	# top
+	r.set_source_rgb (0, 0, 0)
+	r.move_to (0, 25)
+	r.put_text ("top", desc="5", halign=1, valign=-1)
+	r.move_to (0, 25)
+	r.line_to (100, 25)
+	r.stroke ()
+
+	# bottom
+	r.move_to (100, 50)
+	r.put_text ("bottom", desc="5", halign=-1, valign=-1)
+	r.move_to (0, 50)
+	r.line_to (100, 50)
+	r.stroke ()
+
+	# left
+	r.set_source_rgb (.2, .6, .2)	
+	r.move_to (30, 20)
+	r.put_text ("left", desc="5", halign=1, valign=-1)
+	r.move_to (30, 20)
+	r.line_to (10, 60)
+	r.stroke ()
+
+	# right
+	r.set_source_rgb (.8, .2, .2)
+	r.move_to (65, 15)
+	r.put_text ("right", desc="5", halign=-1, valign=-1)
+	r.move_to (65, 15)
+	r.line_to (75, 55)
+	r.stroke ()
+
+	r.allocate (0, 0, 100, 60)
 
 pid = None
 
@@ -253,6 +319,9 @@ def geotv (r):
 	global pid
 	r.move_to (400, 300)
 	r.put_image ("geotv.jpg", width=900)
+	r.move_to (100, 400)
+	r.set_source_rgb (1, 1, 1)
+	r.put_text ("April 2002", desc="40", halign=1)
 	yield ""
 	if r.viewer:
 		if not pid:
@@ -261,7 +330,86 @@ def geotv (r):
 	yield ""
 	pid = None
 
-slide("Cairo finds Behdad")
+@slide
+def first_post (r):
+	r.move_to (400, 300)
+	r.put_text("""Subject: Xr API strawman
+To: Keith Packard <keithp@keithp.com>
+Date: Tue, 4 Jun 2002 19:55:06 +0000
+
+Hi Keith,
+
+I read up a bit on PostScript. It's the obvious source of the
+proposals you were making.
+
+I like it much better than GL as a model for Xr. It's cleaner in
+general, (IMHO). And PS has larger overlap with the primitives we want
+in Xr, (eg. bezier curves as opposed to just triangle meshes).
+
+So, here's what I'm thinking of so far. This sticks fairly close to
+PostScript, (but with an explicit rather than an implicit state
+object).
+
+Feedback welcome,
+
+-Carl""", desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
+
+@slide
+def api_strawman (r):
+	r.move_to (400, 300)
+	r.put_text("""/* Opaque state structure */
+typedef struct _XrState XrState;
+
+/* Functions for manipulating state objects */
+
+/* XXX: Do we want to add `State' to any of these functions?
+        eg. XrStateCreate, XrStateClone? */
+XrState *XrCreate(void);
+void XrDestroy(XrState *xrs);
+
+void XrSave(XrState *xrs);
+void XrRestore(XrState *xrs);
+
+XrState *XrClone(XrState *xrs);
+
+/* Modify state */
+void XrSetPicture(XrState *xrs, XrPicture)
+void XrSetColor(XrState *xrs, XrColor);
+
+/* XXX: XrSetLineWidth, XrSetLineCap, XrSetLineJoin, XrSetDash, ... */
+
+/* Path creation */
+
+/* XXX: I'm thinking that it might make sense to do away with the
+        notion of a "current path" in the state object and instead
+        provide functions to manipulate an opaque XrPath object. This
+        would add one more argument to XrStroke/XrFill, but it would
+        unify support for PS "user paths" */
+
+void XrNewPath(XrState *xrs);
+void XrMoveTo(XrState *xrs, double x, double y);
+void XrLineTo(XrState *xrs, double x, double y);
+void XrClosePath(XrState *xrs);
+
+/* XXX: XrRLineTo, XrArc, XrCurveTo, XrRCurveTo, ... */
+
+/* Render current path */
+void XrStroke(XrState *xrs);
+void XrFill(XrState *xrs);
+""", desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
+
+@slide
+def committers (r):
+    yield "<b>Committers</b>"
+    for c in [
+	'2002	2',
+	'2003	11',
+	'2004	12',
+	'2005	26',
+	'2006	54',
+	'2007	<span foreground="#888">44</span>',
+	]:
+		yield "\n"+c
 
 who (behdad)
 
@@ -292,6 +440,8 @@ def bindings (r):
 	"O'Caml", "Perl", "PHP", "Python", "Ruby", "Scheme", "Squeak"]
 	for b in binds:
 		yield "\n"+b
+
+slide("Cairo finds Behdad")
 
 slide("Cairo finds «ickle»")
 
