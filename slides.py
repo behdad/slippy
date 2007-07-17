@@ -267,3 +267,12 @@ who (behdad)
 
 slide("Cairo finds «ickle»")
 
+@slide
+def git (r):
+	yield "If you don't <i>git,</i> it,\nyou don't get it"
+
+	yield "\n\nIt's the\nRight Thing To Do"
+	r.move_to (400, 300)
+	r.put_image ("street.jpg", height=650)
+	r.set_allocation (50, 0, 800, 550)
+	yield ""

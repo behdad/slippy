@@ -145,7 +145,7 @@ class Slide:
 			items = ("",)
 		if isinstance (items, str):
 			items = (items,)
-		return (item + " "*int(item == "" or item == None) for item in items)
+		return items
 
 	def __len__ (self):
 		return len (self.texts)
@@ -183,12 +183,14 @@ class Slide:
 		lw, lh = renderer.fit_layout (layout, w, h)
 
 		ext = self.extents
-		if self.text != " ":
+		#if ext:
+		#	ex, ey, ew, eh = ext
+		#	ex, ey = cr.device_to_user (ex, ey)
+		#	ew, eh = cr.device_to_user_distance (ew, eh)
+		#	ext = [ex, ey, ew, eh]
+		if self.text:
 			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
 		ext = extents_intersect (ext, [0, 0, w, h])
-		#ex, ey, ew, eh = self.extents
-		#ex, ey = cr.device_to_user (ex, ey)
-		#ew, eh = cr.device_to_user_distance (ew, eh)
 		renderer.theme.draw_bubble (renderer, who=self.who, *ext)
 
 		text = ""
@@ -260,6 +262,11 @@ class Renderer:
 		w, h = self.cr.user_to_device_distance (w, h)
 		self.extents = extents_union (self.extents, [x, y, w, h])
 
+	def set_allocation (self, x, y, w, h):
+		x, y = self.cr.user_to_device (x, y)
+		w, h = self.cr.user_to_device_distance (w, h)
+		self.extents = [x, y, w, h]
+
 	def create_layout (self, text, markup=True):
 
 		cr = self.cr
@@ -310,7 +317,7 @@ class Renderer:
 
 		return layout.get_pixel_size ()
 
-	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True, desc=None):
+	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True, alloc=True, desc=None):
 		layout = self.create_layout (text, markup=markup)
 		if desc:
 			layout.set_font_description (pango.FontDescription (desc))
@@ -325,31 +332,34 @@ class Renderer:
 		self.cr.rel_move_to ((halign - 1) * width / 2., (valign - 1) * height / 2.)
 		x, y = self.cr.get_current_point ()
 		self.cr.show_layout (layout)
-		self.allocate (x, y, width, height)
+		if alloc:
+			self.allocate (x, y, width, height)
 		return width, height
 
-	def put_image (self, filename, width=0, height=0, halign=0, valign=0):
+	def put_image (self, filename, width=0, height=0, halign=0, valign=0, alloc=True):
 
 		global pixcache
-		pix = pixcache.get (filename, None)
+		pix, w, h = pixcache.get (filename, (None, 0, 0))
 
 		svg = filename.endswith (".svg")
 
 		if not pix:
 			if svg:
 				pix = rsvg.Handle (filename)
+				w, h = pix.get_dimension_data()[2:4]
 			else:
 				pix = gtk.gdk.pixbuf_new_from_file (filename)
+				w, h = pix.get_width(), pix.get_height()
+				surface = self.get_target().create_similar (cairo.CONTENT_COLOR_ALPHA, w, h)
+				gcr = gtk.gdk.CairoContext (cairo.Context (surface))
+				gcr.set_source_pixbuf (pix, 0, 0)
+				gcr.paint ()
+				pix = surface
 
-		pixcache[filename] = pix
+		pixcache[filename] = (pix, w, h)
 
-		if svg:
-			w, h = pix.get_dimension_data()[2:4]
-		else:
-			w, h = pix.get_width(), pix.get_height()
-
-		gcr = gtk.gdk.CairoContext (self.cr)
-		x, y = gcr.get_current_point ()
+		cr = self.cr
+		x, y = cr.get_current_point ()
 		r = 0
 		width, height = float (width), float (height)
 		if width or height:
@@ -359,20 +369,21 @@ class Renderer:
 					r = min (r, height / h)
 			elif height:
 				r = height / h
-		gcr.save ()
-		gcr.translate (x, y)
+		cr.save ()
+		cr.translate (x, y)
 		if r:
-			gcr.scale (r, r)
-		gcr.translate ((halign - 1) * w / 2., (valign - 1) * h / 2.)
-		gcr.move_to (0, 0)
+			cr.scale (r, r)
+		cr.translate ((halign - 1) * w / 2., (valign - 1) * h / 2.)
+		cr.move_to (0, 0)
 
 		if svg:
-			pix.render_cairo (gcr)
+			pix.render_cairo (cr)
 		else:
-			gcr.set_source_pixbuf (pix, 0, 0)
-			gcr.paint ()
-		self.allocate (0, 0, w * r, h * r)
-		gcr.restore ()
+			cr.set_source_surface (pix, 0, 0)
+			cr.paint ()
+		if alloc:
+			self.allocate (0, 0, w, h)
+		cr.restore ()
 		return w * r, h * r
 
 pixcache = {}
