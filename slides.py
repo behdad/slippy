@@ -448,6 +448,16 @@ def bindings (r):
 
 slide ("News")
 
+slide ("Mutex rework")
+
+slide ("Error-handling")
+
+slide ("Great malloc hunt")
+
+slide ("Xlib work queue")
+
+slide ("PDF hotness")
+
 slide ("Lessons")
 
 @slide
@@ -459,3 +469,11 @@ def git (r):
 	r.put_image ("street.jpg", height=650)
 	r.set_allocation (50, 0, 800, 550)
 	yield ""
+
+slide ("Commit-access\nfor everyone!")
+
+slide ("Tricking others\into doing their work")
+
+slide ("Don't go AWOL")
+
+slide ("Why do we\nlove cairo?")
