@@ -8,7 +8,7 @@ padding = .005
 def bubble (cr, x0, y0, x, y, w, h):
 
 	x1, y1, x2, y2 = x, y, x + w, y + h
-	r = min (w, h) * .15
+	r = min (w, h) * .25
 
 	cr.move_to (x1+r, y1)
 	cr.line_to (x2-r, y1)
@@ -107,7 +107,7 @@ def draw_bubble (renderer, x, y, w, h, who=None):
 	bubble (cr, xc, yc, x, y, w, h)
 	cr.set_source_rgb (0, 0, 0)
 	cr.set_line_width (p)
-	cr.set_miter_limit (30)
+	cr.set_miter_limit (20)
 	cr.stroke_preserve ()
 
 	cr.restore()
