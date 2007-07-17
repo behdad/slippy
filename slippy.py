@@ -215,25 +215,37 @@ class Renderer:
 		cr = self.cr
 
 		cr.update_layout (layout)
-		desc = pango.FontDescription("Sans")
+		desc = layout.get_font_description ()
+		if not desc:
+			desc = pango.FontDescription("Sans")
 		s = int (max (height * 5., width / 50.))
-		desc.set_size (s)
+		if s:
+			desc.set_size (s)
+		elif desc.get_size () == 0:
+			desc.set_size (36 * pango.SCALE)
 		layout.set_font_description (desc)
-		w,h = layout.get_size ()
-		if width > 0:
-			size = float (width) / w
-			if height > 0:
-				size = min (size, float (height) / h)
-		else:
-			size = float (height) / h
 
-		desc.set_size (int (s * size)) 
+		if s:
+			w,h = layout.get_size ()
+			if width > 0:
+				size = float (width) / w
+				if height > 0:
+					size = min (size, float (height) / h)
+			elif height > 0:
+				size = float (height) / h
+			else:
+				size = 1
+
+			desc.set_size (int (s * size)) 
+
 		layout.set_font_description (desc)
 
 		return layout.get_pixel_size ()
 
-	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True):
+	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True, desc=None):
 		layout = self.create_layout (text, markup=markup)
+		if desc:
+			layout.set_font_description (pango.FontDescription (desc))
 		if halign < 0:
 			layout.set_alignment (pango.ALIGN_RIGHT)
 		elif halign > 0:
