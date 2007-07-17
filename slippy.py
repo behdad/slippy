@@ -201,7 +201,7 @@ class Slide:
 				break;
 			i += 1
 
-		layout.set_width (lw * pango.SCALE)
+		layout.set_width (1.001 * lw * pango.SCALE)
 		layout.set_markup (text)
 		cr.move_to ((w - lw) * .5, (h - lh) * .5)
 		cr.show_layout (layout)
