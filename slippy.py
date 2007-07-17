@@ -317,11 +317,13 @@ class Renderer:
 
 		return layout.get_pixel_size ()
 
-	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True, alloc=True, desc=None):
+	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True, alloc=True, desc=None, align=None):
 		layout = self.create_layout (text, markup=markup)
 		if desc:
 			layout.set_font_description (pango.FontDescription (desc))
-		if halign < 0:
+		if align != None:
+			layout.set_alignment (align)
+		elif halign < 0:
 			layout.set_alignment (pango.ALIGN_RIGHT)
 		elif halign > 0:
 			layout.set_alignment (pango.ALIGN_LEFT)
