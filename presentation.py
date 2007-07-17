@@ -41,7 +41,7 @@ class ViewerGTK(gtk.Widget):
 		cr.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
 		cr.clip()
 
-		renderer = self.Renderer (cr, self.allocation.width, self.allocation.height)
+		renderer = Renderer (theme=self.theme, cr=cr, width=self.allocation.width, height=self.allocation.height)
 
 		self.slide.show_page (renderer, self.step)
 
@@ -89,8 +89,8 @@ class ViewerGTK(gtk.Widget):
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
 
-	def run (self, Renderer, slides):
-		self.Renderer = Renderer
+	def run (self, theme, slides):
+		self.theme = theme
 		self.slides = slides
 
 		window = gtk.Window()
@@ -113,9 +113,9 @@ class ViewerPDF:
 		self.width, self.height = 8.5 * 4/3 * 72, 8.5 * 72
 		self.surface = cairo.PDFSurface (filename, self.width, self.height)
 
-	def run (self, Renderer, slides):
+	def run (self, theme, slides):
 		cr = pangocairo.CairoContext (cairo.Context (self.surface))
-		renderer = Renderer (cr, self.width, self.height)
+		renderer = Renderer (theme, cr, self.width, self.height)
 		for slide in slides:
 			slide = Slide (slide)
 			for step in range (len (slide)):
@@ -124,35 +124,38 @@ class ViewerPDF:
 
 class Slide:
 
-	nullcr = cairo.Context (cairo.ImageSurface (0, 0, 0))
-
-	def get_items (self, cr):
+	def __init__ (self, slide):
+		self.slide = slide
+		self.texts = [x for x in self.get_items (Renderer ())]
+		self.text = ''.join (self.texts)
+	
+	def get_items (self, renderer):
 		items = self.slide
 		if isinstance (items, types.FunctionType):
-			items = items(cr)
+			items = items(renderer)
 		if items == None or items == "":
 			items = (" ",)
 		if isinstance (items, str):
 			items = (items,)
 		return items
 
-	def __init__ (self, slide):
-		self.slide = slide
-		self.texts = [x for x in self.get_items (self.nullcr)]
-		self.text = ''.join (self.texts)
-	
 	def __len__ (self):
 		return len (self.texts)
 	
 	def show_page (self, renderer, pageno):
 		cr = renderer.cr
 		cr.save ()
-		w, h = renderer.prepare_page ()
-		layout = renderer.create_layout ()
-		lw, lh = renderer.prepare_layout (layout, self.text, w, h)
+		x, y, w, h = renderer.theme.prepare_page (renderer)
+		cr.translate (x, y)
+		cr.rectangle (0, 0, w, h)
+		cr.clip ()
+		cr.move_to (0, 0)
+
+		layout = renderer.create_layout (self.text)
+		lw, lh = renderer.fit_layout (layout, w, h)
 		text = ""
 		i = 0;
-		for page in self.get_items (cr):
+		for page in self.get_items (renderer):
 			text += page
 			if i == pageno:
 				break;
@@ -167,51 +170,24 @@ class Slide:
 
 class Renderer():
 	
-	side_margin = .03
-	logo_margin = .15
-	padding = .01
+	def __init__ (self, theme=None, cr=None, width=0, height=0):
+		if not theme:
+			class NullTheme:
+				def prepare_page (renderer):
+					return 0, 0, renderer.width, renderer.height
+			theme = NullTheme ()
+		if not cr:
+			cr = cairo.Context (cairo.ImageSurface (0, 0, 0))
+		if not width:
+			width = 8
+		if not height:
+			height = 6
 
-	def __init__ (self, cr, width, height):
 		self.cr = cr
+		self.theme = theme
 		self.width, self.height = width, height
-		
 
-	def prepare_page (self):
-
-		cr = self.cr
-		
-		cr.set_source_rgb (0, 0, 0)
-		cr.paint ()
-
-		cr.rectangle (0, 0, self.side_margin * self.width, self.height)
-		cr.rectangle (self.width, 0, -self.side_margin * self.width, self.height)
-		cr.set_source_rgb (1, 1, 1)
-		cr.fill ()
-
-		cr.rectangle (0, 0, self.side_margin * self.width, self.logo_margin * self.height)
-		cr.rectangle (self.width, 0, -self.side_margin * self.width, self.logo_margin * self.height)
-		cr.set_source_rgb (.8, 0, 0)
-		cr.fill ()
-
-		cr.set_source_rgba (1, 1, 1, .95)
-
-		layout = self.create_layout ()
-		layout.set_markup ("<i>GUADEC 2007, Birmingham, UK</i>")
-
-		w, h = self.fit_layout (layout, .5 * self.width, 0)
-		cr.move_to (.5 * (self.width - w), self.height - h)
-		cr.show_layout (layout)
-
-		p = min (self.padding * self.width, self.padding * self.height)
-		w = self.width * (1 - 2 * self.side_margin) - 2 * p
-		x = self.width * self.side_margin + p
-		h = self.height * (1 - self.logo_margin) - h - 2 * p
-		y = self.height * self.logo_margin + p
-
-		cr.translate (x, y)
-		return w, h
-
-	def create_layout (self):
+	def create_layout (self, text, markup=True):
 
 		cr = self.cr
 		
@@ -219,6 +195,12 @@ class Renderer():
 		font_options = cairo.FontOptions ()
 		font_options.set_hint_metrics (cairo.HINT_METRICS_OFF)
 		pangocairo.context_set_font_options (layout.get_context (), font_options)
+
+		if markup:
+			layout.set_markup (text)
+		else:
+			layout.set_text (text)
+
 		return layout
 
 	def fit_layout (self, layout, width, height):
@@ -246,9 +228,19 @@ class Renderer():
 
 		return layout.get_pixel_size ()
 
-	def prepare_layout (self, layout, text, w, h):
-		layout.set_markup (text)
-		return self.fit_layout (layout, w, h)
+	def put_text (self, text, w, h, markup=True):
+		layout = self.create_layout (text, markup=markup)
+		w, h = self.fit_layout (layout, w, h)
+		self.cr.show_layout (layout)
+		return w, h
+
+	def something ():
+		cr.move_to (0, 0)
+		pix = gtk.gdk.pixbuf_new_from_file ("apply-now.png")
+		gcr = gtk.gdk.CairoContext (cr)
+		gcr.set_source_pixbuf (pix, 0, 0)
+		gcr.paint ()
+
 	
 
 gobject.type_register(ViewerGTK)
@@ -263,7 +255,9 @@ def main():
 	else:
 		viewer = ViewerGTK ()
 
-	viewer.run (Renderer, all_slides)
+	import theme
+
+	viewer.run (theme, all_slides)
 
 if __name__ == "__main__":
 	main()
