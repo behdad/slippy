@@ -42,7 +42,7 @@ class ViewerGTK(gtk.Widget):
 		cr.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
 		cr.clip()
 
-		renderer = Renderer (theme=self.theme, cr=cr, width=self.allocation.width, height=self.allocation.height)
+		renderer = Renderer (viewer=self, theme=self.theme, cr=cr, width=self.allocation.width, height=self.allocation.height)
 
 		self.slide.show_page (self, renderer, self.step)
 
@@ -121,7 +121,7 @@ class ViewerPDF:
 	def run (self, theme, slides):
 		self.cache = False
 		cr = pangocairo.CairoContext (cairo.Context (self.surface))
-		renderer = Renderer (theme, cr, self.width, self.height)
+		renderer = Renderer (None, theme, cr, self.width, self.height)
 		for slide in slides:
 			slide = Slide (slide)
 			for step in range (len (slide)):
@@ -231,7 +231,7 @@ def extents_intersect (ex1, ex2):
 
 class Renderer:
 	
-	def __init__ (self, theme=None, cr=None, width=0, height=0):
+	def __init__ (self, viewer=None, theme=None, cr=None, width=0, height=0):
 		if not theme:
 			class NullTheme:
 				def prepare_page (renderer):
@@ -246,6 +246,7 @@ class Renderer:
 		if not height:
 			height = 6
 
+		self.viewer = viewer
 		self.cr = cr
 		self.theme = theme
 		self.width, self.height = float (width), float (height)
