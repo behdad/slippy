@@ -36,30 +36,37 @@ def prepare_page (renderer):
 	p = padding * min (width, height)
 	p2 = 2 * p
 
+	# Blue sky
 	cr.set_source_rgb (.8, .85, 1)
 	cr.paint ()
 
+	# Brown earth
 	cr.set_source_rgb (158/255., 87/255., 0/255.)
 	cr.rectangle (0, height, width, -p2)
 	cr.fill ()
+
+	# GUADEC logo on the bottom
 	cr.move_to (.5 * width, height-p2)
 	cr.set_source_rgb (0x03/255., 0x40/255., 0x79/255.)
 	fw, fh = renderer.put_text ("GUADEC 2007, Birmingham, UK", height=f-p2, valign=-1)
 	cr.move_to (.5 * (width - fw), height-p2)
 	renderer.put_image ("guadec.svg", height=f-p2, valign=-1, halign=-1)
 
+	# Red Hat/cairo logos at the top
 	cr.move_to (p, p)
 	renderer.put_image ("redhat.svg", height = l-p2, valign=+1, halign=+1)
 
 	cr.move_to (width-p, p)
 	renderer.put_image ("cairo.svg", height = l-p2, valign=+1, halign=-1)
 
+	# Cartoon icons for speakers
 	cr.move_to (p, height-p)
 	renderer.put_image ("behdad.svg", width = s-p2, valign=-1, halign=+1)
 
 	cr.move_to (width-p, height-p)
 	renderer.put_image ("cworth.svg", width = s-p2, valign=-1, halign=-1)
 
+	# Fancy speech bubble!
 	w = width - s - s - p2
 	x = s + p
 	h = height - l - f - p2
@@ -79,5 +86,6 @@ def prepare_page (renderer):
 	cr.set_source_rgb (0, 0, 0)
 
 	p *= 3
-	
+
+	# Compute rectangle available for slide content
 	return x + p, y + p, w - 2 * p, h - 2 * p
