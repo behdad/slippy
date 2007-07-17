@@ -398,6 +398,19 @@ void XrStroke(XrState *xrs);
 void XrFill(XrState *xrs);
 """, desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
 
+@slide
+def committers (r):
+    yield "<b>Committers</b>"
+    for c in [
+	'2002	2',
+	'2003	11',
+	'2004	12',
+	'2005	26',
+	'2006	54',
+	'2007	<span foreground="#888">44</span>',
+	]:
+		yield "\n"+c
+
 who (behdad)
 
 slide("Cairo finds Behdad")
