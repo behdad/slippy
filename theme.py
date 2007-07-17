@@ -1,6 +1,6 @@
 side_margin = .07
 logo_margin = .09
-footer_margin = .03
+footer_margin = .05
 
 def prepare_page (renderer):
 	cr = renderer.cr
@@ -24,9 +24,6 @@ def prepare_page (renderer):
 	cr.move_to (width, 0)
 	renderer.put_image ("cairo.svg", height = l, valign=+1, halign=-1)
 
-	cr.move_to (width * .5, 0)
-	renderer.put_image ("cworth.png", height = l, valign=+1)
-	
 
 	cr.set_source_rgb (1, 1, 1)
 
