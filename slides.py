@@ -6,6 +6,23 @@ def slide(f):
 	slides.append (f)
 	return f
 
+@slide
+def title_slide (r):
+	r.move_to (400, 100)
+	r.put_text (
+"""Co-maintaining cairo:
+cool community
+cool code""", desc="50", valign=1)
+
+	r.move_to (800, 500)
+	r.put_text (
+"""Carl Worth &lt;cworth@redhat.com&gt;
+Behdad Esfahbod &lt;behdad@redhat.com&gt;""", desc="20", halign=-1, valign=-1)
+
+slide("Community == People")
+
+slide("A (very) brief introduction to cairo")
+
 def paint_checkers (cr):
 	image = cairo.ImageSurface (cairo.FORMAT_RGB24, 30, 30)
 	cr2 = cairo.Context (image)
@@ -203,3 +220,9 @@ def imaging_model (r):
 	r.cr.mask (get_radial_mask_pattern ())
 
 	return " "
+
+slide("Cairo finds Carl")
+
+slide("Cairo finds Behdad")
+
+slide("Cairo finds «ickle»")
