@@ -180,7 +180,7 @@ class Renderer:
 					return 0, 0, renderer.width, renderer.height
 			theme = NullTheme ()
 		if not cr:
-			cr = cairo.Context (cairo.ImageSurface (0, 0, 0))
+			cr = pangocairo.CairoContext (cairo.Context (cairo.ImageSurface (0, 0, 0)))
 		if not width:
 			width = 8
 		if not height:
