@@ -261,6 +261,26 @@ def trapezoid (r):
 		r.stroke ()
 	r.scale (pixel_size / 10, pixel_size / 10)
 
+	# Interior
+	r.save ()
+	r.move_to (0, 25)
+	r.line_to (100, 25)
+	r.line_to (100, 50)	
+	r.line_to (0, 50)
+	r.close_path ()
+	r.clip ()
+
+	r.move_to (30, 20)
+	r.line_to (10, 60)
+	r.line_to (75, 55)
+	r.line_to (65, 15)
+	r.close_path ()
+	r.clip ()
+
+	r.set_source_rgba (.2, .2, .7, 0.5)
+	r.paint ()
+	r.restore ()
+
 	# top
 	r.set_source_rgb (0, 0, 0)
 	r.move_to (0, 25)
