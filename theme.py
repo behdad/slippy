@@ -21,8 +21,8 @@ def bubble (cr, x0, y0, x, y, w, h):
 
 	xc, yc = .5 * (x1 + x2), .5 * (y1 + y2)
 	cr.move_to (xc+r, yc)
-	cr.curve_to (xc+r, y0, .5 * (xc+r+x0), .5 * (yc+y0), x0, y0)
-	cr.curve_to (.5 * (xc-r+x0), .5 * (yc+y0), xc-r, y0, xc-r, yc)
+	cr.curve_to (xc+r, y0, .5 * (xc+r+x0), (yc+y0*2)/3, x0, y0)
+	cr.curve_to (.5 * (xc-r+x0), (yc+y0*2)/3, xc-r, y0, xc-r, yc)
 
 	
 def prepare_page (renderer):
@@ -58,10 +58,10 @@ def prepare_page (renderer):
 	cr.move_to (.5 * (width - fw), height-p)
 	renderer.put_image ("guadec.svg", height=f-p2, valign=-1, halign=-1)
 
-	w = width - s - s - p2
-	x = s + p
-	h = height - l - f - p2
-	y = l + p
+	w = width - s - s - p2 - p2
+	x = s + p2
+	h = height - l - f - p2 - p2
+	y = l + p2
 
 	bubble (cr, s * .5, height - .5 * s, x, y, w, h)
 	cr.set_source_rgb (0, 0, 0)
