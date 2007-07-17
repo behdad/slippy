@@ -272,21 +272,18 @@ def backends (r):
 		  "2002-06	Xlib",
 		  "2003-02	image",
 		  "2003-10	PostScript",
+		  '2004-04	<span foreground="#888">XCB</span>',
+		  '2004-09	<span foreground="#888">glitz</span>',
 		  "2005-01	Win32",
 		  "2005-01	PDF",
-		  "2005-12	SVG"
+		  '2005-01	<span foreground="#888">Quartz</span>',
+		  "2005-12	SVG",
+		  '2005-12	<span foreground="#888">BeOS</span>',
+		  '2005-12	<span foreground="#888">directfb</span>',
+		  '2006-09	<span foreground="#888">OS/2</span>',
+		  '2007-02	<span foreground="#888">Quartz (<i>New!</i>)</span>',
 		 ]:
 		yield "\n"+b
-	for b in [
-		  "2004-04	XCB",
-		  "2004-09	glitz",
-		  "2005-01	Quartz",
-		  "2005-12	BeOS",
-		  "2005-12	directfb",
-		  "2006-09	OS/2",
-		  "2007-02	Quartz (<i>New!</i>)",
-		 ]:
-		yield '\n<span foreground="#888">'+b+'</span>'
 
 @slide
 def bindings (r):
