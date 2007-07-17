@@ -1,6 +1,6 @@
 # -*- coding:utf8 -*-
 
-import pango, pangocairo, cairo, os
+import pango, pangocairo, cairo, os, signal
 slides = []
 behdad = -1
 cworth = +1
@@ -246,19 +246,23 @@ slide("Cairo finds Carl")
 
 slide(("2002\n", "Pre-history"))
 
+pid = None
+
 @slide
 def geotv (r):
+	global pid
 	r.move_to (400, 300)
 	r.put_image ("geotv.jpg", width=900)
-	yield "foo"
-	yield "bar"
+	yield "Movie"
 	if r.viewer:
-		cmd = "mplayer -wid %d geotv.mpg" % r.viewer.window.xid
-		print cmd
-		os.system(cmd)
-	yield "done"
-
-	yield ""
+		if not pid:
+			pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
+			print "mplayer spawned with pid %d" % pid
+	yield "Movie"
+	if r.viewer:
+		print "killing mplayer of pid %d" % pid
+		os.kill (pid, signal.SIGTERM)
+		pid = None
 
 slide("Cairo finds Behdad")
 
