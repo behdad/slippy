@@ -1,0 +1,10 @@
+Co-maintaining cairo: cool community, cool code
+
+Behdad Esfahbod and Carl Worth
+
+
+Most talks are given by a single person, but our code isn't written that way, so we didn't want to present that way either.  Cairo recently celebrated[*] 5 years since its first commit.  It started with one programmer having fun and sharing his code in case others would find it useful. Now, more than 80 people have contributed code to cairo, (more than 60 in the last year alone). Presumably many more have had fun programming with it as it has become a core part of GNOME as well as several non-GNOME applications.
+
+The accelerated growth of the community also corresponds with an acceleration in the capabilities of cairo itself. In the last year it has gotten much faster, and is producing better-quality output than ever before. We will describe our experiences as co-maintainers of the project during this period, sharing highlights of what has worked well within the community and the code, and what challenges we still face.
+
+[*] Or will have celebrated by the time of GUADEC 2007.
