@@ -253,16 +253,13 @@ def geotv (r):
 	global pid
 	r.move_to (400, 300)
 	r.put_image ("geotv.jpg", width=900)
-	yield "Movie"
+	yield ""
 	if r.viewer:
 		if not pid:
 			pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
 			print "mplayer spawned with pid %d" % pid
-	yield "Movie"
-	if r.viewer:
-		print "killing mplayer of pid %d" % pid
-		os.kill (pid, signal.SIGTERM)
-		pid = None
+	yield ""
+	pid = None
 
 slide("Cairo finds Behdad")
 
