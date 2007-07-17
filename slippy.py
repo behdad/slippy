@@ -234,6 +234,13 @@ class Renderer:
 
 	def put_text (self, text, width=0, height=0, halign=0, valign=0, markup=True):
 		layout = self.create_layout (text, markup=markup)
+		if halign < 0:
+			layout.set_alignment (pango.ALIGN_RIGHT)
+		elif halign > 0:
+			layout.set_alignment (pango.ALIGN_LEFT)
+		else:
+			layout.set_alignment (pango.ALIGN_CENTER)
+
 		width, height = self.fit_layout (layout, width, height)
 		self.cr.rel_move_to ((halign - 1) * width / 2., (valign - 1) * height / 2.)
 		self.cr.show_layout (layout)
