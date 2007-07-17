@@ -24,6 +24,11 @@ def prepare_page (renderer):
 	cr.move_to (width, 0)
 	renderer.put_image ("cairo.svg", height = l, valign=+1, halign=-1)
 
+	cr.move_to (0, height)
+	renderer.put_image ("behdad.svg", width = s, valign=-1, halign=+1)
+
+	cr.move_to (width, height)
+	renderer.put_image ("cworth.svg", width = s, valign=-1, halign=-1)
 
 	cr.set_source_rgb (1, 1, 1)
 
