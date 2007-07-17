@@ -65,7 +65,7 @@ def prepare_page (renderer):
 	h = height - l - f - p * 6
 	y = l + p * 3
 
-	draw_bubble (renderer, x, y, w, h)
+	#draw_bubble (renderer, x, y, w, h)
 	return x, y, w, h
 
 def draw_bubble (renderer, x, y, w, h):
@@ -75,17 +75,22 @@ def draw_bubble (renderer, x, y, w, h):
 	
 	s = side_margin * width
 	p = padding * min (width, height)
+
+	cr.save()
+	x, y = cr.user_to_device (x, y)
+	w, h = cr.user_to_device_distance (w, h)
+	cr.identity_matrix ()
+
 	x -= 3 * p
 	y -= 3 * p
 	w += 6 * p
 	h += 6 * p
-
 	bubble (cr, s * .9, height - .7 * s, x, y, w, h)
 	cr.set_source_rgb (0, 0, 0)
 	cr.set_line_width (p)
-	cr.save()
-	cr.set_miter_limit (20)
+	cr.set_miter_limit (30)
 	cr.stroke_preserve ()
+
 	cr.restore()
 	cr.clip ()
 	cr.set_source_rgb (1, 1, 1)

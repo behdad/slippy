@@ -73,6 +73,7 @@ def imaging_model (r):
 
 	paint_checkers (r.cr)
 
+	r.allocate (100, 130, 550, 450)
 	r.cr.translate (200, 130)
 
 	### Column 1
