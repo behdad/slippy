@@ -24,7 +24,7 @@ def bubble (cr, x0, y0, x, y, w, h):
 	cr.curve_to (xc+r, y0, .5 * (xc+r+x0), (yc+y0*2)/3, x0, y0)
 	cr.curve_to (.5 * (xc-r+x0), (yc+y0*2)/3, xc-r, y0, xc-r, yc)
 
-	
+
 def prepare_page (renderer):
 	cr = renderer.cr
 	width = renderer.width
@@ -60,15 +60,30 @@ def prepare_page (renderer):
 	cr.move_to (width-p, height-p)
 	renderer.put_image ("cworth.svg", width = s-p2, valign=-1, halign=-1)
 
-	w = width - s - s - p2
-	x = s + p
-	h = height - l - f - p2
-	y = l + p
+	w = width - s - s - p * 6
+	x = s + p * 3
+	h = height - l - f - p * 6
+	y = l + p * 3
+
+	draw_bubble (renderer, x, y, w, h)
+	return x, y, w, h
+
+def draw_bubble (renderer, x, y, w, h):
+	cr = renderer.cr
+	width = renderer.width
+	height = renderer.height
+	
+	s = side_margin * width
+	p = padding * min (width, height)
+	x -= 3 * p
+	y -= 3 * p
+	w += 6 * p
+	h += 6 * p
 
 	bubble (cr, s * .9, height - .7 * s, x, y, w, h)
 	cr.set_source_rgb (0, 0, 0)
-	cr.save()
 	cr.set_line_width (p)
+	cr.save()
 	cr.set_miter_limit (20)
 	cr.stroke_preserve ()
 	cr.restore()
@@ -77,7 +92,3 @@ def prepare_page (renderer):
 	cr.paint ()
 
 	cr.set_source_rgb (0, 0, 0)
-
-	p *= 3
-	
-	return x + p, y + p, w - 2 * p, h - 2 * p

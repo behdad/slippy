@@ -176,6 +176,8 @@ class Renderer:
 			class NullTheme:
 				def prepare_page (renderer):
 					return 0, 0, renderer.width, renderer.height
+				def draw_bubble (renderer):
+					pass
 			theme = NullTheme ()
 		if not cr:
 			cr = pangocairo.CairoContext (cairo.Context (cairo.ImageSurface (0, 0, 0)))
