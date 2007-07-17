@@ -58,10 +58,10 @@ def prepare_page (renderer):
 	cr.move_to (.5 * (width - fw), height-p)
 	renderer.put_image ("guadec.svg", height=f-p2, valign=-1, halign=-1)
 
-	w = width - s - s - p2 - p2
-	x = s + p2
-	h = height - l - f - p2 - p2
-	y = l + p2
+	w = width - s - s - p2
+	x = s + p
+	h = height - l - f - p2
+	y = l + p
 
 	bubble (cr, s * .9, height - .7 * s, x, y, w, h)
 	cr.set_source_rgb (0, 0, 0)
@@ -76,4 +76,6 @@ def prepare_page (renderer):
 
 	cr.set_source_rgb (0, 0, 0)
 
-	return x, y, w, h
+	p *= 3
+	
+	return x + p, y + p, w - 2 * p, h - 2 * p
