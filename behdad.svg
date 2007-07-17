@@ -14,8 +14,8 @@
    width="203.11209"
    height="280.16446"
    version="1.0"
-   sodipodi:docbase="/home/cworth"
-   sodipodi:docname="behdad-sp.svg"
+   sodipodi:docbase="/home/cworth/src/slippy"
+   sodipodi:docname="behdad.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    sodipodi:modified="true">
   <metadata
@@ -49,6 +49,12 @@
      inkscape:window-x="5"
      inkscape:window-y="32"
      inkscape:current-layer="svg2" />
+  <rect
+     fill="white"
+     width="132"
+     height="74"
+     x="34"
+     y="95" />
   <g
      id="g2161"
      transform="translate(-71.057225,-38.726489)">

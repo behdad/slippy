@@ -14,8 +14,8 @@
    width="203.77296"
    height="300.98453"
    version="1.0"
-   sodipodi:docbase="/home/cworth"
-   sodipodi:docname="cworth-sp.svg"
+   sodipodi:docbase="/home/cworth/src/slippy"
+   sodipodi:docname="cworth.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    sodipodi:modified="true">
   <metadata
@@ -32,7 +32,7 @@
   <defs
      id="defs5" />
   <sodipodi:namedview
-     inkscape:cy="175"
+     inkscape:cy="174.58726"
      inkscape:cx="253.17591"
      inkscape:zoom="1.2114286"
      inkscape:window-height="731"
@@ -49,6 +49,12 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:current-layer="svg2" />
+  <rect
+     fill="white"
+     width="132"
+     height="74"
+     x="34"
+     y="95" />
   <g
      id="g2204"
      transform="translate(-77.227033,-21.852985)">
