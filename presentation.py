@@ -149,6 +149,8 @@ class Slide:
 		cr.translate (x, y)
 		cr.rectangle (0, 0, w, h)
 		cr.clip ()
+		cr.scale (w / 800., h / 600.)
+		w, h = 800., 600.
 		cr.move_to (0, 0)
 
 		layout = renderer.create_layout (self.text)
@@ -185,7 +187,7 @@ class Renderer():
 
 		self.cr = cr
 		self.theme = theme
-		self.width, self.height = width, height
+		self.width, self.height = float (width), float (height)
 
 	def create_layout (self, text, markup=True):
 
@@ -234,14 +236,11 @@ class Renderer():
 		self.cr.show_layout (layout)
 		return w, h
 
-	def something ():
-		cr.move_to (0, 0)
-		pix = gtk.gdk.pixbuf_new_from_file ("apply-now.png")
-		gcr = gtk.gdk.CairoContext (cr)
+	def put_image (self, filename):
+		pix = gtk.gdk.pixbuf_new_from_file (filename)
+		gcr = gtk.gdk.CairoContext (self.cr)
 		gcr.set_source_pixbuf (pix, 0, 0)
 		gcr.paint ()
-
-	
 
 gobject.type_register(ViewerGTK)
 
