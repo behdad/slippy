@@ -148,8 +148,6 @@ class Slide:
 		cr.save ()
 		x, y, w, h = renderer.theme.prepare_page (renderer)
 		cr.translate (x, y)
-		cr.rectangle (0, 0, w, h)
-		cr.clip ()
 		cr.scale (w / 800., h / 600.)
 		w, h = 800., 600.
 		cr.move_to (0, 0)
