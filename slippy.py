@@ -93,6 +93,7 @@ class ViewerGTK(gtk.Widget):
 	def run (self, theme, slides):
 		self.cache = True
 		self.cached = False
+		self.interactive = True
 
 		self.theme = theme
 		self.slides = slides
@@ -112,20 +113,35 @@ class ViewerGTK(gtk.Widget):
 		gtk.main()
 
 
-class ViewerPDF:
+class ViewerFile:
 
 	def __init__ (self, filename):
 		self.width, self.height = 8.5 * 4/3 * 72, 8.5 * 72
-		self.surface = cairo.PDFSurface (filename, self.width, self.height)
+		if filename.endswith (".pdf"):
+			Klass = cairo.PDFSurface
+		elif filename.endswith (".ps"):
+			Klass = cairo.PSSurface
+		elif filename.endswith (".svg"):
+			Klass = cairo.SVGSurface
+		else:
+			raise Exception ("Donno how to save as %s" % filename)
+
+		self.surface = Klass (filename, self.width, self.height)
 
 	def run (self, theme, slides):
 		self.cache = False
-		cr = pangocairo.CairoContext (cairo.Context (self.surface))
-		renderer = Renderer (None, theme, cr, self.width, self.height)
+		self.interactive = False
 		for slide in slides:
+			title = slide[0]
+			if isinstance (title, types.FunctionType):
+				title = title.__name__
+			print "Slide", title
 			slide = Slide (slide)
 			for step in range (len (slide)):
+				cr = pangocairo.CairoContext (cairo.Context (self.surface))
+				renderer = Renderer (self, theme, cr, self.width, self.height)
 				slide.show_page (self, renderer, step)
+				print "Step", step
 
 
 class Slide:
@@ -155,16 +171,22 @@ class Slide:
 		cr.save ()
 		if viewer.cache and viewer.cached and (renderer.width, renderer.height) == viewer.cached_size:
 			x, y, w, h = viewer.cached_canvas_size
+			renderer.save ()
 			renderer.set_source_surface (viewer.cached_surface)
+			renderer.set_operator (cairo.OPERATOR_SOURCE)
 			renderer.paint ()
+			renderer.restore ()
 		elif viewer.cache:
 			x, y, w, h = renderer.theme.prepare_page (renderer)
 			viewer.cached_size = (renderer.width, renderer.height)
 			viewer.cached_canvas_size = [x, y, w, h]
-			surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR_ALPHA, int(viewer.cached_size[0]), int(viewer.cached_size[1]))
+			surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR, int(viewer.cached_size[0]), int(viewer.cached_size[1]))
 			ncr = cairo.Context (surface)
+			ncr.save ()
 			ncr.set_source_surface (renderer.get_target (), 0, 0)
+			ncr.set_operator (cairo.OPERATOR_SOURCE)
 			ncr.paint ()
+			ncr.restore ()
 			viewer.cached_surface = surface
 			viewer.cached = True
 		else:
@@ -351,11 +373,18 @@ class Renderer:
 				pix = rsvg.Handle (filename)
 				w, h = pix.get_dimension_data()[2:4]
 			else:
+				opaque = filename.endswith (".jpg")
 				pix = gtk.gdk.pixbuf_new_from_file (filename)
 				w, h = pix.get_width(), pix.get_height()
-				surface = self.get_target().create_similar (cairo.CONTENT_COLOR_ALPHA, w, h)
+				if opaque:
+					content = cairo.CONTENT_COLOR
+				else:
+					content = cairo.CONTENT_COLOR_ALPHA
+				surface = self.get_target().create_similar (content, w, h)
 				gcr = gtk.gdk.CairoContext (cairo.Context (surface))
 				gcr.set_source_pixbuf (pix, 0, 0)
+				if opaque:
+					gcr.set_operator (cairo.OPERATOR_SOURCE)
 				gcr.paint ()
 				pix = surface
 
@@ -395,16 +424,16 @@ gobject.type_register(ViewerGTK)
 
 def main():
 	import slides
+	import theme
 	all_slides = slides.slides
 
-	if len(sys.argv) == 2:
-		viewer = ViewerPDF (sys.argv[1])
+	if len(sys.argv) > 1:
+		for i in range (1, len (sys.argv)):
+			viewer = ViewerFile (sys.argv[i])
+			viewer.run (theme, all_slides)
 	else:
 		viewer = ViewerGTK ()
-
-	import theme
-
-	viewer.run (theme, all_slides)
+		viewer.run (theme, all_slides)
 
 if __name__ == "__main__":
 	main()

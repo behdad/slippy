@@ -240,7 +240,9 @@ def imaging_model (r):
 	set_image_source ()
 	r.cr.mask (get_radial_mask_pattern ())
 
-	return " "
+	r.cr.restore ()
+
+	return ""
 
 who (cworth)
 
@@ -318,7 +320,6 @@ pid = None
 
 @slide
 def geotv (r):
-	global pid
 	r.move_to (400, 300)
 	r.put_image ("geotv.jpg", width=900)
 	r.move_to (100, 400)
@@ -326,11 +327,12 @@ def geotv (r):
 	r.put_text ("April 2002", desc="40", halign=1)
 	yield ""
 	if r.viewer:
-		if not pid:
-			pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
-			print "mplayer spawned with pid %d" % pid
-	yield ""
-	pid = None
+		global pid
+		if r.viewer.interactive and not pid:
+				pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
+				print "mplayer spawned with pid %d" % pid
+		yield ""
+		pid = None
 
 @slide
 def first_post (r):
