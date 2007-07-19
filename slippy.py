@@ -44,6 +44,8 @@ class ViewerGTK(gtk.Widget):
 
 		renderer = Renderer (viewer=self, theme=self.theme, cr=cr, width=self.allocation.width, height=self.allocation.height)
 
+		if not self.slide:
+			self.slide = Slide (self.slides[self.slide_no])
 		self.slide.show_page (self, renderer, self.step)
 
 		return False
@@ -51,7 +53,7 @@ class ViewerGTK(gtk.Widget):
 	def go_forward_full(self):
 		if self.slide_no + 1 < len (self.slides):
 			self.slide_no += 1
-			self.slide = Slide (self.slides[self.slide_no])
+			self.slide = None
 			self.step = 0
 			self.queue_draw()
 
@@ -65,7 +67,7 @@ class ViewerGTK(gtk.Widget):
 	def go_backward_full(self):
 		if self.slide_no > 0:
 			self.slide_no -= 1
-			self.slide = Slide (self.slides[self.slide_no])
+			self.slide = None
 			self.step = 0
 			self.queue_draw()
 
@@ -90,10 +92,11 @@ class ViewerGTK(gtk.Widget):
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
 
+	cache = True
+	interactive = True
+
 	def run (self, theme, slides):
-		self.cache = True
 		self.cached = False
-		self.interactive = True
 
 		self.theme = theme
 		self.slides = slides
@@ -108,7 +111,7 @@ class ViewerGTK(gtk.Widget):
 
 		self.slide_no = 0
 		self.step = 0
-		self.slide = Slide (self.slides[self.slide_no])
+		self.slide = None
 
 		gtk.main()
 
@@ -128,9 +131,10 @@ class ViewerFile:
 
 		self.surface = Klass (filename, self.width, self.height)
 
+	cache = False
+	interactive = False
+
 	def run (self, theme, slides):
-		self.cache = False
-		self.interactive = False
 		for slide in slides:
 			title = slide[0]
 			if isinstance (title, types.FunctionType):
