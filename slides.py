@@ -404,45 +404,64 @@ void XrFill(XrState *xrs);
 
 @slide
 def committers (r):
-    yield "<b>Committers</b>"
-    for c in [
-	'2002	2',
-	'2003	11',
-	'2004	12',
-	'2005	26',
-	'2006	54',
-	'2007	<span foreground="#888">44</span>',
-	]:
-		yield "\n"+c
+	committers_list = [
+		'2002	2',
+		'2003	11',
+		'2004	12',
+		'2005	26',
+		'2006	54',
+		'2007	<span foreground="#888">44</span>',
+	]
+
+	yield "<b>Committers</b>"
+	for b in committers_list:
+		yield "\n"+b
 
 who (behdad)
 
 @slide
 def backends (r):
+	backends_list = [
+		"2002-06	Xlib",
+		"2003-02	image",
+		"2003-10	PostScript",
+		'2004-04	<span foreground="#888">XCB</span>',
+		'2004-09	<span foreground="#888">glitz</span>',
+		"2005-01	Win32",
+		"2005-01	PDF",
+		'2005-01	<span foreground="#888">Quartz</span>',
+		"2005-12	SVG",
+		'2005-12	<span foreground="#888">BeOS</span>',
+		'2005-12	<span foreground="#888">directfb</span>',
+		'2006-09	<span foreground="#888">OS/2</span>',
+		'2007-02	<span foreground="#888">Quartz (<i>New!</i>)</span>',
+	]
+
 	yield "<b>Backends</b>"
-	for b in [
-		  "2002-06	Xlib",
-		  "2003-02	image",
-		  "2003-10	PostScript",
-		  '2004-04	<span foreground="#888">XCB</span>',
-		  '2004-09	<span foreground="#888">glitz</span>',
-		  "2005-01	Win32",
-		  "2005-01	PDF",
-		  '2005-01	<span foreground="#888">Quartz</span>',
-		  "2005-12	SVG",
-		  '2005-12	<span foreground="#888">BeOS</span>',
-		  '2005-12	<span foreground="#888">directfb</span>',
-		  '2006-09	<span foreground="#888">OS/2</span>',
-		  '2007-02	<span foreground="#888">Quartz (<i>New!</i>)</span>',
-		 ]:
+	for b in backends_list:
 		yield "\n"+b
 
 @slide
 def bindings (r):
+	bindings_list = [
+		"C++",
+		"Common Lisp",
+		"D",
+		"Haskell",
+		"Java",
+		".NET",
+		"Nickle",
+		"O'Caml",
+		"Perl",
+		"PHP",
+		"Python",
+		"Ruby",
+		"Scheme",
+		"Squeak",
+	]
+
 	yield "<b>Bindings</b>"
-	binds = ["C++", "Common Lisp", "D", "Haskell", "Java", ".NET", "Nickle",
-	"O'Caml", "Perl", "PHP", "Python", "Ruby", "Scheme", "Squeak"]
-	for b in binds:
+	for b in bindings_list:
 		yield "\n"+b
 
 slide_noone ("News")
