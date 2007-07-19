@@ -326,9 +326,9 @@ def geotv (r):
 	r.set_source_rgb (1, 1, 1)
 	r.put_text ("April 2002", desc="40", halign=1)
 	yield ""
-	if r.viewer:
+	if not compact:
 		global pid
-		if r.viewer.interactive and not pid:
+		if r.viewer and not pid:
 				pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
 				print "mplayer spawned with pid %d" % pid
 		yield ""
@@ -402,26 +402,31 @@ void XrStroke(XrState *xrs);
 void XrFill(XrState *xrs);
 """, desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
 
-@slide
-def committers (r):
-	committers_list = [
+def list_slide (l):
+	def s (r):
+		if compact:
+			yield '\n'.join (l)
+		else:
+			yield l[0]
+			for i in l[1:]:
+				yield '\n'+i
+	s.__name__ = l[0]
+	slide (s)
+
+list_slide ([
+		'<b>Committers</b>',
 		'2002	2',
 		'2003	11',
 		'2004	12',
 		'2005	26',
 		'2006	54',
 		'2007	<span foreground="#888">44</span>',
-	]
-
-	yield "<b>Committers</b>"
-	for b in committers_list:
-		yield "\n"+b
+	    ])
 
 who (behdad)
 
-@slide
-def backends (r):
-	backends_list = [
+list_slide ([
+		"<b>Backends</b>",
 		"2002-06	Xlib",
 		"2003-02	image",
 		"2003-10	PostScript",
@@ -435,15 +440,10 @@ def backends (r):
 		'2005-12	<span foreground="#888">directfb</span>',
 		'2006-09	<span foreground="#888">OS/2</span>',
 		'2007-02	<span foreground="#888">Quartz (<i>New!</i>)</span>',
-	]
+	    ])
 
-	yield "<b>Backends</b>"
-	for b in backends_list:
-		yield "\n"+b
-
-@slide
-def bindings (r):
-	bindings_list = [
+list_slide ([
+		"<b>Bindings</b>",
 		"C++",
 		"Common Lisp",
 		"D",
@@ -458,11 +458,7 @@ def bindings (r):
 		"Ruby",
 		"Scheme",
 		"Squeak",
-	]
-
-	yield "<b>Bindings</b>"
-	for b in bindings_list:
-		yield "\n"+b
+	    ])
 
 slide_noone ("News")
 

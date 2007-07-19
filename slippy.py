@@ -36,6 +36,11 @@ class ViewerGTK(gtk.Widget):
 	def do_unrealize(self):
 		self.window.destroy()
 
+	def get_slide(self):
+		if not self.slide:
+			self.slide = Slide (self.slides[self.slide_no])
+		return self.slide
+
 	def do_expose_event(self, event):
 		cr = pangocairo.CairoContext (self.window.cairo_create())
 
@@ -44,9 +49,7 @@ class ViewerGTK(gtk.Widget):
 
 		renderer = Renderer (viewer=self, theme=self.theme, cr=cr, width=self.allocation.width, height=self.allocation.height)
 
-		if not self.slide:
-			self.slide = Slide (self.slides[self.slide_no])
-		self.slide.show_page (self, renderer, self.step)
+		self.get_slide().show_page (self, renderer, self.step)
 
 		return False
 	
@@ -58,7 +61,7 @@ class ViewerGTK(gtk.Widget):
 			self.queue_draw()
 
 	def go_forward(self):
-		if self.step + 1 < len (self.slide):
+		if self.step + 1 < len (self.get_slide ()):
 			self.step += 1
 			self.queue_draw()
 		else:
@@ -77,7 +80,7 @@ class ViewerGTK(gtk.Widget):
 			self.queue_draw()
 		else:
 			self.go_backward_full ()
-			self.step = len (self.slide) - 1
+			self.step = len (self.get_slide ()) - 1
 			self.queue_draw()
 
 	def key_press_event(self, widget, event):
@@ -93,7 +96,6 @@ class ViewerGTK(gtk.Widget):
 			gtk.main_quit()
 
 	cache = True
-	interactive = True
 
 	def run (self, theme, slides):
 		self.cached = False
@@ -132,7 +134,6 @@ class ViewerFile:
 		self.surface = Klass (filename, self.width, self.height)
 
 	cache = False
-	interactive = False
 
 	def run (self, theme, slides):
 		for slide in slides:
@@ -263,9 +264,9 @@ class Renderer:
 	def __init__ (self, viewer=None, theme=None, cr=None, width=0, height=0):
 		if not theme:
 			class NullTheme:
-				def prepare_page (renderer):
+				def prepare_page (self, renderer):
 					return 0, 0, renderer.width, renderer.height
-				def draw_bubble (renderer):
+				def draw_bubble (self, renderer, *args, **kargs):
 					pass
 			theme = NullTheme ()
 		if not cr:
@@ -427,17 +428,41 @@ gobject.type_register(ViewerGTK)
 
 
 def main():
-	import slides
-	import theme
-	all_slides = slides.slides
+	if len(sys.argv) < 2:
+		print "Usage: slippy.py slides.py theme.py [output.pdf/ps/svg...]"
+		sys.exit (1)
+	slidefile, themefile, outputfiles = sys.argv[1], sys.argv[2:3], sys.argv[3:]
 
-	if len(sys.argv) > 1:
-		for i in range (1, len (sys.argv)):
-			viewer = ViewerFile (sys.argv[i])
-			viewer.run (theme, all_slides)
+	def load_slides (slidefile, args):
+		slides = dict (args)
+		execfile(slidefile, slides)
+		return slides['slides']
+
+	def load_theme (themefile):
+		themedict = dict ()
+		execfile(themefile, themedict)
+		class Theme:
+			def __nonzero__ (self):
+				return True
+			def __getattr__ (self, attr):
+				return themedict[attr]
+
+		return Theme ()
+	
+	if themefile and themefile[0]:
+		theme = load_theme (themefile[0])
 	else:
+		theme = None
+
+	if outputfiles:
+		slides = load_slides (slidefile, {'compact': True})
+		for outputfile in outputfiles:
+			viewer = ViewerFile (outputfile)
+			viewer.run (theme, slides)
+	else:
+		slides = load_slides (slidefile, {'compact': False})
 		viewer = ViewerGTK ()
-		viewer.run (theme, all_slides)
+		viewer.run (theme, slides)
 
 if __name__ == "__main__":
 	main()
