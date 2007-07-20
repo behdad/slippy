@@ -41,8 +41,8 @@ def prepare_page (renderer):
 	# Blue sky (first white, then gradient)
 	cr.set_source_rgb (1, 1, 1)
 	sky = cairo.LinearGradient (0, 0, 0, height)
-	sky.add_color_stop_rgba (0, .6, .65, 1, 1.0)
-	sky.add_color_stop_rgba (1, .6, .65, 1, 0.2)
+	sky.add_color_stop_rgba (0, .60, .65, 1, 1.0)
+	sky.add_color_stop_rgba (1, .92, .93, 1, 1.0)
 	cr.set_source (sky)
 	cr.paint ()
 
