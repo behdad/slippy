@@ -13,28 +13,7 @@ import pango
 import pangocairo
 import gobject
 
-class ViewerGTK(gtk.Widget):
-
-	def do_realize(self):
-		self.set_flags(self.flags() | gtk.REALIZED)
-
-		self.window = gtk.gdk.Window(
-			self.get_parent_window(),
-			width=self.allocation.width,
-			height=self.allocation.height,
-			window_type=gtk.gdk.WINDOW_CHILD,
-			wclass=gtk.gdk.INPUT_OUTPUT,
-			event_mask=self.get_events() | gtk.gdk.EXPOSURE_MASK)
-
-		self.window.set_user_data(self)
-
-		self.style.attach(self.window)
-
-		self.style.set_background(self.window, gtk.STATE_NORMAL)
-		self.window.move_resize(*self.allocation)
-
-	def do_unrealize(self):
-		self.window.destroy()
+class ViewerGTK(gtk.Window):
 
 	def get_slide(self):
 		if not self.slide:
@@ -95,15 +74,15 @@ class ViewerGTK(gtk.Widget):
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
 		elif event.string == 'f':
-			if self.fullscreen:
-				self.main_window.unfullscreen ()
-				self.fullscreen = False
+			if self.isfullscreen:
+				self.unfullscreen ()
+				self.isfullscreen = False
 			else:
-				self.main_window.fullscreen ()
-				self.fullscreen = True
+				self.fullscreen ()
+				self.isfullscreen = True
 
 	cache = True
-	fullscreen = False
+	isfullscreen = False
 
 	def run (self, theme, slides):
 		self.cached = False
@@ -111,14 +90,21 @@ class ViewerGTK(gtk.Widget):
 		self.theme = theme
 		self.slides = slides
 
-		window = gtk.Window()
-		window.add(self)
+		window = self
+		screen = window.get_screen()
+		colormap = screen.get_rgba_colormap()
+		# TODO: we should check screen/window.is_composited() here
+		# too, but those return False all the time for me
+		if colormap:
+			window.set_colormap (colormap)
+			# caching background only speeds up rendering for
+			# color-only surfaces
+			self.cache = False
+		window.set_app_paintable(True)
 		window.connect("destroy", gtk.main_quit)
 		window.connect("key-press-event", self.key_press_event)
 		window.set_default_size (800, 600)
-		window.set_default_size (800, 600)
 		window.show_all()
-		self.main_window = window
 
 		self.slide_no = 0
 		self.step = 0
@@ -190,21 +176,26 @@ class Slide:
 			renderer.set_operator (cairo.OPERATOR_SOURCE)
 			renderer.paint ()
 			renderer.restore ()
-		elif viewer.cache:
-			x, y, w, h = renderer.theme.prepare_page (renderer)
-			viewer.cached_size = (renderer.width, renderer.height)
-			viewer.cached_canvas_size = [x, y, w, h]
-			surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR, int(viewer.cached_size[0]), int(viewer.cached_size[1]))
-			ncr = cairo.Context (surface)
-			ncr.save ()
-			ncr.set_source_surface (renderer.get_target (), 0, 0)
-			ncr.set_operator (cairo.OPERATOR_SOURCE)
-			ncr.paint ()
-			ncr.restore ()
-			viewer.cached_surface = surface
-			viewer.cached = True
 		else:
+		
+			renderer.save ()
+			renderer.set_operator (cairo.OPERATOR_CLEAR)
+			renderer.paint ()
+			renderer.restore ()
 			x, y, w, h = renderer.theme.prepare_page (renderer)
+
+			if viewer.cache:
+				viewer.cached_size = (renderer.width, renderer.height)
+				viewer.cached_canvas_size = [x, y, w, h]
+				surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR, int(viewer.cached_size[0]), int(viewer.cached_size[1]))
+				ncr = cairo.Context (surface)
+				ncr.save ()
+				ncr.set_source_surface (renderer.get_target (), 0, 0)
+				ncr.set_operator (cairo.OPERATOR_SOURCE)
+				ncr.paint ()
+				ncr.restore ()
+				viewer.cached_surface = surface
+				viewer.cached = True
 
 		cr.translate (x, y)
 

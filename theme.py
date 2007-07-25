@@ -38,8 +38,7 @@ def prepare_page (renderer):
 	p = padding * min (width, height)
 	p2 = 2 * p
 
-	# Blue sky (first white, then gradient)
-	cr.set_source_rgb (1, 1, 1)
+	# Blue sky
 	sky = cairo.LinearGradient (0, 0, 0, height)
 	sky.add_color_stop_rgba (0, .60, .65, 1, 1.0)
 	sky.add_color_stop_rgba (1, .92, .93, 1, 1.0)
