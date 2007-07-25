@@ -30,7 +30,7 @@ cool community
 cool code""", desc="50", valign=1)
 
 	r.move_to (0, 450)
-	r.put_text ("""Behdad Esfahbod\n<span font_desc="16">behdad@<span foreground="#c00">redhat</span>.com</span>""",
+	r.put_text ("""Behdad Esfahbod\n<span font_desc="16">besfahbo@<span foreground="#c00">redhat</span>.com</span>""",
 		    desc="20", halign=1, valign=-1)
 
 	r.move_to (800, 450)
