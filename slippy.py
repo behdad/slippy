@@ -94,8 +94,16 @@ class ViewerGTK(gtk.Widget):
 			self.go_backward_full()
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
+		elif event.string == 'f':
+			if self.fullscreen:
+				self.main_window.unfullscreen ()
+				self.fullscreen = False
+			else:
+				self.main_window.fullscreen ()
+				self.fullscreen = True
 
 	cache = True
+	fullscreen = False
 
 	def run (self, theme, slides):
 		self.cached = False
@@ -110,6 +118,7 @@ class ViewerGTK(gtk.Widget):
 		window.set_default_size (800, 600)
 		window.set_default_size (800, 600)
 		window.show_all()
+		self.main_window = window
 
 		self.slide_no = 0
 		self.step = 0
