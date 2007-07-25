@@ -7,8 +7,12 @@ padding = .005
 
 def bubble (cr, x0, y0, x, y, w, h):
 
-	x1, y1, x2, y2 = x, y, x + w, y + h
 	r = min (w, h) * .25
+
+	p = r / 8.
+	x, y, w, h = x - p, y - p, w + 2*p, h + 2*p
+
+	x1, y1, x2, y2 = x, y, x + w, y + h
 
 	cr.move_to (x1+r, y1)
 	cr.line_to (x2-r, y1)
@@ -72,10 +76,13 @@ def prepare_page (renderer):
 	renderer.put_image ("cworth.svg", width = s-p2, valign=-1, halign=-1)
 
 	# Compute rectangle available for slide content
-	w = width - s - s - p * 6
-	x = s + p * 3
-	h = height - l - f - p * 6
-	y = l + p * 3
+	w = width - s - s - p * 2
+	x = s + p
+	h = height - l - f - p * 2
+	y = l + p
+	# Adjust for bubble padding
+	d = min (w, h) * .25 / 8.
+	x, y, w, h = x + d, y + d, w - d*2, h - d*2
 
 	return x, y, w, h
 
@@ -93,10 +100,6 @@ def draw_bubble (renderer, x, y, w, h, who=None):
 	w, h = cr.user_to_device_distance (w, h)
 	cr.identity_matrix ()
 
-	x -= 3 * p
-	y -= 3 * p
-	w += 6 * p
-	h += 6 * p
 	if not who:
 		xc, yc = x + w*.5, y + h*.5
 	elif who < 0:
