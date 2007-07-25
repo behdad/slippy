@@ -4,10 +4,11 @@ side_margin = .07
 logo_margin = .09
 footer_margin = .05
 padding = .005
+bubble_rad = .25
 
 def bubble (cr, x0, y0, x, y, w, h):
 
-	r = min (w, h) * .25
+	r = min (w, h) * bubble_rad
 
 	p = r / 8.
 	x, y, w, h = x - p, y - p, w + 2*p, h + 2*p
@@ -80,8 +81,8 @@ def prepare_page (renderer):
 	x = s + p
 	h = height - l - f - p * 2
 	y = l + p
-	# Adjust for bubble padding
-	d = min (w, h) * .25 / 8.
+	# Adjust for bubble padding. the 8 comes from bezier calculations
+	d = min (w, h) * bubble_rad / 8.
 	x, y, w, h = x + d, y + d, w - d*2, h - d*2
 
 	return x, y, w, h
