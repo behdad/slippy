@@ -230,7 +230,7 @@ class Slide:
 			i += 1
 
 		layout.set_width (int (1.001 * lw * pango.SCALE))
-		layout.set_markup (text)
+		layout.set_markup (remove_empty_lines (text))
 		cr.move_to ((w - lw) * .5, (h - lh) * .5)
 		cr.show_layout (layout)
 		cr.restore ()
@@ -258,6 +258,16 @@ def extents_intersect (ex1, ex2):
 		x2 = min (ex1[0] + ex1[2], ex2[0] + ex2[2])
 		y2 = min (ex1[1] + ex1[3], ex2[1] + ex2[3])
 		return [x1, y1, x2 - x1, y2 - y1]
+
+def remove_empty_lines (text):
+	"""replace empty lines with lines of a single space.  this works
+	around a pango bug with wrong computation of line height for empty
+	lines under cairo scales"""
+	text = text.replace ("\n\n", "\n \n")
+	if text.endswith ("\n"):
+		text += " "
+	return text
+
 
 class Renderer:
 	
@@ -298,7 +308,8 @@ class Renderer:
 	def create_layout (self, text, markup=True):
 
 		cr = self.cr
-		
+		text = remove_empty_lines (text)
+
 		layout = cr.create_layout ()
 		font_options = cairo.FontOptions ()
 		font_options.set_hint_metrics (cairo.HINT_METRICS_OFF)
