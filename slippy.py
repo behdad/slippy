@@ -27,12 +27,29 @@ class Viewer:
 
 class ViewerGTK (Viewer):
 	
-	def __init__(self, fullscreen=False, repeat=False, slideshow=False, delay=5.):
+	def __init__(self, fullscreen=False, repeat=False, slideshow=False, delay=5., width=800, height=600):
 		self.__fullscreen = fullscreen
 		self.__repeat = repeat
 		self.__slideshow = slideshow
 		self.__delay = delay
 		self.__cache = True
+
+		window = gtk.Window()
+		screen = window.get_screen()
+		colormap = screen.get_rgba_colormap()
+		# TODO: we should check screen/window.is_composited() here
+		# too, but those return False all the time for me
+		if colormap:
+			window.set_colormap (colormap)
+			# caching background only speeds up rendering for
+			# color-only surfaces
+			self.__cache = False
+		window.set_app_paintable(True)
+		window.connect("destroy", gtk.main_quit)
+		window.connect("key-press-event", self.__key_press_event)
+		window.connect("expose-event", self.__expose_event)
+		window.set_default_size (width, height)
+		self.window = window
 
 	def get_slide(self):
 		if not self.slide:
@@ -205,24 +222,7 @@ class ViewerGTK (Viewer):
 		self.theme = theme
 		self.timeout_source = None
 
-		window = gtk.Window()
-		screen = window.get_screen()
-		colormap = screen.get_rgba_colormap()
-		# TODO: we should check screen/window.is_composited() here
-		# too, but those return False all the time for me
-		if colormap:
-			window.set_colormap (colormap)
-			# caching background only speeds up rendering for
-			# color-only surfaces
-			self.__cache = False
-		window.set_app_paintable(True)
-		window.connect("destroy", gtk.main_quit)
-		window.connect("key-press-event", self.__key_press_event)
-		window.connect("expose-event", self.__expose_event)
-		window.set_default_size (800, 600)
-		window.show_all()
-
-		self.window = window
+		self.window.show()
 		self.cached_slide = None
 		self.slide_no = 0
 		self.step = 0
@@ -238,8 +238,8 @@ class ViewerGTK (Viewer):
 
 class ViewerFile (Viewer):
 
-	def __init__ (self, filename):
-		self.width, self.height = 8.5 * 4/3 * 72, 8.5 * 72
+	def __init__ (self, filename, width=8.5*4/3*72, height=8.5*72):
+		self.width, self.height = width, height
 		if filename.endswith (".pdf"):
 			Klass = cairo.PDFSurface
 		elif filename.endswith (".ps"):
