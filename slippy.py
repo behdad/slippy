@@ -12,7 +12,10 @@ import pangocairo
 import gtk
 import gtk.gdk
 
-class ViewerGTK(gtk.Window):
+class Viewer:
+	slideshow = False
+
+class ViewerGTK (Viewer, gtk.Window):
 
 	cache = True
 	isfullscreen = False
@@ -63,8 +66,8 @@ class ViewerGTK(gtk.Window):
 		# idle again, repeat...
 		def idle_callback():
 			def timeout_callback():
-				self.go_forward ()
 				self.timeout_source = gobject.idle_add (idle_callback)
+				self.go_forward ()
 				return False
 			self.timeout_source = gobject.timeout_add (int (self.delay * 1000), timeout_callback)
 			return False
@@ -97,6 +100,8 @@ class ViewerGTK(gtk.Window):
 			self.slide = None
 			self.step = 0
 			self.queue_draw()
+		else:
+			self.stop_slideshow()
 
 	def go_forward(self):
 		if self.step + 1 < len (self.get_slide ()):
@@ -186,7 +191,7 @@ class ViewerGTK(gtk.Window):
 		gtk.main()
 
 
-class ViewerFile:
+class ViewerFile (Viewer):
 
 	def __init__ (self, filename):
 		self.width, self.height = 8.5 * 4/3 * 72, 8.5 * 72
@@ -200,8 +205,6 @@ class ViewerFile:
 			raise Exception ("Donno how to save as %s" % filename)
 
 		self.surface = Klass (filename, self.width, self.height)
-
-	cache = False
 
 	def run (self, slides, theme=None, **kargs):
 		for slide in slides:

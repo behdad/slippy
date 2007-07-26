@@ -328,7 +328,7 @@ def geotv (r):
 	yield ""
 	if not outputfile:
 		global pid
-		if r.viewer and not pid:
+		if r.viewer and not r.viewer.slideshow and not pid:
 				pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
 				print "mplayer spawned with pid %d" % pid
 		yield ""
