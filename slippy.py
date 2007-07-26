@@ -19,50 +19,39 @@ class Viewer:
 	slideshow = False
 	cache = False
 
-	def run (self, slides, **kargs):
+	def run (self, slides, theme=None):
 		pass
 
-class ViewerGTK (Viewer, gtk.Window):
-
+class ViewerGTK (Viewer):
+	
 	cache = True
-	isfullscreen = False
-	repeat = False
-	slideshow = False
-	delay = 5.
-	timeout_source = None
+
+	def __init__(self, fullscreen=False, repeat=False, slideshow=False, delay=5.):
+		self.isfullscreen = fullscreen
+		self.repeat = repeat
+		self.slideshow = slideshow
+		self.delay = delay
 
 	def get_slide(self):
 		if not self.slide:
 			self.slide = Slide (self.slides[self.slide_no])
 		return self.slide
 
-	def do_expose_event(self, event):
-		cr = pangocairo.CairoContext (self.window.cairo_create())
-
-		cr.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
-		cr.clip()
-
-		renderer = Renderer (viewer=self, theme=self.theme, cr=cr, width=self.allocation.width, height=self.allocation.height)
-
-		self.get_slide().show_page (self, renderer, self.step)
-
-		return False
-	
-	def do_fullscreen(self):
-		#self.maximize ()
-		self.fullscreen ()
+	def fullscreen(self):
+		#self.window.maximize ()
+		self.window.fullscreen ()
 		self.isfullscreen = True
 
-	def do_unfullscreen(self):
-		self.unfullscreen ()
-		#self.unmaximize ()
+	def unfullscreen(self):
+		self.window.unfullscreen ()
+		#self.window.unmaximize ()
 		self.isfullscreen = False
 
 	def toggle_fullscreen(self):
 		if self.isfullscreen:
-			self.do_unfullscreen()
+			self.unfullscreen()
 		else:
-			self.do_fullscreen()
+			self.fullscreen()
 
 	def start_slideshow(self):
 		self.stop_slideshow ()
@@ -92,28 +81,31 @@ class ViewerGTK (Viewer, gtk.Window):
 		else:
 			self.start_slideshow()
 	
-	def tick(self):
+	def __tick(self):
 		if self.slideshow:
 			self.start_slideshow()
+
+	def __queue_draw(self):
+		self.window.queue_draw()
 
 	def go_forward_full(self):
 		if self.slide_no + 1 < len (self.slides):
 			self.slide_no += 1
 			self.slide = None
 			self.step = 0
-			self.queue_draw()
+			self.__queue_draw()
 		elif self.repeat:
 			self.slide_no = 0
 			self.slide = None
 			self.step = 0
-			self.queue_draw()
+			self.__queue_draw()
 		else:
 			self.stop_slideshow()
 
 	def go_forward(self):
 		if self.step + 1 < len (self.get_slide ()):
 			self.step += 1
-			self.queue_draw()
+			self.__queue_draw()
 		else:
 			self.go_forward_full ()
 
@@ -122,29 +114,29 @@ class ViewerGTK (Viewer, gtk.Window):
 			self.slide_no -= 1
 			self.slide = None
 			self.step = 0
-			self.queue_draw()
+			self.__queue_draw()
 
 	def go_backward(self):
 		if self.step > 0:
 			self.step -= 1
-			self.queue_draw()
+			self.__queue_draw()
 		else:
 			self.go_backward_full ()
 			self.step = len (self.get_slide ()) - 1
-			self.queue_draw()
+			self.__queue_draw()
 
-	def key_press_event(self, widget, event):
+	def __key_press_event(self, widget, event):
 		if event.string in [' ', '\r'] or event.keyval in [gtk.keysyms.Right, gtk.keysyms.Down]:
-			self.tick ()
+			self.__tick ()
 			self.go_forward()
 		elif event.keyval in [gtk.keysyms.Page_Down]:
-			self.tick ()
+			self.__tick ()
 			self.go_forward_full()
 		elif event.keyval == gtk.keysyms.BackSpace or event.keyval in [gtk.keysyms.Left, gtk.keysyms.Up]:
-			self.tick ()
+			self.__tick ()
 			self.go_backward()
 		elif event.keyval in [gtk.keysyms.Page_Up]:
-			self.tick ()
+			self.__tick ()
 			self.go_backward_full()
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
@@ -154,22 +146,32 @@ class ViewerGTK (Viewer, gtk.Window):
 			self.toggle_slideshow ()
 		elif event.string == 'a':
 			self.delay /= 1.2 
-			self.tick ()
+			self.__tick ()
 		elif event.string == 'z':
 			self.delay *= 1.2
-			self.tick ()
+			self.__tick ()
 		elif event.string == 'r':
 			self.repeat = not self.repeat
 
-	def run (self, slides, theme=None, fullscreen=False, repeat=False, slideshow=False, delay=5., **kargs):
+	def __expose_event(self, widget, event):
+		cr = pangocairo.CairoContext (widget.window.cairo_create())
+		cr.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
+		cr.clip()
+
+		renderer = Renderer (viewer=self, theme=self.theme, cr=cr, width=widget.allocation.width, height=widget.allocation.height)
+
+		self.get_slide().show_page (self, renderer, self.step)
+
+		return False
+
+
+	def run (self, slides, theme=None):
 
 		self.slides = slides
 		self.theme = theme
-		self.repeat = repeat
-		self.delay = delay
 		self.timeout_source = None
 
-		window = self
+		window = gtk.Window()
 		screen = window.get_screen()
 		colormap = screen.get_rgba_colormap()
 		# TODO: we should check screen/window.is_composited() here
@@ -181,18 +183,20 @@ class ViewerGTK (Viewer, gtk.Window):
 			self.cache = False
 		window.set_app_paintable(True)
 		window.connect("destroy", gtk.main_quit)
-		window.connect("key-press-event", self.key_press_event)
+		window.connect("key-press-event", self.__key_press_event)
+		window.connect("expose-event", self.__expose_event)
 		window.set_default_size (800, 600)
 		window.show_all()
 
+		self.window = window
 		self.cached = False
 		self.slide_no = 0
 		self.step = 0
 		self.slide = None
 
-		if fullscreen:
-			self.do_fullscreen()
-		if slideshow:
+		if self.isfullscreen:
+			self.fullscreen()
+		if self.slideshow:
 			self.start_slideshow()
 
 		gtk.main()
@@ -213,7 +217,7 @@ class ViewerFile (Viewer):
 
 		self.surface = Klass (filename, self.width, self.height)
 
-	def run (self, slides, theme=None, **kargs):
+	def run (self, slides, theme=None):
 		for slide in slides:
 			title = slide[0]
 			if isinstance (title, types.FunctionType):
@@ -522,7 +526,6 @@ class Renderer:
 		return w * r, h * r
 
 pixcache = {}
-gobject.type_register(ViewerGTK)
 
 
 def main():
@@ -584,8 +587,8 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 	if outputfile:
 		viewer = ViewerFile (outputfile)
 	else:
-		viewer = ViewerGTK ()
-	viewer.run (slides, theme=theme, fullscreen=fullscreen, repeat=repeat, slideshow=slideshow, delay=delay)
+		viewer = ViewerGTK (fullscreen=fullscreen, repeat=repeat, slideshow=slideshow, delay=delay)
+	viewer.run (slides, theme=theme)
 
 if __name__ == "__main__":
 	main()
