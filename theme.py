@@ -10,8 +10,8 @@ def bubble (cr, x0, y0, x, y, w, h):
 
 	r = min (w, h) * bubble_rad
 
-	p = r / 8.
-	x, y, w, h = x - p, y - p, w + 2*p, h + 2*p
+	p = r / 7.
+	x, y, w, h, r = x - p, y - p, w + 2*p, h + 2*p, r + p
 
 	x1, y1, x2, y2 = x, y, x + w, y + h
 
