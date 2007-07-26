@@ -42,13 +42,13 @@ class ViewerGTK (Viewer, gtk.Window):
 		return False
 	
 	def do_fullscreen(self):
-		self.maximize ()
+		#self.maximize ()
 		self.fullscreen ()
 		self.isfullscreen = True
 
 	def do_unfullscreen(self):
 		self.unfullscreen ()
-		self.unmaximize ()
+		#self.unmaximize ()
 		self.isfullscreen = False
 
 	def toggle_fullscreen(self):
