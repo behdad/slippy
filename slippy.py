@@ -16,46 +16,70 @@ import gtk
 import gtk.gdk
 
 class Viewer:
-	slideshow = False
-	cache = False
+	def _should_cache_background (self):
+		return False
+
+	def is_slideshow (self):
+		return False
 
 	def run (self, slides, theme=None):
 		pass
 
 class ViewerGTK (Viewer):
 	
-	cache = True
-
 	def __init__(self, fullscreen=False, repeat=False, slideshow=False, delay=5.):
-		self.isfullscreen = fullscreen
-		self.repeat = repeat
-		self.slideshow = slideshow
-		self.delay = delay
+		self.__fullscreen = fullscreen
+		self.__repeat = repeat
+		self.__slideshow = slideshow
+		self.__delay = delay
+		self.__cache = True
 
 	def get_slide(self):
 		if not self.slide:
 			self.slide = Slide (self.slides[self.slide_no])
 		return self.slide
 
+	def is_fullscreen(self):
+		return self.__fullscreen
+
 	def fullscreen(self):
+		print "fullscreen"
 		#self.window.maximize ()
 		self.window.fullscreen ()
-		self.isfullscreen = True
+		self.__fullscreen = True
 
 	def unfullscreen(self):
+		print "unfullscreen"
 		self.window.unfullscreen ()
 		#self.window.unmaximize ()
-		self.isfullscreen = False
+		self.__fullscreen = False
 
 	def toggle_fullscreen(self):
-		if self.isfullscreen:
+		if self.__fullscreen:
 			self.unfullscreen()
 		else:
 			self.fullscreen()
 
+	def is_repeat(self):
+		return self.__repeat
+
+	def toggle_repeat(self):
+		self.__repeat = not self.__repeat
+
+	def is_slideshow (self):
+		return self.__slideshow
+
+	def __remove_slideshow_timeout(self):
+		if self.timeout_source:
+			gobject.source_remove (self.timeout_source)
+			self.timeout_source = None;
+
 	def start_slideshow(self):
-		self.stop_slideshow ()
-		self.slideshow = True
+		if not self.__slideshow:
+			print "starting slideshow with delay %gs" % self.__delay
+
+		self.__remove_slideshow_timeout ()
+		self.__slideshow = True
 		# we want to wait "delay" seconds after expose is done, that's
 		# why we don't use a simple recurring timeout, but add an idle
 		# callback, in the idle set a timeout, in the timeout set the
@@ -65,28 +89,40 @@ class ViewerGTK (Viewer):
 				self.timeout_source = gobject.idle_add (idle_callback)
 				self.go_forward ()
 				return False
-			self.timeout_source = gobject.timeout_add (int (self.delay * 1000), timeout_callback)
+			self.timeout_source = gobject.timeout_add (int (self.__delay * 1000), timeout_callback)
 			return False
 		self.timeout_source = gobject.idle_add (idle_callback)
 
 	def stop_slideshow(self):
-		self.slideshow = False
-		if self.timeout_source:
-			gobject.source_remove (self.timeout_source)
-			self.timeout_source = None;
+		if self.__slideshow:
+			print "stopping slideshow"
+
+		self.__slideshow = False
+		self.__remove_slideshow_timeout ()
 
 	def toggle_slideshow(self):
-		if self.slideshow:
+		if self.__slideshow:
 			self.stop_slideshow()
 		else:
 			self.start_slideshow()
 	
+	def get_slideshow_delay(self):
+		return self.__delay
+
+	def set_slideshow_delay(self, delay):
+		print "setting slideshow delay to %gs" % delay
+		self.__delay = delay
+		self.__tick ()
+
 	def __tick(self):
-		if self.slideshow:
+		if self.__slideshow:
 			self.start_slideshow()
 
 	def __queue_draw(self):
 		self.window.queue_draw()
+
+	def _should_cache_background (self):
+		return self.__cache
 
 	def go_forward_full(self):
 		if self.slide_no + 1 < len (self.slides):
@@ -94,7 +130,7 @@ class ViewerGTK (Viewer):
 			self.slide = None
 			self.step = 0
 			self.__queue_draw()
-		elif self.repeat:
+		elif self.is_repeat():
 			self.slide_no = 0
 			self.slide = None
 			self.step = 0
@@ -145,13 +181,11 @@ class ViewerGTK (Viewer):
 		elif event.string == 's':
 			self.toggle_slideshow ()
 		elif event.string == 'a':
-			self.delay /= 1.2 
-			self.__tick ()
+			self.set_slideshow_delay (self.get_slideshow_delay () / 1.2)
 		elif event.string == 'z':
-			self.delay *= 1.2
-			self.__tick ()
+			self.set_slideshow_delay (self.get_slideshow_delay () * 1.2)
 		elif event.string == 'r':
-			self.repeat = not self.repeat
+			self.toggle_repeat ()
 
 	def __expose_event(self, widget, event):
 		cr = pangocairo.CairoContext (widget.window.cairo_create())
@@ -180,7 +214,7 @@ class ViewerGTK (Viewer):
 			window.set_colormap (colormap)
 			# caching background only speeds up rendering for
 			# color-only surfaces
-			self.cache = False
+			self.__cache = False
 		window.set_app_paintable(True)
 		window.connect("destroy", gtk.main_quit)
 		window.connect("key-press-event", self.__key_press_event)
@@ -189,14 +223,14 @@ class ViewerGTK (Viewer):
 		window.show_all()
 
 		self.window = window
-		self.cached = False
+		self.cached_slide = None
 		self.slide_no = 0
 		self.step = 0
 		self.slide = None
 
-		if self.isfullscreen:
+		if self.is_fullscreen():
 			self.fullscreen()
-		if self.slideshow:
+		if self.is_slideshow():
 			self.start_slideshow()
 
 		gtk.main()
@@ -259,10 +293,10 @@ class Slide:
 	def show_page (self, viewer, renderer, pageno):
 		cr = renderer.cr
 		cr.save ()
-		if viewer.cache and viewer.cached and (renderer.width, renderer.height) == viewer.cached_size:
-			x, y, w, h = viewer.cached_canvas_size
+		if viewer._should_cache_background() and viewer.cached_slide and (renderer.width, renderer.height) == viewer.cached_slide_size:
+			x, y, w, h = viewer.cached_slide_canvas_size
 			renderer.save ()
-			renderer.set_source_surface (viewer.cached_surface)
+			renderer.set_source_surface (viewer.cached_slide_surface)
 			renderer.set_operator (cairo.OPERATOR_SOURCE)
 			renderer.paint ()
 			renderer.restore ()
@@ -275,18 +309,18 @@ class Slide:
 			#renderer.set_source_rgb (.5, .5, .5)
 			x, y, w, h = renderer.theme.prepare_page (renderer)
 
-			if viewer.cache:
-				viewer.cached_size = (renderer.width, renderer.height)
-				viewer.cached_canvas_size = [x, y, w, h]
-				surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR, int(viewer.cached_size[0]), int(viewer.cached_size[1]))
+			if viewer._should_cache_background():
+				viewer.cached_slide_size = (renderer.width, renderer.height)
+				viewer.cached_slide_canvas_size = [x, y, w, h]
+				surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR, int(viewer.cached_slide_size[0]), int(viewer.cached_slide_size[1]))
 				ncr = cairo.Context (surface)
 				ncr.save ()
 				ncr.set_source_surface (renderer.get_target (), 0, 0)
 				ncr.set_operator (cairo.OPERATOR_SOURCE)
 				ncr.paint ()
 				ncr.restore ()
-				viewer.cached_surface = surface
-				viewer.cached = True
+				viewer.cached_slide_surface = surface
+				viewer.cached_slide = True
 
 		cr.translate (x, y)
 
