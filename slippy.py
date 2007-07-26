@@ -211,7 +211,7 @@ class ViewerGTK (Viewer):
 
 		renderer = Renderer (viewer=self, cr=cr, width=widget.allocation.width, height=widget.allocation.height)
 
-		self.get_slide().show_page (self, renderer, self.step, theme=self.theme)
+		self.get_slide().show_page (renderer, self.step, theme=self.theme)
 
 		return False
 
@@ -261,7 +261,7 @@ class ViewerFile (Viewer):
 			for step in range (len (slide)):
 				cr = pangocairo.CairoContext (cairo.Context (self.surface))
 				renderer = Renderer (self, cr, self.width, self.height)
-				slide.show_page (self, renderer, step, theme=theme)
+				slide.show_page (renderer, step, theme=theme)
 				print "Step", step
 
 
@@ -290,7 +290,7 @@ class Slide:
 	def __len__ (self):
 		return len (self.texts)
 	
-	def show_page (self, viewer, renderer, pageno, theme=None):
+	def show_page (self, renderer, pageno, theme=None):
 		class NullTheme:
 			def prepare_page (self, renderer):
 				return 0, 0, renderer.width, renderer.height
@@ -298,10 +298,11 @@ class Slide:
 				pass
 		if not theme:
 			theme = NullTheme()
+		viewer = renderer.viewer
 			
 		cr = renderer.cr
 		cr.save ()
-		if viewer._should_cache_background() and viewer.cached_slide and (renderer.width, renderer.height) == viewer.cached_slide_size:
+		if viewer and viewer._should_cache_background() and viewer.cached_slide and (renderer.width, renderer.height) == viewer.cached_slide_size:
 			x, y, w, h = viewer.cached_slide_canvas_size
 			renderer.save ()
 			renderer.set_source_surface (viewer.cached_slide_surface)
@@ -317,7 +318,7 @@ class Slide:
 			#renderer.set_source_rgb (.5, .5, .5)
 			x, y, w, h = theme.prepare_page (renderer)
 
-			if viewer._should_cache_background():
+			if viewer and viewer._should_cache_background():
 				viewer.cached_slide_size = (renderer.width, renderer.height)
 				viewer.cached_slide_canvas_size = [x, y, w, h]
 				surface = renderer.get_target().create_similar (cairo.CONTENT_COLOR, int(viewer.cached_slide_size[0]), int(viewer.cached_slide_size[1]))
