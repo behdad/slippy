@@ -75,8 +75,10 @@ class ViewerGTK(gtk.Window):
 		elif event.string == 'f':
 			if self.isfullscreen:
 				self.unfullscreen ()
+				self.unmaximize ()
 				self.isfullscreen = False
 			else:
+				self.maximize ()
 				self.fullscreen ()
 				self.isfullscreen = True
 
