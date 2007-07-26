@@ -1,17 +1,16 @@
 #!/usr/bin/python
 # -*- coding:utf8 -*-
 
-import sys
 import types
 import cairo
 import rsvg
 import pygtk
 pygtk.require('2.0')
-import gtk
-import gtk.gdk
+import gobject
 import pango
 import pangocairo
-import gobject
+import gtk
+import gtk.gdk
 
 class ViewerGTK(gtk.Window):
 
@@ -148,7 +147,7 @@ class Slide:
 
 	def __init__ (self, slide):
 		renderer = Renderer ()
-		self.slide, self.who = slide
+		self.slide, self.data = slide
 		self.texts = [x for x in self.get_items (renderer)]
 		self.extents = renderer.extents
 		self.text = ''.join (self.texts)
@@ -178,10 +177,11 @@ class Slide:
 			renderer.restore ()
 		else:
 		
-			renderer.save ()
-			renderer.set_operator (cairo.OPERATOR_CLEAR)
-			renderer.paint ()
-			renderer.restore ()
+			#renderer.save ()
+			#renderer.set_operator (cairo.OPERATOR_CLEAR)
+			#renderer.paint ()
+			#renderer.restore ()
+			#renderer.set_source_rgb (.5, .5, .5)
 			x, y, w, h = renderer.theme.prepare_page (renderer)
 
 			if viewer.cache:
@@ -219,7 +219,7 @@ class Slide:
 		if self.text:
 			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
 		ext = extents_intersect (ext, [0, 0, w, h])
-		renderer.theme.draw_bubble (renderer, who=self.who, *ext)
+		renderer.theme.draw_bubble (renderer, data=self.data, *ext)
 
 		text = ""
 		i = 0;
@@ -439,17 +439,50 @@ gobject.type_register(ViewerGTK)
 
 
 def main():
-	if len(sys.argv) < 2:
-		print "Usage: slippy.py slides.py theme.py [output.pdf/ps/svg...]"
-		sys.exit (1)
-	slidefile, themefile, outputfiles = sys.argv[1], sys.argv[2:3], sys.argv[3:]
+	import sys, getopt
 
-	def load_slides (slidefile, args):
-		slides = dict (args)
-		execfile(slidefile, slides)
-		return slides['slides']
+	opts, args = getopt.gnu_getopt (sys.argv[1:], "o:t:sd:rf", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen"))
+
+	if not args:
+		print \
+"""
+Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
+		 [--slideshow [--delay seconds]] [--repeat] [--fullscreen] \\
+		 slides.py..."""
+		sys.exit (1)
+
+	slidefiles = args
+	themefile = None
+	outputfile = None
+	slideshow = False
+	delay = 5.
+	repeat = False
+	fullscreen = False
+	for opt, val in opts:
+		if opt in ['-o', '--output']:
+			outputfile = val
+		elif opt in ['-t', '--theme']:
+			themefile = val
+		elif opt in ['-s', '--slideshow']:
+			slideshow = True
+		elif opt in ['-d', '--delay']:
+			delay = float (val)
+		elif opt in ['-r', '--repeat']:
+			repeat = True
+		elif opt in ['-f', '--fullscreen']:
+			fullscreen = True
+
+	def load_slides (slidefiles, args):
+		all_slides = []
+		for slidefile in slidefiles:
+			slides = dict (args)
+			execfile(slidefile, slides)
+			all_slides += slides['slides']
+		return all_slides
 
 	def load_theme (themefile):
+		if not themefile:
+			return None
 		themedict = dict ()
 		execfile(themefile, themedict)
 		class Theme:
@@ -457,23 +490,15 @@ def main():
 				return True
 			def __getattr__ (self, attr):
 				return themedict[attr]
-
 		return Theme ()
-	
-	if themefile and themefile[0]:
-		theme = load_theme (themefile[0])
-	else:
-		theme = None
 
-	if outputfiles:
-		slides = load_slides (slidefile, {'compact': True})
-		for outputfile in outputfiles:
-			viewer = ViewerFile (outputfile)
-			viewer.run (theme, slides)
+	theme = load_theme (themefile)
+	slides = load_slides (slidefiles, {'outputfile': outputfile})
+	if outputfile:
+		viewer = ViewerFile (outputfile)
 	else:
-		slides = load_slides (slidefile, {'compact': False})
 		viewer = ViewerGTK ()
-		viewer.run (theme, slides)
+	viewer.run (theme, slides)
 
 if __name__ == "__main__":
 	main()

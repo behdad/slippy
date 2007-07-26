@@ -87,7 +87,7 @@ def prepare_page (renderer):
 
 	return x, y, w, h
 
-def draw_bubble (renderer, x, y, w, h, who=None):
+def draw_bubble (renderer, x, y, w, h, data=None):
 	# Fancy speech bubble!
 	cr = renderer.cr
 	width = renderer.width
@@ -101,9 +101,9 @@ def draw_bubble (renderer, x, y, w, h, who=None):
 	w, h = cr.user_to_device_distance (w, h)
 	cr.identity_matrix ()
 
-	if not who:
+	if not data:
 		xc, yc = x + w*.5, y + h*.5
-	elif who < 0:
+	elif data < 0:
 		xc, yc = s * .9, height - .7 * s
 	else:
 		xc, yc = width - s * .9, height - .7 * s

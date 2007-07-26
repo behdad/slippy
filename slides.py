@@ -326,7 +326,7 @@ def geotv (r):
 	r.set_source_rgb (1, 1, 1)
 	r.put_text ("April 2002", desc="40", halign=1)
 	yield ""
-	if not compact:
+	if not outputfile:
 		global pid
 		if r.viewer and not pid:
 				pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
@@ -404,7 +404,7 @@ void XrFill(XrState *xrs);
 
 def list_slide (l):
 	def s (r):
-		if compact:
+		if outputfile:
 			yield '\n'.join (l)
 		else:
 			yield l[0]
