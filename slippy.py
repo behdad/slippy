@@ -209,9 +209,9 @@ class ViewerGTK (Viewer):
 		cr.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
 		cr.clip()
 
-		renderer = Renderer (viewer=self, theme=self.theme, cr=cr, width=widget.allocation.width, height=widget.allocation.height)
+		renderer = Renderer (viewer=self, cr=cr, width=widget.allocation.width, height=widget.allocation.height)
 
-		self.get_slide().show_page (self, renderer, self.step)
+		self.get_slide().show_page (self, renderer, self.step, theme=self.theme)
 
 		return False
 
@@ -260,8 +260,8 @@ class ViewerFile (Viewer):
 			slide = Slide (slide)
 			for step in range (len (slide)):
 				cr = pangocairo.CairoContext (cairo.Context (self.surface))
-				renderer = Renderer (self, theme, cr, self.width, self.height)
-				slide.show_page (self, renderer, step)
+				renderer = Renderer (self, cr, self.width, self.height)
+				slide.show_page (self, renderer, step, theme=theme)
 				print "Step", step
 
 
@@ -290,7 +290,15 @@ class Slide:
 	def __len__ (self):
 		return len (self.texts)
 	
-	def show_page (self, viewer, renderer, pageno):
+	def show_page (self, viewer, renderer, pageno, theme=None):
+		class NullTheme:
+			def prepare_page (self, renderer):
+				return 0, 0, renderer.width, renderer.height
+			def draw_bubble (self, renderer, *args, **kargs):
+				pass
+		if not theme:
+			theme = NullTheme()
+			
 		cr = renderer.cr
 		cr.save ()
 		if viewer._should_cache_background() and viewer.cached_slide and (renderer.width, renderer.height) == viewer.cached_slide_size:
@@ -307,7 +315,7 @@ class Slide:
 			#renderer.paint ()
 			#renderer.restore ()
 			#renderer.set_source_rgb (.5, .5, .5)
-			x, y, w, h = renderer.theme.prepare_page (renderer)
+			x, y, w, h = theme.prepare_page (renderer)
 
 			if viewer._should_cache_background():
 				viewer.cached_slide_size = (renderer.width, renderer.height)
@@ -344,7 +352,7 @@ class Slide:
 		if self.text:
 			ext = _extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
 		ext = _extents_intersect (ext, [0, 0, w, h])
-		renderer.theme.draw_bubble (renderer, data=self.data, *ext)
+		theme.draw_bubble (renderer, data=self.data, *ext)
 
 		text = ""
 		i = 0;
@@ -396,14 +404,7 @@ def _remove_empty_lines (text):
 
 class Renderer:
 	
-	def __init__ (self, viewer=None, theme=None, cr=None, width=0, height=0):
-		if not theme:
-			class NullTheme:
-				def prepare_page (self, renderer):
-					return 0, 0, renderer.width, renderer.height
-				def draw_bubble (self, renderer, *args, **kargs):
-					pass
-			theme = NullTheme ()
+	def __init__ (self, viewer=None, cr=None, width=0, height=0):
 		if not cr:
 			cr = pangocairo.CairoContext (cairo.Context (cairo.ImageSurface (0, 0, 0)))
 		if not width:
@@ -413,7 +414,6 @@ class Renderer:
 
 		self.viewer = viewer
 		self.cr = cr
-		self.theme = theme
 		self.width, self.height = float (width), float (height)
 		self.extents = None
 
