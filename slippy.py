@@ -14,6 +14,13 @@ import gtk.gdk
 
 class ViewerGTK(gtk.Window):
 
+	cache = True
+	isfullscreen = False
+	repeat = False
+	slideshow = False
+	delay = 5.
+	timeout_source = None
+
 	def get_slide(self):
 		if not self.slide:
 			self.slide = Slide (self.slides[self.slide_no])
@@ -31,9 +38,62 @@ class ViewerGTK(gtk.Window):
 
 		return False
 	
+	def do_fullscreen(self):
+		self.maximize ()
+		self.fullscreen ()
+		self.isfullscreen = True
+
+	def do_unfullscreen(self):
+		self.unfullscreen ()
+		self.unmaximize ()
+		self.isfullscreen = False
+
+	def toggle_fullscreen(self):
+		if self.isfullscreen:
+			self.do_unfullscreen()
+		else:
+			self.do_fullscreen()
+
+	def start_slideshow(self):
+		self.stop_slideshow ()
+		self.slideshow = True
+		# we want to wait "delay" seconds after expose is done, that's
+		# why we don't use a simple recurring timeout, but add an idle
+		# callback, in the idle set a timeout, in the timeout set the
+		# idle again, repeat...
+		def idle_callback():
+			def timeout_callback():
+				self.go_forward ()
+				self.timeout_source = gobject.idle_add (idle_callback)
+				return False
+			self.timeout_source = gobject.timeout_add (int (self.delay * 1000), timeout_callback)
+			return False
+		self.timeout_source = gobject.idle_add (idle_callback)
+
+	def stop_slideshow(self):
+		self.slideshow = False
+		if self.timeout_source:
+			gobject.source_remove (self.timeout_source)
+			self.timeout_source = None;
+
+	def toggle_slideshow(self):
+		if self.slideshow:
+			self.stop_slideshow()
+		else:
+			self.start_slideshow()
+	
+	def tick(self):
+		if self.slideshow:
+			self.start_slideshow()
+
 	def go_forward_full(self):
 		if self.slide_no + 1 < len (self.slides):
 			self.slide_no += 1
+			self.slide = None
+			self.step = 0
+			self.queue_draw()
+		elif self.repeat:
+			self.slide_no = 0
 			self.slide = None
 			self.step = 0
 			self.queue_draw()
@@ -63,33 +123,39 @@ class ViewerGTK(gtk.Window):
 
 	def key_press_event(self, widget, event):
 		if event.string in [' ', '\r'] or event.keyval in [gtk.keysyms.Right, gtk.keysyms.Down]:
+			self.tick ()
 			self.go_forward()
 		elif event.keyval in [gtk.keysyms.Page_Down]:
+			self.tick ()
 			self.go_forward_full()
 		elif event.keyval == gtk.keysyms.BackSpace or event.keyval in [gtk.keysyms.Left, gtk.keysyms.Up]:
+			self.tick ()
 			self.go_backward()
 		elif event.keyval in [gtk.keysyms.Page_Up]:
+			self.tick ()
 			self.go_backward_full()
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
 		elif event.string == 'f':
-			if self.isfullscreen:
-				self.unfullscreen ()
-				self.unmaximize ()
-				self.isfullscreen = False
-			else:
-				self.maximize ()
-				self.fullscreen ()
-				self.isfullscreen = True
+			self.toggle_fullscreen ()
+		elif event.string == 's':
+			self.toggle_slideshow ()
+		elif event.string == 'a':
+			self.delay /= 1.2 
+			self.tick ()
+		elif event.string == 'z':
+			self.delay *= 1.2
+			self.tick ()
+		elif event.string == 'r':
+			self.repeat = not self.repeat
 
-	cache = True
-	isfullscreen = False
+	def run (self, slides, theme=None, fullscreen=False, repeat=False, slideshow=False, delay=5., **kargs):
 
-	def run (self, theme, slides):
-		self.cached = False
-
-		self.theme = theme
 		self.slides = slides
+		self.theme = theme
+		self.repeat = repeat
+		self.delay = delay
+		self.timeout_source = None
 
 		window = self
 		screen = window.get_screen()
@@ -107,9 +173,15 @@ class ViewerGTK(gtk.Window):
 		window.set_default_size (800, 600)
 		window.show_all()
 
+		self.cached = False
 		self.slide_no = 0
 		self.step = 0
 		self.slide = None
+
+		if fullscreen:
+			self.do_fullscreen()
+		if slideshow:
+			self.start_slideshow()
 
 		gtk.main()
 
@@ -131,7 +203,7 @@ class ViewerFile:
 
 	cache = False
 
-	def run (self, theme, slides):
+	def run (self, slides, theme=None, **kargs):
 		for slide in slides:
 			title = slide[0]
 			if isinstance (title, types.FunctionType):
@@ -500,7 +572,7 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 		viewer = ViewerFile (outputfile)
 	else:
 		viewer = ViewerGTK ()
-	viewer.run (theme, slides)
+	viewer.run (slides, theme=theme, fullscreen=fullscreen, repeat=repeat, slideshow=slideshow, delay=delay)
 
 if __name__ == "__main__":
 	main()
