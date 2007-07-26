@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding:utf8 -*-
 
+# Written by Behdad Esfahbod, 2007
+# Not copyrighted, in public domain.
+
 import types
 import cairo
 import rsvg

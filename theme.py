@@ -1,3 +1,20 @@
+# Written by Behdad Esfahbod, 2007
+# Not copyrighted, in public domain.
+
+# A theme file should define two functions:
+#
+# - prepare_page(renderer): should draw any background and return a tuple of
+#   x,y,w,h that is the area to use for slide canvas.
+# 
+# - draw_bubble(renderer, x, y, w, h, data=None): should setup canvas for the
+#   slide to run.  Can draw a speaking-bubble for example.  x,y,w,h is the
+#   actual extents that the slide will consume.  Data will be the user-data
+#   from the slide.
+#
+# Renderer is an object similar to a cairo.Context and pangocairo.CairoContext
+# but has its own methods too.  The more useful of them here are put_text and
+# put_image.  See their pydocs.
+
 import cairo
 
 side_margin = .07

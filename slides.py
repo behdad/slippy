@@ -1,16 +1,49 @@
 # -*- coding:utf8 -*-
+
+# Copyright 2007 Carl Worth <cworth@redhat.com>
+# Copyright 2007 Behdad Esfahbod <besfahbo@redhat.com>
+
+# A slides file should populate the variable slides with
+# a list of tuples.  Each tuple should have:
+#
+#	- Slide content
+#	- User data
+#	- Canvas width
+#	- Canvas height
+#
+# Slide content can be a string, a list of strings,
+# a function returning one of those, or a generator
+# yielding strings.  The user data is passed to the
+# theme functions as data.  Its use is theme-specific.
+#
+# A function-based slide content will be passed a renderer object.
+# Renderer is an object similar to a cairo.Context and
+# pangocairo.CairoContext but has its own methods too.
+# The more useful of them here are put_text, put_image, and
+# set_allocation.  See their pydocs.
+#
+# The global variable outputfile will be set to the name
+# of the output file if any, or None if using an inveractive
+# viewer.  Slides can change behavior depending on whether
+# outputfile is set, or depending on its extension for example.
+
 slides = []
-def slide_add(f, data, width=800, height=600):
+def slide_add(f, data=None, width=800, height=600):
 	slides.append ((f, data, width, height))
 	return f
 
 import pango, pangocairo, cairo, os, signal
+
+# We use slide data to tell the theme who's speaking.
+# That is, which side the bubble should point to.
 behdad = -1
 cworth = +1
 whois = None
 def who(name):
 	global whois
 	whois = name
+# And convenience functions to add a slide.  Can be
+# used as a function decorator, or called directly.
 def slide(f):
 	return slide_add (f, whois)
 def slide_noone(f):
@@ -19,6 +52,10 @@ def slide_cworth(f):
 	return slide_add (f, cworth)
 def slide_behdad(f):
 	return slide_add (f, behdad)
+
+#
+# Slides start here
+#
 
 @slide_noone
 def title_slide (r):
