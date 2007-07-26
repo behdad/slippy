@@ -14,6 +14,7 @@ import gtk.gdk
 
 class Viewer:
 	slideshow = False
+	cache = False
 
 class ViewerGTK (Viewer, gtk.Window):
 
