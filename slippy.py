@@ -19,6 +19,9 @@ class Viewer:
 	slideshow = False
 	cache = False
 
+	def run (self, slides, **kargs):
+		pass
+
 class ViewerGTK (Viewer, gtk.Window):
 
 	cache = True
@@ -301,8 +304,8 @@ class Slide:
 		#	ew, eh = cr.device_to_user_distance (ew, eh)
 		#	ext = [ex, ey, ew, eh]
 		if self.text:
-			ext = extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
-		ext = extents_intersect (ext, [0, 0, w, h])
+			ext = _extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
+		ext = _extents_intersect (ext, [0, 0, w, h])
 		renderer.theme.draw_bubble (renderer, data=self.data, *ext)
 
 		text = ""
@@ -314,14 +317,14 @@ class Slide:
 			i += 1
 
 		layout.set_width (int (1.001 * lw * pango.SCALE))
-		layout.set_markup (remove_empty_lines (text))
+		layout.set_markup (_remove_empty_lines (text))
 		cr.move_to ((w - lw) * .5, (h - lh) * .5)
 		cr.show_layout (layout)
 		cr.restore ()
 
 		cr.show_page()
 		
-def extents_union (ex1, ex2):
+def _extents_union (ex1, ex2):
 	
 	if not ex1:
 		return ex2
@@ -332,7 +335,7 @@ def extents_union (ex1, ex2):
 		y2 = max (ex1[1] + ex1[3], ex2[1] + ex2[3])
 		return [x1, y1, x2 - x1, y2 - y1]
 
-def extents_intersect (ex1, ex2):
+def _extents_intersect (ex1, ex2):
 	
 	if not ex1:
 		return ex2
@@ -343,7 +346,7 @@ def extents_intersect (ex1, ex2):
 		y2 = min (ex1[1] + ex1[3], ex2[1] + ex2[3])
 		return [x1, y1, x2 - x1, y2 - y1]
 
-def remove_empty_lines (text):
+def _remove_empty_lines (text):
 	"""replace empty lines with lines of a single space.  this works
 	around a pango bug with wrong computation of line height for empty
 	lines under cairo scales"""
@@ -382,7 +385,7 @@ class Renderer:
 	def allocate (self, x, y, w, h):
 		x, y = self.cr.user_to_device (x, y)
 		w, h = self.cr.user_to_device_distance (w, h)
-		self.extents = extents_union (self.extents, [x, y, w, h])
+		self.extents = _extents_union (self.extents, [x, y, w, h])
 
 	def set_allocation (self, x, y, w, h):
 		x, y = self.cr.user_to_device (x, y)
@@ -392,7 +395,7 @@ class Renderer:
 	def create_layout (self, text, markup=True):
 
 		cr = self.cr
-		text = remove_empty_lines (text)
+		text = _remove_empty_lines (text)
 
 		layout = cr.create_layout ()
 		font_options = cairo.FontOptions ()
