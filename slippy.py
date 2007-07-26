@@ -224,8 +224,11 @@ class ViewerFile (Viewer):
 class Slide:
 
 	def __init__ (self, slide):
+		self.slide, self.data, self.width, self.height = slide
+
+		self.width, self.height = float (self.width), float (self.height)
+
 		renderer = Renderer ()
-		self.slide, self.data = slide
 		self.texts = [x for x in self.get_items (renderer)]
 		self.extents = renderer.extents
 		self.text = ''.join (self.texts)
@@ -278,8 +281,8 @@ class Slide:
 		cr.translate (x, y)
 
 		# normalize canvas size
-		cr.scale (w / 800., h / 600.)
-		w, h = 800., 600.
+		cr.scale (w / self.width, h / self.height)
+		w, h = self.width, self.height
 		renderer.w, renderer.h = w,h
 		cr.move_to (0, 0)
 

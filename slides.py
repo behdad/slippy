@@ -1,7 +1,10 @@
 # -*- coding:utf8 -*-
+slides = []
+def slide_add(f, data, width=800, height=600):
+	slides.append ((f, data, width, height))
+	return f
 
 import pango, pangocairo, cairo, os, signal
-slides = []
 behdad = -1
 cworth = +1
 whois = None
@@ -9,17 +12,13 @@ def who(name):
 	global whois
 	whois = name
 def slide(f):
-	slides.append ((f, whois))
-	return f
+	return slide_add (f, whois)
 def slide_noone(f):
-	slides.append ((f, None))
-	return f
+	return slide_add (f, None)
 def slide_cworth(f):
-	slides.append ((f, cworth))
-	return f
+	return slide_add (f, cworth)
 def slide_behdad(f):
-	slides.append ((f, behdad))
-	return f
+	return slide_add (f, behdad)
 
 @slide_noone
 def title_slide (r):
