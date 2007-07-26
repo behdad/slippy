@@ -256,7 +256,7 @@ class ViewerFile (Viewer):
 			title = slide[0]
 			if isinstance (title, types.FunctionType):
 				title = title.__name__
-			print "Slide", title
+			print "Slide", title.replace ('\n', ' ')
 			slide = Slide (slide)
 			for step in range (len (slide)):
 				cr = pangocairo.CairoContext (cairo.Context (self.surface))
