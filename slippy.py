@@ -570,18 +570,10 @@ class Renderer:
 pixcache = {}
 
 
-def main():
+def main(slides = None, theme = None):
 	import sys, getopt
 
 	opts, args = getopt.gnu_getopt (sys.argv[1:], "o:t:sd:rf", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen"))
-
-	if not args:
-		print \
-"""
-Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
-		 [--slideshow [--delay seconds]] [--repeat] [--fullscreen] \\
-		 slides.py..."""
-		sys.exit (1)
 
 	slidefiles = args
 	themefile = None
@@ -624,8 +616,19 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 				return themedict[attr]
 		return Theme ()
 
-	theme = load_theme (themefile)
-	slides = load_slides (slidefiles, {'outputfile': outputfile})
+	if not themefile == None:
+		theme = load_theme (themefile)
+	if slidefiles:
+		slides = load_slides (slidefiles, {'outputfile': outputfile})
+
+	if not slides:
+		print \
+"""
+Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
+		 [--slideshow [--delay seconds]] [--repeat] [--fullscreen] \\
+		 slides.py..."""
+		sys.exit (1)
+
 	if outputfile:
 		viewer = ViewerFile (outputfile)
 	else:

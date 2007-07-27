@@ -1,10 +1,10 @@
 cairo:
-	./slippy.py -t cairo-theme.py cairo-slides.py
+	./slippy.py -t cairo_theme.py cairo_slides.py
 
-pdf: cairo-slides.pdf
+pdf: cairo_slides.pdf
 
-cairo-slides.pdf cairo-slides.svg cairo-slides.ps: slippy.py cairo-slides.py cairo-theme.py
-	./slippy.py -o $@ -t cairo-theme.py cairo-slides.py
+cairo_slides.pdf cairo_slides.svg cairo_slides.ps: slippy.py cairo_slides.py cairo_theme.py
+	./slippy.py -o $@ -t cairo_theme.py cairo_slides.py
 
 clean:
-	$(RM) cairo-slides.ps cairo-slides.pdf cairo-slides.svg
+	$(RM) cairo_slides.ps cairo_slides.pdf cairo_slides.svg

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding:utf8 -*-
 
 # Copyright 2007 Carl Worth <cworth@redhat.com>
@@ -554,3 +555,8 @@ slide ("Don't go AWOL")
 slide_noone ("Why do we\nlove cairo?")
 
 slide_noone ('Why do <span foreground="#c00"><i>you</i></span>\nlove cairo?')
+
+if __name__ == "__main__":
+	import slippy
+	import cairo_theme
+	slippy.main (slides, cairo_theme)
