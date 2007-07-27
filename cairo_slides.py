@@ -23,11 +23,6 @@
 # pangocairo.CairoContext but has its own methods too.
 # The more useful of them here are put_text, put_image, and
 # set_allocation.  See their pydocs.
-#
-# The global variable outputfile will be set to the name
-# of the output file if any, or None if using an inveractive
-# viewer.  Slides can change behavior depending on whether
-# outputfile is set, or depending on its extension for example.
 
 slides = []
 def slide_add(f, data=None, width=800, height=600):
@@ -371,9 +366,9 @@ def geotv (r):
 	r.set_source_rgb (1, 1, 1)
 	r.put_text ("April 2002", desc="40", halign=1)
 	yield ""
-	if not outputfile:
+	if r.viewer.is_interactive():
 		global pid
-		if r.viewer and not r.viewer.is_slideshow() and not pid:
+		if not r.viewer.is_test_run() and not r.viewer.is_slideshow() and not pid:
 				pid = os.spawnlp (os.P_NOWAIT, 'mplayer', 'mplayer', '-fs', 'geotv.mpg')
 				print "mplayer spawned with pid %d" % pid
 		yield ""
@@ -449,12 +444,9 @@ void XrFill(XrState *xrs);
 
 def list_slide (l, data=None):
 	def s (r):
-		if outputfile:
-			yield '\n'.join (l)
-		else:
-			yield l[0]
-			for i in l[1:]:
-				yield '\n'+i
+		yield l[0]
+		for i in l[1:]:
+			yield '\n'+i
 	s.__name__ = l[0]
 	slide (s, data)
 

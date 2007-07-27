@@ -22,6 +22,12 @@ class Viewer:
 	def is_slideshow (self):
 		return False
 
+	def is_interactive (self):
+		return False
+
+	def is_test_run (self):
+		return False
+
 	def run (self, slides, theme=None):
 		pass
 
@@ -53,7 +59,7 @@ class ViewerGTK (Viewer):
 
 	def get_slide(self):
 		if not self.slide:
-			self.slide = Slide (self.slides[self.slide_no])
+			self.slide = Slide (self.slides[self.slide_no], viewer=self)
 		return self.slide
 
 	def is_fullscreen(self):
@@ -85,6 +91,9 @@ class ViewerGTK (Viewer):
 
 	def is_slideshow (self):
 		return self.__slideshow
+
+	def is_interactive (self):
+		return True
 
 	def __remove_slideshow_timeout(self):
 		if self.timeout_source:
@@ -215,7 +224,7 @@ class ViewerGTK (Viewer):
 		cr.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
 		cr.clip()
 
-		renderer = Renderer (viewer=self, cr=cr, width=widget.allocation.width, height=widget.allocation.height)
+		renderer = Renderer (cr=cr, width=widget.allocation.width, height=widget.allocation.height)
 
 		self.get_slide().show_page (renderer, self.step, theme=self.theme)
 
@@ -263,24 +272,32 @@ class ViewerFile (Viewer):
 			if isinstance (title, types.FunctionType):
 				title = title.__name__
 			print "Slide", title.replace ('\n', ' ')
-			slide = Slide (slide)
-			for step in range (len (slide)):
-				cr = pangocairo.CairoContext (cairo.Context (self.surface))
-				renderer = Renderer (self, cr, self.width, self.height)
-				slide.show_page (renderer, step, theme=theme)
-				print "Step", step
+			slide = Slide (slide, viewer=self)
+
+			step = len (slide) - 1
+			cr = pangocairo.CairoContext (cairo.Context (self.surface))
+			renderer = Renderer (cr=cr, width=self.width, height=self.height)
+			slide.show_page (renderer, step, theme=theme)
 
 
 class Slide:
 
-	def __init__ (self, slide):
+	def __init__ (self, slide, viewer):
 		self.slide, self.data, self.width, self.height = slide
+		self.viewer = viewer
+
+		class TestViewer:
+			def is_test_run(self):
+				return True
+			def __getattr__ (self, arg):
+				return getattr (viewer, arg)
 
 		self.width, self.height = float (self.width), float (self.height)
 		if not self.data:
 			data = {}
 
 		renderer = Renderer ()
+		renderer.viewer = TestViewer ()
 		self.texts = [x for x in self.get_items (renderer)]
 		self.extents = renderer.extents
 		self.text = ''.join (self.texts)
@@ -306,7 +323,8 @@ class Slide:
 				pass
 		if not theme:
 			theme = NullTheme()
-		viewer = renderer.viewer
+		viewer = self.viewer
+		renderer.viewer = viewer
 			
 		cr = renderer.cr
 		cr.save ()
@@ -412,7 +430,7 @@ def _remove_empty_lines (text):
 
 class Renderer:
 	
-	def __init__ (self, viewer=None, cr=None, width=0, height=0):
+	def __init__ (self, cr=None, width=0, height=0):
 		if not cr:
 			cr = pangocairo.CairoContext (cairo.Context (cairo.ImageSurface (0, 0, 0)))
 		if not width:
@@ -420,13 +438,12 @@ class Renderer:
 		if not height:
 			height = 6
 
-		self.viewer = viewer
 		self.cr = cr
 		self.width, self.height = float (width), float (height)
 		self.extents = None
 
 	def __getattr__ (self, arg):
-		return eval ("self.cr." + arg)
+		return getattr (self.cr, arg)
 	
 	def allocate (self, x, y, w, h):
 		x, y = self.cr.user_to_device (x, y)
@@ -570,10 +587,11 @@ class Renderer:
 pixcache = {}
 
 
-def main(slides = None, theme = None):
+def main(slides = None, theme = None, args=[]):
 	import sys, getopt
 
-	opts, args = getopt.gnu_getopt (sys.argv[1:], "o:t:sd:rf", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen"))
+	args = args + sys.argv[1:]
+	opts, args = getopt.gnu_getopt (args, "o:t:sd:rf", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen"))
 
 	slidefiles = args
 	themefile = None
