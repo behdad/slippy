@@ -152,6 +152,9 @@ class ViewerGTK (Viewer):
 			self.slide = None
 			self.step = 0
 			self.__queue_draw()
+		elif self.step + 1 < len (self.get_slide ()):
+			self.step = len (self.get_slide ()) - 1
+			self.__queue_draw()
 		else:
 			self.stop_slideshow()
 
@@ -166,6 +169,9 @@ class ViewerGTK (Viewer):
 		if self.slide_no > 0:
 			self.slide_no -= 1
 			self.slide = None
+			self.step = 0
+			self.__queue_draw()
+		elif self.step > 0:
 			self.step = 0
 			self.__queue_draw()
 
@@ -271,6 +277,8 @@ class Slide:
 		self.slide, self.data, self.width, self.height = slide
 
 		self.width, self.height = float (self.width), float (self.height)
+		if not self.data:
+			data = {}
 
 		renderer = Renderer ()
 		self.texts = [x for x in self.get_items (renderer)]
@@ -340,8 +348,7 @@ class Slide:
 		cr.move_to (0, 0)
 
 		layout = renderer.create_layout (self.text)
-		if self.text.find ('\t') == -1:
-			layout.set_alignment (pango.ALIGN_CENTER)
+		layout.set_alignment (self.data.get ('align', pango.ALIGN_CENTER))
 		lw, lh = renderer.fit_layout (layout, w, h)
 
 		ext = self.extents

@@ -9,7 +9,7 @@
 # - draw_bubble(renderer, x, y, w, h, data=None): should setup canvas for the
 #   slide to run.  Can draw a speaking-bubble for example.  x,y,w,h is the
 #   actual extents that the slide will consume.  Data will be the user-data
-#   from the slide.
+#   dictionary from the slide.
 #
 # Renderer is an object similar to a cairo.Context and pangocairo.CairoContext
 # but has its own methods too.  The more useful of them here are put_text and
@@ -118,9 +118,10 @@ def draw_bubble (renderer, x, y, w, h, data=None):
 	w, h = cr.user_to_device_distance (w, h)
 	cr.identity_matrix ()
 
-	if not data:
+	who = data.get ('who', None)
+	if not who:
 		xc, yc = x + w*.5, y + h*.5
-	elif data < 0:
+	elif who < 0:
 		xc, yc = s * .9, height - .7 * s
 	else:
 		xc, yc = width - s * .9, height - .7 * s

@@ -13,8 +13,9 @@
 #
 # Slide content can be a string, a list of strings,
 # a function returning one of those, or a generator
-# yielding strings.  The user data is passed to the
-# theme functions as data.  Its use is theme-specific.
+# yielding strings.  The user data should be a dictionary or
+# None, and is both used to communicate options to the
+# renderer and to pass extra options to the theme functions.
 #
 # A function-based slide content will be passed a renderer object.
 # Renderer is an object similar to a cairo.Context and
@@ -44,14 +45,21 @@ def who(name):
 	whois = name
 # And convenience functions to add a slide.  Can be
 # used as a function decorator, or called directly.
-def slide(f):
-	return slide_add (f, whois)
-def slide_noone(f):
-	return slide_add (f, None)
-def slide_cworth(f):
-	return slide_add (f, cworth)
-def slide_behdad(f):
-	return slide_add (f, behdad)
+def slide_who(f, who, data=None):
+	if data:
+		data = dict (data)
+	else:
+		data = {}
+	data['who'] = who
+	return slide_add (f, data)
+def slide(f, data=None):
+	return slide_who (f, whois, data=data)
+def slide_noone(f, data=None):
+	return slide_who (f, None, data=data)
+def slide_cworth(f, data=None):
+	return slide_who (f, cworth, data=data)
+def slide_behdad(f, data=None):
+	return slide_who (f, behdad, data=data)
 
 #
 # Slides start here
@@ -438,7 +446,7 @@ void XrStroke(XrState *xrs);
 void XrFill(XrState *xrs);
 """, desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
 
-def list_slide (l):
+def list_slide (l, data=None):
 	def s (r):
 		if outputfile:
 			yield '\n'.join (l)
@@ -447,7 +455,7 @@ def list_slide (l):
 			for i in l[1:]:
 				yield '\n'+i
 	s.__name__ = l[0]
-	slide (s)
+	slide (s, data)
 
 list_slide ([
 		'<b>Committers</b>',
@@ -457,7 +465,7 @@ list_slide ([
 		'2005	26',
 		'2006	54',
 		'2007	<span foreground="#888">44</span>',
-	    ])
+	    ], data={'align': pango.ALIGN_LEFT})
 
 who (behdad)
 
@@ -476,7 +484,7 @@ list_slide ([
 		'2005-12	<span foreground="#888">directfb</span>',
 		'2006-09	<span foreground="#888">OS/2</span>',
 		'2007-02	<span foreground="#888">Quartz (<i>New!</i>)</span>',
-	    ])
+	    ], data={'align': pango.ALIGN_LEFT})
 
 list_slide ([
 		"<b>Bindings</b>",
