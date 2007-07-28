@@ -41,7 +41,7 @@ def prepare_page (renderer):
 
 	cr.move_to (0, height)
 	global logo_w, logo_h
-	logo_w, logo_h = renderer.put_image ("gnu-bold.svg", height=logo_height*height, valign=-1, halign=+1)
+	logo_w, logo_h = renderer.put_image ("gnu-color.png", height=logo_height*height, valign=-1, halign=+1)
 
 	# Compute rectangle available for slide content
 	w = width
