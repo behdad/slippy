@@ -34,6 +34,11 @@ def prepare_page (renderer):
 	width = renderer.width
 	height = renderer.height
 	
+	cr.save ()
+	cr.set_operator (cairo.OPERATOR_CLEAR)
+	cr.paint ()
+	cr.restore ()
+
 	cr.move_to (0, height)
 	global logo_w, logo_h
 	logo_w, logo_h = renderer.put_image ("gnu-bold.svg", height=logo_height*height, valign=-1, halign=+1)
