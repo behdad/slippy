@@ -43,9 +43,7 @@ class ViewerGTK (Viewer):
 		window = gtk.Window()
 		screen = window.get_screen()
 		colormap = screen.get_rgba_colormap()
-		# TODO: we should check screen/window.is_composited() here
-		# too, but those return False all the time for me
-		if colormap:
+		if window.is_composited() and colormap:
 			window.set_colormap (colormap)
 			# caching background only speeds up rendering for
 			# color-only surfaces
