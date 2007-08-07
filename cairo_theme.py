@@ -25,7 +25,7 @@ bubble_rad = .25
 
 def bubble (cr, x0, y0, x, y, w, h):
 
-	r = min (w, h) * bubble_rad
+	r = min (w, h) * (bubble_rad / (1 - 2./8*bubble_rad))
 
 	p = r / 7.
 	x, y, w, h, r = x - p, y - p, w + 2*p, h + 2*p, r + p
@@ -98,6 +98,7 @@ def prepare_page (renderer):
 	x = s + p
 	h = height - l - f - p * 2
 	y = l + p
+
 	# Adjust for bubble padding. the 8 comes from bezier calculations
 	d = min (w, h) * bubble_rad / 8.
 	x, y, w, h = x + d, y + d, w - d*2, h - d*2
@@ -132,8 +133,8 @@ def draw_bubble (renderer, x, y, w, h, data=None):
 	cr.stroke_preserve ()
 
 	cr.restore()
-	cr.set_source_rgb (1, 1, 1)
 	cr.clip ()
+	cr.set_source_rgb (1, 1, 1)
 	cr.paint ()
 
 	cr.set_source_rgb (0, 0, 0)

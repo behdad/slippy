@@ -439,8 +439,7 @@ void XrClosePath(XrState *xrs);
 
 /* Render current path */
 void XrStroke(XrState *xrs);
-void XrFill(XrState *xrs);
-""", desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
+void XrFill(XrState *xrs);""", desc="Monospace", markup=False, width=800, height=600, align=pango.ALIGN_LEFT)
 
 def list_slide (l, data=None):
 	def s (r):
