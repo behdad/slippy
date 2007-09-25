@@ -1,4 +1,3 @@
 *.pyc
-slides.pdf
-slides.ps
-slides.svg
+*.pdf
+*.ps

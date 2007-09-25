@@ -616,6 +616,8 @@ def main(slides = None, theme = None, args=[]):
 		all_slides = []
 		for slidefile in slidefiles:
 			slides = dict (args)
+			if slidefile == '-':
+				slidefile = '/dev/stdin'
 			execfile(slidefile, slides)
 			all_slides += slides['slides']
 		return all_slides
