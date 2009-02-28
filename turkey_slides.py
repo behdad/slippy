@@ -101,15 +101,8 @@ list_slide ([
 slide_noone("Who am I?")
 
 slide("Born in 1982\nin Sari, Iran")
-list_slide ([
-		"• Math?",
-		"• Physics?",
-		"• Computers?",
-	    ], data={'align': pango.ALIGN_LEFT})
-list_slide ([
-		"IOI'99, Antalya",
-		"IOI'2000, Beijing",
-	    ], data={'align': pango.ALIGN_LEFT})
+slide("Math?\nPhysics?\nComputers?")
+slide ("IOI'99, Antalya\nIOI'2000, Beijing")
 slide("Sharif\nUniversity of\nTechnology")
 slide("FarsiWeb")
 slide("Free\nas in\nFreedom")
