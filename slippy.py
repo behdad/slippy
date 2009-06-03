@@ -33,8 +33,9 @@ class Viewer:
 
 class ViewerGTK (Viewer):
 	
-	def __init__(self, fullscreen=False, repeat=False, slideshow=False, delay=5., width=800, height=600):
+	def __init__(self, fullscreen=False, decorated=True, repeat=False, slideshow=False, delay=5., width=800, height=600):
 		self.__fullscreen = fullscreen
+		self.__decorated = decorated
 		self.__repeat = repeat
 		self.__slideshow = slideshow
 		self.__delay = delay
@@ -52,8 +53,11 @@ class ViewerGTK (Viewer):
 		window.connect("destroy", gtk.main_quit)
 		window.connect("key-press-event", self.__key_press_event)
 		window.connect("expose-event", self.__expose_event)
+		width=1024
+		height=768
 		window.set_default_size (width, height)
 		self.window = window
+		self.window.set_decorated (decorated)
 
 	def get_slide(self):
 		if not self.slide:
@@ -589,7 +593,7 @@ def main(slides = None, theme = None, args=[]):
 	import sys, getopt
 
 	args = args + sys.argv[1:]
-	opts, args = getopt.gnu_getopt (args, "o:t:sd:rf", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen"))
+	opts, args = getopt.gnu_getopt (args, "o:t:sd:rfn", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen", "nodecorated"))
 
 	slidefiles = args
 	themefile = None
@@ -598,6 +602,7 @@ def main(slides = None, theme = None, args=[]):
 	delay = 5.
 	repeat = False
 	fullscreen = False
+	decorated = True
 	for opt, val in opts:
 		if opt in ['-o', '--output']:
 			outputfile = val
@@ -611,6 +616,8 @@ def main(slides = None, theme = None, args=[]):
 			repeat = True
 		elif opt in ['-f', '--fullscreen']:
 			fullscreen = True
+		elif opt in ['-n', '--nodecorated']:
+			decorated = False
 
 	def load_slides (slidefiles, args):
 		all_slides = []
@@ -632,10 +639,20 @@ def main(slides = None, theme = None, args=[]):
 				return True
 			def __getattr__ (self, attr):
 				return themedict[attr]
+			def reload (self):
+				# XXX
+				themedict = dict ()
+				execfile(themefile, themedict)
+				return Theme()
+
 		return Theme ()
 
+	if themefile == None and isinstance (theme, str):
+		themefile = theme
 	if not themefile == None:
 		theme = load_theme (themefile)
+	if not slidefiles and isinstance (slides, str):
+		slidefiles = [slides]
 	if slidefiles:
 		slides = load_slides (slidefiles, {'outputfile': outputfile})
 
@@ -643,14 +660,14 @@ def main(slides = None, theme = None, args=[]):
 		print \
 """
 Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
-		 [--slideshow [--delay seconds]] [--repeat] [--fullscreen] \\
+		 [--slideshow [--delay seconds]] [--repeat] [--fullscreen] [--nodecorated] \\
 		 slides.py..."""
 		sys.exit (1)
 
 	if outputfile:
 		viewer = ViewerFile (outputfile)
 	else:
-		viewer = ViewerGTK (fullscreen=fullscreen, repeat=repeat, slideshow=slideshow, delay=delay)
+		viewer = ViewerGTK (fullscreen=fullscreen, decorated=decorated, repeat=repeat, slideshow=slideshow, delay=delay)
 	viewer.run (slides, theme=theme)
 
 if __name__ == "__main__":
