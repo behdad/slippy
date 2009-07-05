@@ -53,6 +53,7 @@ class ViewerGTK (Viewer):
 		window.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
 
 		window.connect("destroy", gtk.main_quit)
+		window.connect("configure-event", self.__configure_event)
 		window.connect("button-press-event", self.__button_press_event)
 		window.connect("scroll-event", self.__scroll_event)
 		window.connect("key-press-event", self.__key_press_event)
@@ -264,6 +265,9 @@ class ViewerGTK (Viewer):
 
 		return False
 
+	def __configure_event(self, widget, event):
+		self.window.queue_draw()
+		return False
 
 	def run (self, slides, theme=None):
 
