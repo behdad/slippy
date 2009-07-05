@@ -88,15 +88,127 @@ def list_slide (l, data=None):
 	slide (s, data)
 
 list_slide ([
-		"• CodeThink",
-		"• Collabora",
-		"• Fluendo",
-		"• Igalia",
-		"• Imendio",
-		"• Opened Hand *",
-		"• Openismus",
-		"• ...",
+		"<b>Agenda</b>",
+		"• The Stack",
+		"• Shapers",
+		"• Shaper Consumers",
+		"• Problems",
+		"• Recent Advances",
+		"• More Problems",
+		"• Road Ahead",
 	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Meet the Stack</b>",
+		"• Pango",
+		"• HarfBuzz",
+		"• FriBidi",
+		"• Fontconfig",
+		"• FreeType",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+slide("OpenType")
+slide("HarfBuzz")
+
+list_slide ([
+		"<b>Other Free Shapers</b>",
+		"• ICU",
+		"• m17n",
+		"• SIL Graphite",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Consumers</b>",
+		"• GUI Toolkits",
+		"• Web Browsers",
+		"• Word Processors",
+		"• Designer Tools",
+		"• Font Design Tools",
+		"• Terminal Emulators",
+		"• Batch Doc Processors",
+		"• TeX Engines",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Excellence</b>",
+		"• Supported Font Formats",
+		"• Configuration Mechanism",
+		"• Transparent Font Fallback",
+		"• Standard Compliance",
+		"• Minority Scripts",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Problems</b>",
+		"• Good Enough",
+		"• Segregated Efforts",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Segregated Efforts</b>",
+		"• Font packager's fault",
+		"• Font configuration GUI",
+		"• Vertical text",
+		"• Text Layout Summit",
+		"• unifont.org",
+		"• Graphite and m17n",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Recent Advances</b>",
+		"• Streamlining font packaging",
+		"• Online font add/remove",
+		"• Automatic font installation",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Online font add/remove</b>",
+		"1. gnome-settings-daemon monitors",
+		"2. g-s-d rebuilds cache ",
+		"3. g-s-d signals via XSETTINGS ",
+		"4. GTK+ catches, drops Pango caches ",
+		"5. GTK+ sends \"theme-changed\" ",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Automatic font installation</b>",
+		"1. RPM detects font at pkg build time",
+		"2. RPM tags package using fc-query",
+		"3. PackgeKit installs GTK+ module",
+		"4. GTK+ overrides Pango default fontmap",
+		"5. PK receives font install request",
+		"6. Installed fonts are picked up",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Major Problems</b>",
+		"• CJK Problem",
+		"• Indic Problem",
+		"• Latin Problem",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
+		"<b>Road Ahead</b>",
+		"• HarfBuzz: layout, API, merge",
+		"• Subpixel rendering and positioning",
+		"• Font chooser dialog",
+		"• Font configurator",
+		"• Font websites",
+		"• Font viewer",
+		"• Application fonts",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+"""
+list_slide ([
+		"<b></b>",
+		"• ",
+		"• ",
+		"• ",
+		"• ",
+		"• ",
+		"• ",
+	    ], data={'align': pango.ALIGN_LEFT})
+"""
 
 @slide
 def where_is_my_vote (r):
