@@ -50,7 +50,11 @@ class ViewerGTK (Viewer):
 			# color-only surfaces
 			self.__cache = False
 		window.set_app_paintable(True)
+		window.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
+
 		window.connect("destroy", gtk.main_quit)
+		window.connect("button-press-event", self.__button_press_event)
+		window.connect("scroll-event", self.__scroll_event)
 		window.connect("key-press-event", self.__key_press_event)
 		window.connect("expose-event", self.__expose_event)
 		width=1024
@@ -194,6 +198,22 @@ class ViewerGTK (Viewer):
 			self.go_backward_full ()
 			self.step = len (self.get_slide ()) - 1
 			self.__queue_draw()
+
+	def __button_press_event(self, widget, event):
+		if event.button == 1:
+			self.__tick ()
+			self.go_forward()
+		elif event.button == 3:
+			self.__tick ()
+			self.go_backward()
+
+	def __scroll_event(self, widget, event):
+		if event.direction == gtk.gdk.SCROLL_DOWN:
+			self.__tick ()
+			self.go_forward_full()
+		elif event.direction == gtk.gdk.SCROLL_UP:
+			self.__tick ()
+			self.go_backward_full()
 
 	def __key_press_event(self, widget, event):
 		if event.string in [' ', '\r'] or event.keyval in [gtk.keysyms.Right, gtk.keysyms.Down]:
