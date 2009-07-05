@@ -33,7 +33,7 @@ class Viewer:
 
 class ViewerGTK (Viewer):
 	
-	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., width=1024, height=768):
+	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., geometry="1024x768"):
 		self.__fullscreen = fullscreen
 		self.__decorate = decorate
 		self.__repeat = repeat
@@ -57,7 +57,14 @@ class ViewerGTK (Viewer):
 		window.connect("scroll-event", self.__scroll_event)
 		window.connect("key-press-event", self.__key_press_event)
 		window.connect("expose-event", self.__expose_event)
+
+		parts = geometry.split ("+")
+		width, height = [int(x) for x in parts[0].split('x')]
 		window.set_default_size (width, height)
+		if len (parts) > 1:
+			x, y = [int(x) for x in parts[1].split('x')]
+			window.move (x, y)
+
 		self.window = window
 		self.window.set_decorated (decorate)
 
@@ -620,15 +627,7 @@ def main(slides = None, theme = None, args=[]):
 	args = args + sys.argv[1:]
 	opts, args = getopt.gnu_getopt (args, "o:t:sd:rfng:", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen", "nodecorated", "geometry="))
 
-	settings = {
-		"fullscreen": False,
-		"decorate": True,
-		"width": 1024,
-		"height": 768,
-		"slideshow": False,
-		"repeat": False,
-		"delay": 5.,
-	}
+	settings = {}
 	outputfile = None
 	themefile = None
 	slidefiles = args
@@ -646,9 +645,9 @@ def main(slides = None, theme = None, args=[]):
 		elif opt in ['-f', '--fullscreen']:
 			settings["fullscreen"] = True
 		elif opt in ['-n', '--nodecorated']:
-			settings["decorated"] = False
+			settings["decorate"] = False
 		elif opt in ['-g', '--geometry']:
-			settings["width"], settings["height"] = [int(x) for x in val.split ('x')]
+			settings["geometry"] = val
 
 	def load_slides (slidefiles, args):
 		all_slides = []
