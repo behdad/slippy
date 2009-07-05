@@ -33,9 +33,9 @@ class Viewer:
 
 class ViewerGTK (Viewer):
 	
-	def __init__(self, fullscreen=False, decorated=True, repeat=False, slideshow=False, delay=5., width=800, height=600):
+	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., width=1024, height=768):
 		self.__fullscreen = fullscreen
-		self.__decorated = decorated
+		self.__decorate = decorate
 		self.__repeat = repeat
 		self.__slideshow = slideshow
 		self.__delay = delay
@@ -57,11 +57,9 @@ class ViewerGTK (Viewer):
 		window.connect("scroll-event", self.__scroll_event)
 		window.connect("key-press-event", self.__key_press_event)
 		window.connect("expose-event", self.__expose_event)
-		width=1024
-		height=768
 		window.set_default_size (width, height)
 		self.window = window
-		self.window.set_decorated (decorated)
+		self.window.set_decorated (decorate)
 
 	def get_slide(self):
 		if not self.slide:
@@ -241,9 +239,12 @@ class ViewerGTK (Viewer):
 		elif event.string == 'r':
 			self.toggle_repeat ()
 		elif event.string == 'R':
-			self.theme = self.theme.reload ()
-			self.cached_slide = None
-			self.window.queue_draw()
+			try:
+				self.theme = self.theme.reload ()
+				self.cached_slide = None
+				self.window.queue_draw()
+			except AttributeError:
+				pass
 
 	def __expose_event(self, widget, event):
 		cr = pangocairo.CairoContext (widget.window.cairo_create())
@@ -617,31 +618,37 @@ def main(slides = None, theme = None, args=[]):
 	import sys, getopt
 
 	args = args + sys.argv[1:]
-	opts, args = getopt.gnu_getopt (args, "o:t:sd:rfn", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen", "nodecorated"))
+	opts, args = getopt.gnu_getopt (args, "o:t:sd:rfng:", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen", "nodecorated", "geometry="))
 
-	slidefiles = args
-	themefile = None
+	settings = {
+		"fullscreen": False,
+		"decorate": True,
+		"width": 1024,
+		"height": 768,
+		"slideshow": False,
+		"repeat": False,
+		"delay": 5.,
+	}
 	outputfile = None
-	slideshow = False
-	delay = 5.
-	repeat = False
-	fullscreen = False
-	decorated = True
+	themefile = None
+	slidefiles = args
 	for opt, val in opts:
 		if opt in ['-o', '--output']:
 			outputfile = val
 		elif opt in ['-t', '--theme']:
 			themefile = val
 		elif opt in ['-s', '--slideshow']:
-			slideshow = True
+			settings["slideshow"] = True
 		elif opt in ['-d', '--delay']:
-			delay = float (val)
+			settings["delay"] = float (val)
 		elif opt in ['-r', '--repeat']:
-			repeat = True
+			settings["repeat"] = True
 		elif opt in ['-f', '--fullscreen']:
-			fullscreen = True
+			settings["fullscreen"] = True
 		elif opt in ['-n', '--nodecorated']:
-			decorated = False
+			settings["decorated"] = False
+		elif opt in ['-g', '--geometry']:
+			settings["width"], settings["height"] = [int(x) for x in val.split ('x')]
 
 	def load_slides (slidefiles, args):
 		all_slides = []
@@ -690,7 +697,7 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 	if outputfile:
 		viewer = ViewerFile (outputfile)
 	else:
-		viewer = ViewerGTK (fullscreen=fullscreen, decorated=decorated, repeat=repeat, slideshow=slideshow, delay=delay)
+		viewer = ViewerGTK (**settings)
 	viewer.run (slides, theme=theme)
 
 if __name__ == "__main__":
