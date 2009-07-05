@@ -73,7 +73,7 @@ def title_slide (r):
 width=800, height=500, valign=1, halign=-1)
 
 	r.move_to (0, 530)
-	r.put_text ("""Behdad Esfahbod\n<span font_desc="monospace">behdad@gnome.org</span>""",
+	r.put_text ("""Behdad Esfahbod\n<span font_desc="monospace">behdad@gnome.org\nhttp://behdad.org/text</span>""",
 		    desc="12", halign=1, valign=-1)
 
 who (behdad)
@@ -88,16 +88,6 @@ def list_slide (l, data=None):
 	slide (s, data)
 
 list_slide ([
-		"<b>Organization</b>",
-		"• Who am I?",
-		"• What is GNOME?",
-		"• What can GNOME do for you?",
-		"• What can <i>you</i> do for GNOME?",
-		"• Why should you join GNOME?",
-	    ], data={'align': pango.ALIGN_LEFT})
-
-slide("Entrepreneurship\nopportunities")
-list_slide ([
 		"• CodeThink",
 		"• Collabora",
 		"• Fluendo",
@@ -108,9 +98,6 @@ list_slide ([
 		"• ...",
 	    ], data={'align': pango.ALIGN_LEFT})
 
-slide_noone("Why should you\njoin GNOME?")
-slide("Living\nHappily")
-
 @slide
 def where_is_my_vote (r):
 	r.set_source_rgb (0, .9, 0)
@@ -118,7 +105,7 @@ def where_is_my_vote (r):
 	r.set_source_rgb (1, 1, 1)
 	return "Where\nis\nMy Vote?"
 
-slide_noone("http://behdad.org/text")
+slide_noone("Q?")
 
 if __name__ == "__main__":
 	import slippy
