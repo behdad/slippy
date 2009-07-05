@@ -249,6 +249,7 @@ class ViewerGTK (Viewer):
 		elif event.string == 'R':
 			try:
 				self.theme = self.theme.reload ()
+				print "theme reloaded"
 				self.cached_slide = None
 				self.window.queue_draw()
 			except AttributeError:
@@ -693,7 +694,8 @@ def main(slides = None, theme = None, args=[]):
 		print \
 """
 Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
-		 [--slideshow [--delay seconds]] [--repeat] [--fullscreen] [--nodecorated] \\
+		 [--slideshow [--delay seconds]] [--repeat] \\
+		 [--fullscreen] [--geometry WxH[+XxY]] [--nodecorated] \\
 		 slides.py..."""
 		sys.exit (1)
 
