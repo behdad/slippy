@@ -8,4 +8,4 @@ all: stateoftext
 	./$*_slides.py -o $@
 
 clean:
-	$(RM) *_slides.ps *_slides.pdf *_slides.svg
+	$(RM) *_slides.ps *_slides.pdf *_slides.svg *.pyc
