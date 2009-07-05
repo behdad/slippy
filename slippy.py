@@ -220,6 +220,10 @@ class ViewerGTK (Viewer):
 			self.set_slideshow_delay (self.get_slideshow_delay () * 1.2)
 		elif event.string == 'r':
 			self.toggle_repeat ()
+		elif event.string == 'R':
+			self.theme = self.theme.reload ()
+			self.cached_slide = None
+			self.window.queue_draw()
 
 	def __expose_event(self, widget, event):
 		cr = pangocairo.CairoContext (widget.window.cairo_create())
@@ -632,20 +636,19 @@ def main(slides = None, theme = None, args=[]):
 	def load_theme (themefile):
 		if not themefile:
 			return None
-		themedict = dict ()
-		execfile(themefile, themedict)
 		class Theme:
+			def __init__ (self, themefile):
+				self.__themefile = themefile
+				self.__themedict = dict ()
+				execfile(self.__themefile, self.__themedict)
 			def __nonzero__ (self):
 				return True
 			def __getattr__ (self, attr):
-				return themedict[attr]
+				return self.__themedict[attr]
 			def reload (self):
-				# XXX
-				themedict = dict ()
-				execfile(themefile, themedict)
-				return Theme()
+				return Theme(self.__themefile)
 
-		return Theme ()
+		return Theme (themefile)
 
 	if themefile == None and isinstance (theme, str):
 		themefile = theme

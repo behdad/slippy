@@ -111,7 +111,8 @@ if __name__ == "__main__":
 	import slippy
 	import stateoftext_theme
 	import sys
-	slippy.main (slides, stateoftext_theme)
+	#slippy.main (slides, stateoftext_theme)
 	#slippy.main ("stateoftext_slides.py", "stateoftext_theme.py")
+	slippy.main (slides, "stateoftext_theme.py")
 	sys.exit (0)
 

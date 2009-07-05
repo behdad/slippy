@@ -18,9 +18,9 @@
 
 import cairo
 
-side_margin = .05
-top_margin = .03
-bottom_margin = .1
+side_margin = .08
+top_margin = .02
+bottom_margin = .14
 padding = .005
 bubble_rad = .25
 
