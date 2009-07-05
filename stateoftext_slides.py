@@ -161,6 +161,8 @@ list_slide ([
 		"• Automatic font installation",
 	    ], data={'align': pango.ALIGN_LEFT})
 
+slide_noone ("Demo\nTime!")
+
 list_slide ([
 		"<b>Online font add/remove</b>",
 		"1. gnome-settings-daemon monitors",
