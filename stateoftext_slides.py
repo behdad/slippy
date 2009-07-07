@@ -87,6 +87,8 @@ def list_slide (l, data=None):
 	s.__name__ = l[0]
 	slide (s, data)
 
+slide_noone("Check the paper:\n<span font_desc=\"monospace\">http://behdad.org/text</span>")
+
 list_slide ([
 		"<b>Agenda</b>",
 		"• The Stack",
