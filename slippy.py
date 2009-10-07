@@ -95,6 +95,10 @@ class ViewerGTK (Viewer):
 		else:
 			self.fullscreen()
 
+	def iconify(self):
+		print "iconify"
+		self.window.iconify ()
+
 	def is_repeat(self):
 		return self.__repeat
 
@@ -234,13 +238,13 @@ class ViewerGTK (Viewer):
 			self.go_backward_full()
 
 	def __key_press_event(self, widget, event):
-		if event.string in [' ', '\r'] or event.keyval in [gtk.keysyms.Right, gtk.keysyms.Down]:
+		if event.string in ['n', 'j', ' ', '\r'] or event.keyval in [gtk.keysyms.Right, gtk.keysyms.Down]:
 			self.__tick ()
 			self.go_forward()
 		elif event.keyval in [gtk.keysyms.Page_Down]:
 			self.__tick ()
 			self.go_forward_full()
-		elif event.keyval in [gtk.keysyms.BackSpace, gtk.keysyms.Left, gtk.keysyms.Up]:
+		elif event.string in ['p', 'k'] or event.keyval in [gtk.keysyms.BackSpace, gtk.keysyms.Left, gtk.keysyms.Up]:
 			self.__tick ()
 			self.go_backward()
 		elif event.keyval in [gtk.keysyms.Page_Up]:
@@ -252,8 +256,10 @@ class ViewerGTK (Viewer):
 		elif event.keyval in [gtk.keysyms.End]:
 			self.__tick ()
 			self.go_last_full()
-		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
+		elif event.string == 'q':
 			gtk.main_quit()
+		elif event.keyval in [gtk.keysyms.Escape]:
+			self.iconify ()
 		elif event.string == 'f':
 			self.toggle_fullscreen ()
 		elif event.string == 's':
@@ -305,7 +311,10 @@ class ViewerGTK (Viewer):
 		if self.is_slideshow():
 			self.start_slideshow()
 
-		gtk.main()
+		try:
+			gtk.main()
+		except KeyboardInterrupt:
+			pass
 
 
 class ViewerFile (Viewer):
