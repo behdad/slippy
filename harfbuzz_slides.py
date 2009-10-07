@@ -1,6 +1,12 @@
 #!/usr/bin/python
 # -*- coding:utf8 -*-
 
+if __name__ == "__main__":
+	import slippy
+	import sys
+	slippy.main (__file__, "harfbuzz_theme.py")
+	sys.exit (0)
+
 # Copyright 2007,2009 Behdad Esfahbod <besfahbo@redhat.com>
 
 # A slides file should populate the variable slides with
@@ -221,13 +227,3 @@ def where_is_my_vote (r):
 	return ""
 
 slide_noone("Q?")
-
-if __name__ == "__main__":
-	import slippy
-	import harfbuzz_theme
-	import sys
-	#slippy.main (slides, harfbuzz_theme)
-	slippy.main ("harfbuzz_slides.py", "harfbuzz_theme.py")
-	#slippy.main (slides, "harfbuzz_theme.py")
-	sys.exit (0)
-
