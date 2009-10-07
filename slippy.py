@@ -656,8 +656,21 @@ pixcache = {}
 def main(slides = None, theme = None, args=[]):
 	import sys, getopt
 
+	def usage ():
+		print \
+"""
+Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
+		 [--slideshow [--delay seconds]] [--repeat] \\
+		 [--fullscreen] [--geometry WxH[+XxY]] [--nodecorated] \\
+		 slides.py..."""
+		sys.exit (1)
+
 	args = args + sys.argv[1:]
-	opts, args = getopt.gnu_getopt (args, "o:t:sd:rfng:", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen", "nodecorated", "geometry="))
+	try:
+		opts, args = getopt.gnu_getopt (args, "o:t:sd:rfng:", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen", "nodecorated", "geometry="))
+	except getopt.GetoptError, e:
+		print "slippy.py: %s" % (e)
+		usage ()
 
 	settings = {}
 	outputfile = None
@@ -718,13 +731,7 @@ def main(slides = None, theme = None, args=[]):
 		slides = load_slides (slidefiles, {'outputfile': outputfile})
 
 	if not slides:
-		print \
-"""
-Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
-		 [--slideshow [--delay seconds]] [--repeat] \\
-		 [--fullscreen] [--geometry WxH[+XxY]] [--nodecorated] \\
-		 slides.py..."""
-		sys.exit (1)
+		usage ()
 
 	if outputfile:
 		viewer = ViewerFile (outputfile)
