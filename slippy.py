@@ -178,13 +178,13 @@ class ViewerGTK (Viewer):
 		self.step = len (self.get_slide ()) - 1
 		self.__queue_draw()
 
-	def go_forward_full(self):
+	def go_forward_full(self, wrap=False):
 		if self.slide_no + 1 < len (self.slides):
 			self.slide_no += 1
 			self.slide = None
 			self.step = 0
 			self.__queue_draw()
-		elif self.is_repeat():
+		elif wrap:
 			self.slide_no = 0
 			self.slide = None
 			self.step = 0
@@ -200,7 +200,7 @@ class ViewerGTK (Viewer):
 			self.step += 1
 			self.__queue_draw()
 		else:
-			self.go_forward_full ()
+			self.go_forward_full (wrap=self.is_repeat())
 
 	def go_backward_full(self):
 		if self.slide_no > 0:
