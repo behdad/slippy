@@ -21,7 +21,7 @@ import cairo
 side_margin = .06
 top_margin = .02
 bottom_margin = .06
-padding = .005
+padding = .006
 bubble_rad = .25
 
 def bubble (cr, x0, y0, x, y, w, h):
@@ -61,12 +61,13 @@ def prepare_page (renderer):
 	p = padding * min (width, height)
 	p2 = 2 * p
 
-	cr.set_source_rgb (128/255., 255/255., 148/255.)
+	a = 1
+	cr.set_source_rgb (0xdb/255.*a, 0x52/255.*a, 0x26/255.*a)
 	cr.paint ()
 
 	cr.move_to (.5 * width, height-p2)
-	cr.set_source_rgba (0,.2,0)
-	renderer.put_text ("Internationalization &amp; Unicode Conference, October 15, 2009, San Jose", height=(f-p2)*.8, width=(width-2*s)*.8, valign=-1)
+	cr.set_source_rgb (0xff/255.*a, 0xda/255.*a, 0x4c/255.*a)
+	renderer.put_text ("<b>Internationalization &amp; Unicode Conference 33, October 14—16, 2009, San Jose</b>", height=(f-p2)*.8, width=(width-2*s)*.8, valign=-1)
 
 	cr.move_to (width-p, height-p)
 	#renderer.put_image ("unicode.png", height = f-p2, valign=-1, halign=-1)
@@ -113,10 +114,10 @@ def draw_bubble (renderer, x, y, w, h, data=None):
 	cr.rectangle (width, 0, -width, height)
 	cr.clip ()
 
-	a = .5
+	a = .7
 
 	bubble (cr, xc, yc, x, y, w, h)
-	cr.set_source_rgb (64/255.*a, 128/255.*a, 64/255.*a)
+	cr.set_source_rgb (0xdb/255.*a, 0x52/255.*a, 0x26/255.*a)
 	cr.set_line_width (p)
 	cr.set_miter_limit (20)
 	cr.stroke_preserve ()
@@ -124,7 +125,9 @@ def draw_bubble (renderer, x, y, w, h, data=None):
 	cr.restore ()
 
 	cr.clip ()
-	cr.set_source_rgba (.92, .98, 1, 1)
+	a = 10
+	cr.set_source_rgb (0xfe/255.*a, 0x9a/255.*a, 0x35/255.*a)
 	cr.paint ()
 
-	cr.set_source_rgb (96/255.*a, 128/255.*a, 96/255.*a)
+	a = .1
+	cr.set_source_rgb (0xdb/255.*a, 0x52/255.*a, 0x26/255.*a)
