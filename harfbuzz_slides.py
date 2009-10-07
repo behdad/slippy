@@ -69,7 +69,7 @@ def slide_image (f, height=650, data=None):
 def title_slide (r):
 	r.move_to (800, 50)
 	r.put_text (
-"""HarfBuzz\nof\nText\nRendering""",
+"""HarfBuzz\n\nText\nRendering""",
 width=800, height=500, valign=1, halign=-1)
 
 	r.move_to (0, 530)

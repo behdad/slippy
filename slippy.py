@@ -393,13 +393,6 @@ class Slide:
 		return len (self.texts)
 	
 	def show_page (self, renderer, pageno, theme=None):
-		class NullTheme:
-			def prepare_page (self, renderer):
-				return 0, 0, renderer.width, renderer.height
-			def draw_bubble (self, renderer, *args, **kargs):
-				pass
-		if not theme:
-			theme = NullTheme()
 		viewer = self.viewer
 		renderer.viewer = viewer
 			
@@ -663,6 +656,71 @@ class Renderer:
 
 pixcache = {}
 
+class NullTheme:
+	def prepare_page (self, renderer):
+		return 0, 0, renderer.width, renderer.height
+	def draw_bubble (self, renderer, *args, **kargs):
+		pass
+
+def load_slides (slidefiles, slidesinit=None, args=None):
+	if isinstance (slidefiles, str):
+		slidefiles = [slidefiles]
+	if not slidefiles and isinstance (slidesinit, str):
+		slidefiles = [slidesinit]
+		slidesinit = None
+	if not slidefiles:
+		slidefiles = []
+	if not slidesinit:
+		slidesinit = []
+	class Slides:
+		def __init__ (self, slidefiles, slidesinit, args):
+			self.__slidesinit = slidesinit[:]
+			self.__slidefiles = slidefiles[:]
+			self.__args = dict(args)
+			self.__slideslist = slidesinit[:]
+			for slidefile in slidefiles:
+				__slides = dict (args)
+				execfile(slidefile, __slides)
+				self.__slideslist += __slides['slides']
+		def __nonzero__ (self):
+			return True
+		def __getattr__ (self, attr):
+			return getattr (self.__slideslist, attr)
+		def reload (self):
+			return Slides(self.__slidefiles, self.__slidesinit, self.__args)
+
+	return Slides (slidefiles, slidesinit, args)
+
+def load_themes (themefiles, themeinit=None):
+	if isinstance (themefiles, str):
+		themefiles = [themefiles]
+	if not themefiles and isinstance (themeinit, str):
+		themefiles = [themeinit]
+		themeinit = None
+	if not themefiles:
+		themefiles = []
+	if not themeinit:
+		themeinit = {}
+	class Theme:
+		def __init__ (self, themefiles, themeinit):
+			self.__themeinit = dict(themeinit)
+			self.__themefiles = themefiles[:]
+			self.__themedict = dict(themeinit)
+			for themefile in themefiles:
+				execfile(themefile, self.__themedict)
+		def __nonzero__ (self):
+			return True
+		def __getattr__ (self, attr):
+			try:
+				ret = self.__themedict[attr]
+			except KeyError:
+				ret = getattr (NullTheme(), attr)
+			return ret
+		def reload (self):
+			return Theme(self.__themefiles, self.__themeinit)
+
+	return Theme (themefiles, themeinit)
+
 
 import sys
 def main(slides = None, theme = None, args=[]):
@@ -682,6 +740,7 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 	except getopt.GetoptError, e:
 		print "slippy.py: %s" % (e)
 		usage ()
+
 
 	settings = {}
 	outputfile = None
@@ -705,54 +764,8 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 		elif opt in ['-g', '--geometry']:
 			settings["geometry"] = val
 
-	def load_slides (slidefiles, args):
-		if not slidefiles:
-			return []
-		class Slides:
-			def __init__ (self, slidefiles, args):
-				self.__slidefiles = slidefiles
-				self.__args = args
-				self.__slideslist = []
-				for slidefile in slidefiles:
-					slides = dict (args)
-					if slidefile == '-':
-						slidefile = '/dev/stdin' # XXX
-					execfile(slidefile, slides)
-					self.__slideslist += slides['slides']
-			def __nonzero__ (self):
-				return True
-			def __getattr__ (self, attr):
-				return getattr (self.__slideslist, attr)
-			def reload (self):
-				return Slides(self.__slidefiles, self.__args)
-
-		return Slides (slidefiles, args)
-
-	def load_theme (themefile):
-		if not themefile:
-			return None
-		class Theme:
-			def __init__ (self, themefile):
-				self.__themefile = themefile
-				self.__themedict = dict ()
-				execfile(self.__themefile, self.__themedict)
-			def __nonzero__ (self):
-				return True
-			def __getattr__ (self, attr):
-				return getattr (self.__themedict, attr)
-			def reload (self):
-				return Theme(self.__themefile)
-
-		return Theme (themefile)
-
-	if themefile == None and isinstance (theme, str):
-		themefile = theme
-	if not themefile == None:
-		theme = load_theme (themefile)
-	if not slidefiles and isinstance (slides, str):
-		slidefiles = [slides]
-	if slidefiles:
-		slides = load_slides (slidefiles, {'outputfile': outputfile})
+	theme = load_themes (themefile, theme)
+	slides = load_slides (slidefiles, slides, {'outputfile': outputfile})
 
 	if not slides:
 		usage ()
