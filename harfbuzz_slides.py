@@ -5,7 +5,7 @@ if __name__ == "__main__":
 	import slippy
 	import sys
 	import harfbuzz_theme
-	slippy.main (__file__, harfbuzz_theme)
+	slippy.main (__file__, harfbuzz_theme, sys.argv[1:])
 	sys.exit (0)
 
 # Copyright 2007,2009 Behdad Esfahbod <besfahbo@redhat.com>
@@ -74,14 +74,14 @@ def slide_image (f, height=650, data=None):
 
 @slide_noone
 def title_slide (r):
-	r.move_to (800, 50)
+	r.move_to (800, 30)
 	r.put_text (
-"""HarfBuzz\n\nText\nRendering""",
+"""<b>HarfBuzz</b>\nthe Free and Open\nShaping Engine""",
 width=800, height=500, valign=1, halign=-1)
 
-	r.move_to (0, 530)
-	r.put_text ("""Behdad Esfahbod\n<span font_desc="monospace">behdad@gnome.org\nhttp://behdad.org/text</span>""",
-		    desc="12", halign=1, valign=-1)
+	r.move_to (0, 570)
+	r.put_text ("""Behdad Esfahbod\n<span font_desc="monospace">behdad@redhat.com\nhttp://behdad.org/\nhttp://freedesktop.org/wiki/Software/HarfBuzz</span>""", height=130, halign=1, valign=-1)
+
 
 who (behdad)
 
@@ -94,40 +94,61 @@ def list_slide (l, data=None):
 	s.__name__ = l[0]
 	slide (s, data)
 
-slide_noone("Check the paper:\n<span font_desc=\"monospace\">http://behdad.org/text</span>")
-
 list_slide ([
 		"<b>Agenda</b>",
-		"• The Stack",
-		"• Shapers",
-		"• Shaper Consumers",
-		"• Problems",
-		"• Recent Advances",
-		"• More Problems",
-		"• Road Ahead",
+		"• Introduction",
+		"• History",
+		"• Old HarfBuzz",
+		"• New HarfBuzz",
+		"• Scope",
+		"• Design",
+		"• Status",
+		"• Roadmap",
 	    ], data={'align': pango.ALIGN_LEFT})
 
-list_slide ([
-		"<b>Meet the Stack</b>",
-		"• Pango",
-		"• HarfBuzz",
-		"• FriBidi",
-		"• Fontconfig",
-		"• FreeType",
-	    ], data={'align': pango.ALIGN_LEFT})
+slide_noone("<b>Intro</b>")
+slide("<span font_desc=\"IranNastaliq\">	حرف باز	</span>")
+slide("Free and Open\nUnicode\nShaping Engine")
 
-slide("OpenType")
-slide("HarfBuzz")
+slide_noone("<b>History</b>")
+slide("FreeType\nOpenType\nLayout")
+slide("GNOME\nKDE")
+slide("Pango\nQt")
 
-list_slide ([
-		"<b>Other Free Shapers</b>",
-		"• ICU",
-		"• m17n",
-		"• SIL Graphite",
-	    ], data={'align': pango.ALIGN_LEFT})
+slide_noone("<b>Old\nHarfBuzz</b>")
+slide("2006")
+slide("Qt\nShapers")
+list_slide([	"<b>Problems</b>",
+		"• Inefficient",
+		"• Fragile",
+		"• Ugly",
+	   ], data={'align': pango.ALIGN_LEFT})
 
-list_slide ([
-		"<b>Consumers</b>",
+slide_noone("<b>New\nHarfBuzz</b>")
+slide("Baking")
+
+slide_noone("<b>Scope</b>")
+list_slide([	"<b>Generic Shaper</b>",
+		"• OpenType",
+		"• ATT",
+		"• Graphite",
+		"• Fallback",
+		"• ...",
+	   ], data={'align': pango.ALIGN_LEFT})
+list_slide([	"<b>Just Shaper</b>",
+		"• No Itemizer",
+		"• No Bidi",
+		"• No Line Breaking",
+		"• No Rasterization",
+	   ], data={'align': pango.ALIGN_LEFT})
+list_slide([	"<b>Goals</b>",
+		"• Beautiful",
+		"• Robust",
+		"• Flexible",
+		"• Efficient",
+		"• Portable",
+	   ], data={'align': pango.ALIGN_LEFT})
+list_slide ([	"<b>Consumers</b>",
 		"• GUI Toolkits",
 		"• Web Browsers",
 		"• Word Processors",
@@ -138,80 +159,32 @@ list_slide ([
 		"• TeX Engines",
 	    ], data={'align': pango.ALIGN_LEFT})
 
-list_slide ([
-		"<b>Excellence</b>",
-		"• Supported Font Formats",
-		"• Configuration Mechanism",
-		"• Transparent Font Fallback",
-		"• Standard Compliance",
-		"• Minority Scripts",
-	    ], data={'align': pango.ALIGN_LEFT})
+slide_noone("<b>Design</b>")
+slide("<b>For Humans</b>\n<small>hb_face_t\nhb_font_t\nhb_buffer_t</small>")
+slide("Unicode\nCallbacks")
+slide("Font\nCallbacks")
+slide("SFNT-\nBased")
+slide("Garbage-In\nGlyphs-Out")
+slide("Fallbacks")
+slide("In-Place")
+slide("Error\nHandling")
+slide("Backend-\nIndependent")
+slide("Backend\nAPI")
+slide("Thread-\nSafe")
+slide("No\nDependencies")
+slide("Well\nSome C++")
+slide("MIT-\nLicensed")
 
-list_slide ([
-		"<b>Problems</b>",
-		"• Good Enough",
-		"• Segregated Efforts",
-	    ], data={'align': pango.ALIGN_LEFT})
+slide_noone("<b>Status</b>")
+slide("OpenType\nLayout")
+slide("API\nReview")
+slide("Shapers")
+slide("Test\nSuite")
 
-list_slide ([
-		"<b>Segregated Efforts</b>",
-		"• Font packager's fault",
-		"• Font configuration GUI",
-		"• Vertical text",
-		"• Text Layout Summit",
-		"• unifont.org",
-		"• Graphite and m17n",
-	    ], data={'align': pango.ALIGN_LEFT})
-
-list_slide ([
-		"<b>Recent Advances</b>",
-		"• Streamlining font packaging",
-		"• Online font add/remove",
-		"• Automatic font installation",
-	    ], data={'align': pango.ALIGN_LEFT})
-
-slide_noone ("Demo\nTime!")
-
-list_slide ([
-		"<b>Online font add/remove</b>",
-		"1. gnome-settings-daemon monitors",
-		"2. g-s-d rebuilds cache ",
-		"3. g-s-d signals via XSETTINGS ",
-		"4. GTK+ catches, drops Pango caches ",
-		"5. GTK+ sends \"theme-changed\" ",
-	    ], data={'align': pango.ALIGN_LEFT})
-
-list_slide ([
-		"<b>Automatic font installation</b>",
-		"1. RPM detects font at pkg build time",
-		"2. RPM tags package using fc-query",
-		"3. PackgeKit installs GTK+ module",
-		"4. GTK+ overrides Pango default fontmap",
-		"5. PK receives font install request",
-		"6. Installed fonts are picked up",
-	    ], data={'align': pango.ALIGN_LEFT})
-
-list_slide ([
-		"<b>Major Problems</b>",
-		"• CJK Problem",
-		"• Indic Problem",
-		"• Latin Problem",
-	    ], data={'align': pango.ALIGN_LEFT})
-
-list_slide ([
-		"<b>Road Ahead</b>",
-		"• HarfBuzz: layout, API, merge",
-		"• Subpixel rendering and positioning",
-		"• Font chooser dialog",
-		"• Font configurator",
-		"• Font websites",
-		"• Font viewer",
-		"• Application fonts",
-	    ], data={'align': pango.ALIGN_LEFT})
+#slide_noone("<b>Roadmap</b>")
 
 """
-list_slide ([
-		"<b></b>",
+list_slide ([	"<b></b>",
 		"• ",
 		"• ",
 		"• ",
