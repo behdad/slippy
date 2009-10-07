@@ -4,7 +4,8 @@
 if __name__ == "__main__":
 	import slippy
 	import sys
-	slippy.main (__file__, "harfbuzz_theme.py")
+	import harfbuzz_theme
+	slippy.main (__file__, harfbuzz_theme)
 	sys.exit (0)
 
 # Copyright 2007,2009 Behdad Esfahbod <besfahbo@redhat.com>

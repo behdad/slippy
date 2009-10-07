@@ -674,9 +674,9 @@ def load_slides (slidefiles, slidesinit=None, args=None):
 		slidesinit = []
 	class Slides:
 		def __init__ (self, slidefiles, slidesinit, args):
-			self.__slidesinit = slidesinit[:]
-			self.__slidefiles = slidefiles[:]
-			self.__args = dict(args)
+			self.__slidesinit = slidesinit
+			self.__slidefiles = slidefiles
+			self.__args = args
 			self.__slideslist = slidesinit[:]
 			for slidefile in slidefiles:
 				__slides = dict (args)
@@ -703,8 +703,13 @@ def load_themes (themefiles, themeinit=None):
 		themeinit = {}
 	class Theme:
 		def __init__ (self, themefiles, themeinit):
-			self.__themeinit = dict(themeinit)
-			self.__themefiles = themefiles[:]
+			self.__themeinit = themeinit
+			self.__themefiles = themefiles
+			try:
+				# handle modules
+				themeinit = themeinit.__dict__
+			except AttributeError:
+				pass
 			self.__themedict = dict(themeinit)
 			for themefile in themefiles:
 				execfile(themefile, self.__themedict)
@@ -717,6 +722,9 @@ def load_themes (themefiles, themeinit=None):
 				ret = getattr (NullTheme(), attr)
 			return ret
 		def reload (self):
+			if hasattr (self.__themeinit, '__dict__'):
+				# reload module
+				reload (self.__themeinit)
 			return Theme(self.__themefiles, self.__themeinit)
 
 	return Theme (themefiles, themeinit)
