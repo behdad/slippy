@@ -162,6 +162,18 @@ class ViewerGTK (Viewer):
 	def _should_cache_background (self):
 		return self.__cache
 
+	def go_first_full(self):
+		self.slide_no = 0
+		self.slide = None
+		self.step = 0
+		self.__queue_draw()
+
+	def go_last_full(self):
+		self.slide_no = len (self.slides) - 1
+		self.slide = None
+		self.step = len (self.get_slide ()) - 1
+		self.__queue_draw()
+
 	def go_forward_full(self):
 		if self.slide_no + 1 < len (self.slides):
 			self.slide_no += 1
@@ -228,12 +240,18 @@ class ViewerGTK (Viewer):
 		elif event.keyval in [gtk.keysyms.Page_Down]:
 			self.__tick ()
 			self.go_forward_full()
-		elif event.keyval == gtk.keysyms.BackSpace or event.keyval in [gtk.keysyms.Left, gtk.keysyms.Up]:
+		elif event.keyval in [gtk.keysyms.BackSpace, gtk.keysyms.Left, gtk.keysyms.Up]:
 			self.__tick ()
 			self.go_backward()
 		elif event.keyval in [gtk.keysyms.Page_Up]:
 			self.__tick ()
 			self.go_backward_full()
+		elif event.keyval in [gtk.keysyms.Home]:
+			self.__tick ()
+			self.go_first_full()
+		elif event.keyval in [gtk.keysyms.End]:
+			self.__tick ()
+			self.go_last_full()
 		elif event.string == 'q':# or event.keyval == gtk.keysyms.Escape:
 			gtk.main_quit()
 		elif event.string == 'f':
