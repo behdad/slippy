@@ -59,6 +59,7 @@ class ViewerGTK (Viewer):
 		window.connect("key-press-event", self.__key_press_event)
 		window.connect("expose-event", self.__expose_event)
 
+		window.set_decorated (decorate)
 		parts = geometry.split ("+")
 		width, height = [int(x) for x in parts[0].split('x')]
 		window.set_default_size (width, height)
@@ -67,7 +68,6 @@ class ViewerGTK (Viewer):
 			window.move (x, y)
 
 		self.window = window
-		self.window.set_decorated (decorate)
 
 	def get_slide(self):
 		if not self.slide:
