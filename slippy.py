@@ -268,13 +268,24 @@ class ViewerGTK (Viewer):
 			self.set_slideshow_delay (self.get_slideshow_delay () / 1.2)
 		elif event.string == 'z':
 			self.set_slideshow_delay (self.get_slideshow_delay () * 1.2)
-		elif event.string == 'r':
-			self.toggle_repeat ()
 		elif event.string == 'R':
+			self.toggle_repeat ()
+		elif event.string == 'r':
 			try:
 				self.theme = self.theme.reload ()
 				print "theme reloaded"
 				self.cached_slide = None
+				self.window.queue_draw()
+			except AttributeError:
+				pass
+			try:
+				self.slides = self.slides.reload ()
+				print "slides reloaded"
+				self.slide = None
+				if self.slide_no >= len (self.slides):
+					self.slide_no = len (self.slides) - 1
+				if self.step >= len (self.get_slide ()):
+					self.step = len (self.get_slide ()) - 1
 				self.window.queue_draw()
 			except AttributeError:
 				pass
@@ -653,8 +664,9 @@ class Renderer:
 pixcache = {}
 
 
+import sys
 def main(slides = None, theme = None, args=[]):
-	import sys, getopt
+	import getopt
 
 	def usage ():
 		print \
@@ -665,7 +677,6 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 		 slides.py..."""
 		sys.exit (1)
 
-	args = args + sys.argv[1:]
 	try:
 		opts, args = getopt.gnu_getopt (args, "o:t:sd:rfng:", ("output=", "theme=", "slideshow", "delay=", "repeat", "fullscreen", "nodecorated", "geometry="))
 	except getopt.GetoptError, e:
@@ -695,14 +706,27 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 			settings["geometry"] = val
 
 	def load_slides (slidefiles, args):
-		all_slides = []
-		for slidefile in slidefiles:
-			slides = dict (args)
-			if slidefile == '-':
-				slidefile = '/dev/stdin'
-			execfile(slidefile, slides)
-			all_slides += slides['slides']
-		return all_slides
+		if not slidefiles:
+			return []
+		class Slides:
+			def __init__ (self, slidefiles, args):
+				self.__slidefiles = slidefiles
+				self.__args = args
+				self.__slideslist = []
+				for slidefile in slidefiles:
+					slides = dict (args)
+					if slidefile == '-':
+						slidefile = '/dev/stdin' # XXX
+					execfile(slidefile, slides)
+					self.__slideslist += slides['slides']
+			def __nonzero__ (self):
+				return True
+			def __getattr__ (self, attr):
+				return getattr (self.__slideslist, attr)
+			def reload (self):
+				return Slides(self.__slidefiles, self.__args)
+
+		return Slides (slidefiles, args)
 
 	def load_theme (themefile):
 		if not themefile:
@@ -715,7 +739,7 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 			def __nonzero__ (self):
 				return True
 			def __getattr__ (self, attr):
-				return self.__themedict[attr]
+				return getattr (self.__themedict, attr)
 			def reload (self):
 				return Theme(self.__themefile)
 
@@ -740,4 +764,4 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 	viewer.run (slides, theme=theme)
 
 if __name__ == "__main__":
-	main()
+	main(args = sys.argv[1:])

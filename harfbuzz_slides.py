@@ -69,7 +69,7 @@ def slide_image (f, height=650, data=None):
 def title_slide (r):
 	r.move_to (800, 50)
 	r.put_text (
-"""State\nof\nText\nRendering""",
+"""HarfBuzz\nof\nText\nRendering""",
 width=800, height=500, valign=1, halign=-1)
 
 	r.move_to (0, 530)
@@ -227,7 +227,7 @@ if __name__ == "__main__":
 	import harfbuzz_theme
 	import sys
 	#slippy.main (slides, harfbuzz_theme)
-	#slippy.main ("harfbuzz_slides.py", "harfbuzz_theme.py")
-	slippy.main (slides, "harfbuzz_theme.py")
+	slippy.main ("harfbuzz_slides.py", "harfbuzz_theme.py")
+	#slippy.main (slides, "harfbuzz_theme.py")
 	sys.exit (0)
 
