@@ -174,6 +174,11 @@ slide("Thread-\nSafe")
 slide("No\nDependencies")
 slide("Well\nSome C++")
 slide("MIT-\nLicensed")
+list_slide ([	"<b>OpenType 1.6</b>",
+		"• Mark filtering sets",
+		"• cmap type 14",
+		"• Mirroring",
+	    ], data={'align': pango.ALIGN_LEFT})
 
 slide_noone("<b>Status</b>")
 slide("OpenType\nLayout")
@@ -181,7 +186,6 @@ slide("API\nReview")
 slide("Shapers")
 slide("Test\nSuite")
 
-#slide_noone("<b>Roadmap</b>")
 
 """
 list_slide ([	"<b></b>",
