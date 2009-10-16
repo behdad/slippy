@@ -33,7 +33,7 @@ class Viewer:
 
 class ViewerGTK (Viewer):
 	
-	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., geometry="1024x768"):
+	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., geometry=None):
 		self.__fullscreen = fullscreen
 		self.__decorate = decorate
 		self.__repeat = repeat
@@ -61,7 +61,10 @@ class ViewerGTK (Viewer):
 
 		window.set_decorated (decorate)
 		parts = geometry.split ("+")
-		width, height = [int(x) for x in parts[0].split('x')]
+		if parts[0]:
+			width, height = [int(x) for x in parts[0].split('x')]
+		else:
+			width, height = 1024, 768
 		window.set_default_size (width, height)
 		if len (parts) > 1:
 			x, y = [int(x) for x in parts[1].split('x')]
