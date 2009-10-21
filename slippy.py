@@ -33,7 +33,7 @@ class Viewer:
 
 class ViewerGTK (Viewer):
 	
-	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., geometry=None):
+	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., geometry=''):
 		self.__fullscreen = fullscreen
 		self.__decorate = decorate
 		self.__repeat = repeat
