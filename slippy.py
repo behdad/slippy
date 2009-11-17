@@ -443,11 +443,6 @@ class Slide:
 		lw, lh = renderer.fit_layout (layout, w, h)
 
 		ext = self.extents
-		#if ext:
-		#	ex, ey, ew, eh = ext
-		#	ex, ey = cr.device_to_user (ex, ey)
-		#	ew, eh = cr.device_to_user_distance (ew, eh)
-		#	ext = [ex, ey, ew, eh]
 		if self.text:
 			ext = _extents_union (ext, [(w - lw) * .5, (h - lh) * .5, lw, lh])
 		ext = _extents_intersect (ext, [0, 0, w, h])
@@ -517,15 +512,27 @@ class Renderer:
 
 	def __getattr__ (self, arg):
 		return getattr (self.cr, arg)
+
+	def _user_to_device_box (self, x, y, w, h):
+		P = []
+		P.append (self.cr.user_to_device (x, y))
+		P.append (self.cr.user_to_device (x+w, y))
+		P.append (self.cr.user_to_device (x, y+h))
+		P.append (self.cr.user_to_device (x+w, y+h))
+		X = [p[0] for p in P]
+		Y = [p[1] for p in P]
+		x = min (X)
+		y = min (Y)
+		w = max (X) - x
+		h = max (Y) - y
+		return x, y, w, h
 	
 	def allocate (self, x, y, w, h):
-		x, y = self.cr.user_to_device (x, y)
-		w, h = self.cr.user_to_device_distance (w, h)
+		x, y, w, h = self._user_to_device_box (x, y, w, h)
 		self.extents = _extents_union (self.extents, [x, y, w, h])
 
 	def set_allocation (self, x, y, w, h):
-		x, y = self.cr.user_to_device (x, y)
-		w, h = self.cr.user_to_device_distance (w, h)
+		x, y, w, h = self._user_to_device_box (x, y, w, h)
 		self.extents = [x, y, w, h]
 
 	def create_layout (self, text, markup=True):
