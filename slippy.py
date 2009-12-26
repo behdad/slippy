@@ -456,7 +456,7 @@ class Slide:
 				break;
 			i += 1
 
-		layout.set_width (int (1.001 * lw * pango.SCALE))
+		layout.set_width (int (lw * pango.SCALE))
 		layout.set_markup (_remove_empty_lines (text))
 		cr.move_to ((w - lw) * .5, (h - lh) * .5)
 		cr.show_layout (layout)
