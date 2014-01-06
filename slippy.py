@@ -39,7 +39,7 @@ class ViewerGTK (Viewer):
 		self.__repeat = repeat
 		self.__slideshow = slideshow
 		self.__delay = delay
-		self.__cache = True
+		self.__cache = False
 
 		window = gtk.Window()
 		screen = window.get_screen()
