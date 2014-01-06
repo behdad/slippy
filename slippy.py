@@ -415,6 +415,7 @@ class Slide:
 			#renderer.paint ()
 			#renderer.restore ()
 			#renderer.set_source_rgb (.5, .5, .5)
+			renderer.data = self.data
 			x, y, w, h = theme.prepare_page (renderer)
 
 			if viewer and viewer._should_cache_background():

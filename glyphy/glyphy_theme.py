@@ -50,7 +50,7 @@ def bubble (cr, x0, y0, x, y, w, h):
 	cr.curve_to (.5 * (xc-r+x0), (yc+y0*2)/3, xc-r, y0, xc-r, yc)
 
 
-def prepare_page (renderer, data={}):
+def prepare_page (renderer):
 	cr = renderer.cr
 	width = renderer.width
 	height = renderer.height
@@ -74,7 +74,7 @@ def prepare_page (renderer, data={}):
 	renderer.put_text ("linux.conf.au, 8 January 2014, Perth, Australia", height=f-p2, valign=-1)
 
 	# Cartoon icons for speakers
-	who = data.get ('who', None)
+	who = renderer.data.get ('who', None)
 	if who < 0:
 		cr.move_to (p, height-p)
 		renderer.put_image ("behdad.png", width = a-p2, valign=-1, halign=+1)
