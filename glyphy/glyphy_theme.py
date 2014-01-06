@@ -62,7 +62,11 @@ def prepare_page (renderer):
 	p = padding * min (width, height)
 	p2 = 2 * p
 
-	cr.set_source_rgb (0x13/255., 0x5f/255., 0xaa/255.)
+	cr.paint ()
+	sky = cairo.LinearGradient (0, 0, 0, height)
+	sky.add_color_stop_rgba (0, 0x13/255., 0x5f/255., 0xaa/255., 1.)
+	sky.add_color_stop_rgba (1, 0x85/255., 0x83/255., 0x6a/255., 1.)
+	cr.set_source (sky)
 	cr.paint ()
 
 	# Background image
