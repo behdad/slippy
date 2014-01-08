@@ -30,6 +30,7 @@ def slide_add(f, data=None, width=800, height=600):
 	return f
 
 import pango, pangocairo, cairo, os, signal
+from pangopygments import highlight
 
 # We use slide data to tell the theme who's speaking.
 # That is, which side the bubble should point to.
@@ -419,7 +420,12 @@ list_slide ([
 	    ], data={'align': pango.ALIGN_LEFT})
 
 def source_slide(s):
-	s = s.replace("&", "&amp;").replace("<", "&lt;")
+	# The highlighter highlights (i.e., adds tags around) operators
+	# (& and ;, here), so let's use a non-highlighted keyword, and escape them
+	# after highlighting.
+	s = s.replace("&", "__AMP__").replace("<", "__LT__")
+	s = highlight(s, 'c')
+	s = s.replace("__AMP__", "&amp;").replace("__LT__", "&lt;")
 	s = "<span font_desc='monospace'>" + s + "</span>"
 	slide_noone (s, data={'align': pango.ALIGN_LEFT})
 
@@ -648,7 +654,7 @@ index 2021d74..95f857b 100644
 --- a/src/glyphy-common.glsl
 +++ b/src/glyphy-common.glsl
 @@ -16,17 +16,6 @@
- 
+
 -#define GLYPHY_PASTE_ARGS(prefix, name) prefix ## name
 -#define GLYPHY_PASTE(prefix, name) GLYPHY_PASTE_ARGS (prefix, name)
 -
@@ -660,9 +666,9 @@ index 2021d74..95f857b 100644
 -#define glyphy(name) name
 -#endif
 -
- 
+
 @@ -36,13 +25,13 @@
- 
+
 -struct glyphy(arc_t) {
 +struct glyphy_arc_t {
    vec2  p0;
@@ -677,7 +683,7 @@ index 5e969c2..c9349b7 100644
 --- a/src/glyphy-common.glsl
 +++ b/src/glyphy-common.glsl
 @@ -151,25 +151,30 @@ glyphy_arc_wedge_contains (const glyphy_arc_t a, const vec2 p)
- 
+
 +float
 +glyphy_arc_wedge_signed_dist_shallow (const glyphy_arc_t a, const vec2 p)
 +{
@@ -711,22 +717,22 @@ Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Apr 11 13:24:22 2012 -0700
 
     i965: Convert live interval computation to using live variable analysis.
-    
+
     Our previous live interval analysis just said that anything in a loop
     was live for the whole loop.  If you had to spill a reg in a loop,
     then we would consider the unspilled value live across the loop too,
     so you never made progress by spilling.  Eventually it would consider
     everything in the loop unspillable and fail out.
-    
+
     With the new analysis, things completely deffed and used inside the
     loop won't be marked live across the loop, so even if you
     spill/unspill something that used to be live across the loop, you
     reduce register pressure.  But you usually don't even have to spill
     any more, since our intervals are smaller than before.
-    
+
     This fixes assertion failure trying to compile the shader for the
     "glyphy" text rasterier and piglit glsl-fs-unroll-explosion.
-    
+
     Improves Unigine Tropics performance 1.3% +/- 0.2% (n=5), by allowing
     more shaders to be compiled in 16-wide mode.
 """, who="anholt.png")
