@@ -622,7 +622,7 @@ def commit_slide(s, who=None):
 	for s in lines:
 		s = s.replace("&", "&amp;").replace("<", "&lt;")
 		if not s: s = ' '
-		elif s[0] != ' ':
+		if s[0] != ' ':
 			s = "<b>%s</b>" % s
 
 		new_lines.append (s)
