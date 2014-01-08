@@ -420,12 +420,7 @@ list_slide ([
 	    ], data={'align': pango.ALIGN_LEFT})
 
 def source_slide(s):
-	# The highlighter highlights (i.e., adds tags around) operators
-	# (& and ;, here), so let's use a non-highlighted keyword, and escape them
-	# after highlighting.
-	s = s.replace("&", "__AMP__").replace("<", "__LT__")
 	s = highlight(s, 'c')
-	s = s.replace("__AMP__", "&amp;").replace("__LT__", "&lt;")
 	s = "<span font_desc='monospace'>" + s + "</span>"
 	slide_noone (s, data={'align': pango.ALIGN_LEFT})
 
