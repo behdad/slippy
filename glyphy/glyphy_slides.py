@@ -116,6 +116,7 @@ who (behdad)
 #
 
 slide_noone("<b>GLyphy</b>\nAn <i>experiment</i> in\nGPU-accelerated\ntext rendering")
+slide_noone("GLSL ES2")
 
 list_slide ([
 		"<b>Status quo</b>",
@@ -131,32 +132,260 @@ slide_noone("<span font_desc='Comic Sans MS'><b>Lets make\ntext beautiful!\n<spa
 slide_noone("What would you do\nif you knew <span strikethrough='true'>you\ncould not fail</span> have a\nhigh-resolution display?")
 slide_noone("<span strikethrough='true'>200+ppi (160 even)</span>\n300+ppi (450 even)")
 
+def image_slide (f, width=600, height=600, imgwidth=0, imgheight=0, xoffset=0, yoffset=0, data=None):
+	def s (r):
+		r.move_to (400+xoffset, 300+yoffset)
+		r.put_image (f, width=imgwidth, height=imgheight)
+		x = (800 - width) * .5
+		y = (600 - height) * .5
+		r.set_allocation (x, y, width, height)
+	s.__name__ = f
+	slide (s, data)
+	return s
+
+def draw_image (r, f, width=600, height=600, imgwidth=0, imgheight=0, xoffset=0, yoffset=0, data=None):
+	r.move_to (400+xoffset, 300+yoffset)
+	r.put_image (f, width=imgwidth, height=imgheight)
+	x = (800 - width) * .5
+	y = (600 - height) * .5
+	r.set_allocation (x, y, width, height)
+
+def g_beziers(r):
+	draw_image (r, "GwithBeziers.png", width=400, imgheight=660)
+
+@slide
+def GBeziers(r):
+	g_beziers (r)
+
+slide ("Coverage-based\nAnti-Aliasing")
+
+@slide
+def GBeziersSquare (r):
+	g_beziers (r)
+	r.rectangle (480, 210, 50, 50)
+	r.set_source_rgba (0., 0., 1., .4)
+	r.fill_preserve ()
+	r.stroke ()
+
+slide ("SDF-based\nAnti-Aliasing")
+
+@slide
+def GBeziersGaussian (r):
+	g_beziers (r)
+	gau = cairo.RadialGradient (505, 235, 0, 505, 235, 25 * 2)
+	stops = 16
+	for stop in (float(x) / stops for x in range(0, stops + 1)):
+		shade = stop * stop * (3. - 2. * stop)
+		gau.add_color_stop_rgba (stop, 0., 0., 1., .7 * (1. - shade))
+	r.set_source (gau)
+	r.paint ()
+
+def glyphy_demo(r, f):
+	r.set_source_rgb (1, 1, 1)
+	r.paint ()
+	args = {
+		"width": 600,
+		"imgheight": 680,
+		"yoffset": -15,
+		"xoffset": 0,
+	}
+	draw_image (r, f, **args)
+
+def clamp(x, a, b):
+	return min (max (x, a), b)
+
+def smoothstep0(a, b, t):
+	scale = 2.
+	t = clamp ((float(t) - a)/(b - a)*scale - (scale-1)/2., 0, 1)
+	return t
+
+def smoothstep(a, b, t):
+	scale = 1./.75
+	t = clamp ((float(t) - a)/(b - a)*scale - (scale-1)/2., 0, 1)
+	return t * t * (3. - 2. * t)
+
+def smoothstep2(a, b, t):
+	scale = 1. # 30./16. # Humm?
+	t = clamp ((float(t) - a)/(b - a)*scale - (scale-1)/2., 0, 1)
+	return t*t*t*(t*(t*6. - 15.) + 10.)
+
+def aa_diagonal(a, b, t):
+	scale = 1. # 2**.5 # Humm?
+	t = clamp ((float(t) - a)/(b - a)*scale - (scale-1)/2., 0, 1)
+	if t <= .5:
+		return t*t * 2
+	else:
+		t = 1. - t
+		return 1 - (t*t * 2)
+
+def plot(r, f, a, b, line=0, scale=1.):
+	r.save ()
+	r.translate (400, 60)
+	r.scale (scale, scale)
+	r.scale (50, -50.5)
+	r.translate (0, -line * 1.5)
+	r.move_to (-4, 0)
+	r.line_to (4, 0)
+	r.move_to (0, -.1)
+	r.line_to (0, 1.1)
+	r.set_source_rgba (0, 0, 0, .1)
+	r.save ()
+	r.identity_matrix ()
+	r.set_line_width (1.)
+	r.stroke ()
+	r.restore ()
+	steps = 200
+	for step in (x* 8./ steps for x in range(-steps/2,steps/2+1)):
+		r.line_to (step, f (a, b, step))
+	r.set_source_rgba (0, 0, 0, .9)
+	r.save ()
+	r.identity_matrix ()
+	r.set_line_width (1.)
+	r.stroke ()
+	r.restore ()
+	r.restore ()
+
+@slide
+def GSdf(r):
+	glyphy_demo (r, "sdf.png")
+
+@slide
+def GRaster(r):
+	glyphy_demo (r, "g.png")
+	plot (r, smoothstep, -1., +1.)
+
+@slide
+def GRasterBlurry(r):
+	glyphy_demo (r, "g-blurry.png")
+	plot (r, smoothstep, -1.*4, +1.*4)
+
+@slide
+def GRasterAliased(r):
+	glyphy_demo (r, "g-aliased.png")
+	plot (r, smoothstep, -1./10, +1./10)
+
+@slide
+def GRaster(r):
+	glyphy_demo (r, "g.png")
+	plot (r, smoothstep, -1., +1.)
+
+@slide
+def GRasterEmboldened(r):
+	glyphy_demo (r, "g-emboldened.png")
+	plot (r, smoothstep, -1.+2., +1.+2.)
+
+@slide
+def GRasterLightened(r):
+	glyphy_demo (r, "g-lightened.png")
+	plot (r, smoothstep, -1.-1., +1.-1.)
+
+@slide
+def AntiAliasFuncs(r):
+	r.set_source_rgb (1, 1, 1)
+	r.paint ()
+	plot (r, smoothstep0, -1., +1., line=1, scale=1.4)
+	plot (r, smoothstep, -1., +1., line=2, scale=1.4)
+	plot (r, smoothstep2, -1., +1., line=3, scale=1.4)
+	plot (r, aa_diagonal, -1., +1., line=4, scale=1.4)
+	r.set_allocation (100, 50, 600, 480)
+
+slide("SDF is <i>linear</i> over\nuniform-scaling\n and translation")
+
+slide_noone("<b>Represent\nSDF on GPU</b>")
+
+image_slide("g-texture-raster.png")
+image_slide("g-texture-sdf.png")
+# TODO bilinear effects on texture raster
+# TODO bilinear effects on texture sdf
+
+slide_noone("<i>Vector\nall the\nglyphs!</i>")
+
+slide("Distance\nto Bézier")
+
+slide("<b>Ouch!</b>")
+
+slide("Convert\nto line\nsegments")
+@slide
+def GLines(r):
+	glyphy_demo (r, "g-lines.png")
+
+slide("Convert to\ncircular arc\nsplines")
+@slide
+def GLines(r):
+	glyphy_demo (r, "g-arcs.png")
+
+slide_noone("<b>Arc-spline\napproximation</b>")
+slide("Error\nfunction")
+@slide
+def CurveArc(r):
+	r.set_source_rgb (1, 1, 1)
+	r.paint ()
+	draw_image (r, "curve-arc.png", width=600, imgheight=750)
+slide("Physics\nsimulation")
+@slide
+def Spiral(r):
+	r.set_source_rgb (1, 1, 1)
+	r.paint ()
+	draw_image (r, "spiral.png", width=600, imgheight=650)
+
+@slide
+def GArcsCloseup(r):
+	glyphy_demo (r, "g-arcs-closeup.png")
+@slide
+def GArcsAll(r):
+	glyphy_demo (r, "g-arcs-all.png")
+list_slide ([
+		"<b>GPU time!</b>",
+		"• Stuff it all in a texture",
+		"• Ship it!",
+	    ], data={'align': pango.ALIGN_LEFT})
+@slide
+def GReal(r):
+	glyphy_demo (r, "g-real.png")
+slide_noone("<b><i>You're</i> insane!</b>")
+
+list_slide ([
+		"<b>Random access</b>",
+		"• Coarse grid",
+		"• Various optimizations",
+	    ], data={'align': pango.ALIGN_LEFT})
+@slide
+def GArcsAll(r):
+	glyphy_demo (r, "g-grid.png")
 who ("keithp.png")
-slide("<b>It's insane!</b>")
+slide("<b><i>It's</i> insane!</b>")
 who (behdad)
 
+slide_noone("<b>Demo\ntime!</b>")
+
+# Demo!
+
+slide_noone("<b>Limitations</b>")
+slide("Speed+memory\nfont-dependent")
+@slide
+def A(r):
+	glyphy_demo (r, "A.png")
+@slide
+def A(r):
+	glyphy_demo (r, "A-debug.png")
+@slide
+def Arcano(r):
+	glyphy_demo (r, "arcano.png")
+
+slide_noone("<b>Practicality</b>")
+
+slide_noone("<b>Challenges</b>")
 
 """
-Make ten times faster, thought Im insane.
-Now Keith thinks the code is insane.
-Have to make it another 5 times faster, now I think I'm becoming insane.
+Sample shaders
 
 Mobile GPU perf unheard of.  Old Tegra had one fetch one add...
 http://venturebeat.com/2014/01/05/nvidia-announces-tegra-k1-a-super-mobile-chip-with-192-cores/
 
-bugs w drivers
+Bugs w drivers
 
 Image gallery.  Spooky etc.
-
-bilinear comparison
-freetype-gl comparison
 """
-
-@slide_noone
-def cluster_image (r):
-	r.move_to (400, 300)
-	r.set_allocation (200, 0, 400, 600)
-	yield ""
 
 if __name__ == "__main__":
 	import slippy
