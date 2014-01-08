@@ -50,7 +50,10 @@ def slide_who(f, who, data=None):
 def slide(f, data=None):
 	return slide_who (f, whois, data=data)
 def slide_noone(f, data=None):
-	return slide_who (f, 0, data=data)
+	if data and 'who' in data:
+		return slide_who (f, data['who'], data=data)
+	else:
+		return slide_who (f, 0, data=data)
 
 #
 # Slides start here
@@ -612,7 +615,7 @@ def patch_slide(s):
         s = "<span font_desc='monospace'>" + s + "</span>"
 	slide_noone (s, data={'align': pango.ALIGN_LEFT})
 
-def commit_slide(s):
+def commit_slide(s, who=None):
 	lines = s.split ("\n")
 	new_lines = []
 	for s in lines:
@@ -625,7 +628,10 @@ def commit_slide(s):
 
 	s = '\n'.join (new_lines)
         s = "<span font_desc='monospace'>" + s + "</span>"
-	slide_noone (s, data={'align': pango.ALIGN_LEFT})
+	if who:
+		slide_noone (s, data={'align': pango.ALIGN_LEFT, 'who': who})
+	else:
+		slide_noone (s, data={'align': pango.ALIGN_LEFT})
 
 slide_noone("<b>Drivers</b>")
 
@@ -723,7 +729,7 @@ Date:   Wed Apr 11 13:24:22 2012 -0700
     
     Improves Unigine Tropics performance 1.3% +/- 0.2% (n=5), by allowing
     more shaders to be compiled in 16-wide mode.
-""")
+""", who="anholt.png")
 slide("60+fps\ni965 Thinkpad")
 
 slide("<b>Case study</b>\niPod 3G")
