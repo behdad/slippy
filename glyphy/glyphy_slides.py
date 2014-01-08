@@ -783,6 +783,14 @@ list_slide ([
 
 slide("<b>Gallery!</b>")
 
+for filename in file("gallery.txt").read().split('\n'):
+	if not filename: continue
+	def closure(filename):
+		def slideFunc(r):
+			glyphy_demo (r, filename)
+		return slideFunc
+	slide(closure(filename))
+
 @slide
 def GReal1(r):
 	glyphy_demo (r, "q.png")
