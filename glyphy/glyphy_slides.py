@@ -345,13 +345,38 @@ def GReal(r):
 slide_noone("<b><i>You're</i> insane!</b>")
 
 list_slide ([
+		"<b>Corner cases</b>",
+		"• Overlappingcontours",
+		"• Tangent arcs",
+		"• Float preceision",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+list_slide ([
 		"<b>Random access</b>",
 		"• Coarse grid",
 		"• Various optimizations",
 	    ], data={'align': pango.ALIGN_LEFT})
 @slide
+def NumClosestArcWithArcs(r):
+	r.set_source_rgb (0x15/255., 0x15/255., 0x15/255.)
+	r.paint ()
+	draw_image (r, "NumClosestArcsWithArcs.png", width=700*.9, height=400*.9, imgwidth=700)
+@slide
+def ThinkGridC(r):
+	r.set_source_rgb (1, 1, 1)
+	r.paint ()
+	draw_image (r, "thickGridC2.png", width=495, height=600, imgheight=658, xoffset=3)
+@slide
+def ThinGridC(r):
+	r.set_source_rgb (1, 1, 1)
+	r.paint ()
+	draw_image (r, "thinGridC2.png", width=495, height=600, imgheight=658, xoffset=3)
+@slide
 def GArcsAll(r):
 	glyphy_demo (r, "g-grid.png")
+@slide
+def GReal1(r):
+	glyphy_demo (r, "g-real.png")
 who ("keithp.png")
 slide("<b><i>It's</i> insane!</b>")
 who (behdad)
@@ -568,17 +593,199 @@ source_slide("""
 def GReal2(r):
 	glyphy_demo (r, "g-real.png")
 
+def patch_slide(s):
+	lines = s.split ("\n")
+	new_lines = []
+	for s in lines:
+		s = s.replace("&", "&amp;").replace("<", "&lt;")
+		if not s: s = ' '
+		if s[0] == '-':
+			s = "<span fgcolor='#d00'>%s</span>" % s
+		elif s[0] == '+':
+			s = "<span fgcolor='#0a0'>%s</span>" % s
+		elif s[0] != ' ':
+			s = "<b>%s</b>" % s
+
+		new_lines.append (s)
+
+	s = '\n'.join (new_lines)
+        s = "<span font_desc='monospace'>" + s + "</span>"
+	slide_noone (s, data={'align': pango.ALIGN_LEFT})
+
+def commit_slide(s):
+	lines = s.split ("\n")
+	new_lines = []
+	for s in lines:
+		s = s.replace("&", "&amp;").replace("<", "&lt;")
+		if not s: s = ' '
+		elif s[0] != ' ':
+			s = "<b>%s</b>" % s
+
+		new_lines.append (s)
+
+	s = '\n'.join (new_lines)
+        s = "<span font_desc='monospace'>" + s + "</span>"
+	slide_noone (s, data={'align': pango.ALIGN_LEFT})
+
 slide_noone("<b>Drivers</b>")
 
-slide("<b>Case study</b>\nNvidia")
+slide("<b>Case study</b>\nMesa\nsoftware\nrenderer")
+source_slide("""
+  "Infinite loop detected in fragment program"  
+""")
 
-slide("<b>Case study</b>\nNvidia")
+slide("<b>Case study</b>\nNvidia+Mac")
+patch_slide("""
+diff --git a/src/glyphy-common.glsl b/src/glyphy-common.glsl
+index 2021d74..95f857b 100644
+--- a/src/glyphy-common.glsl
++++ b/src/glyphy-common.glsl
+@@ -16,17 +16,6 @@
+ 
+-#define GLYPHY_PASTE_ARGS(prefix, name) prefix ## name
+-#define GLYPHY_PASTE(prefix, name) GLYPHY_PASTE_ARGS (prefix, name)
+-
+-#ifndef GLYPHY_PREFIX
+-#define GLYPHY_PREFIX glyphy_
+-#endif
+-
+-#ifndef glyphy
+-#define glyphy(name) name
+-#endif
+-
+ 
+@@ -36,13 +25,13 @@
+ 
+-struct glyphy(arc_t) {
++struct glyphy_arc_t {
+   vec2  p0;
+""")
+slide("150+fps\nMacbook Air 2011")
+slide("~30fps\nretina")
 
-"""
-Bugs w drivers
+slide("<b>Case study</b>\nAMD+Mac")
+patch_slide("""
+diff --git a/src/glyphy-common.glsl b/src/glyphy-common.glsl
+index 5e969c2..c9349b7 100644
+--- a/src/glyphy-common.glsl
++++ b/src/glyphy-common.glsl
+@@ -151,25 +151,30 @@ glyphy_arc_wedge_contains (const glyphy_arc_t a, const vec2 p)
+ }
+ 
+ float
++glyphy_arc_wedge_signed_dist_shallow (const glyphy_arc_t a, const vec2 p)
++{
++  vec2 v = normalize (a.p1 - a.p0);
++  float line_d = dot (p - a.p0, glyphy_perpendicular (v));
++  ...
++  return line_d + r;
++}
++
++float
+ glyphy_arc_wedge_signed_dist (const glyphy_arc_t a, const vec2 p)
+ {
+-  if (abs (a.d) <= .01)
+-  {
+-    vec2 v = normalize (a.p1 - a.p0);
+-    float line_d = dot (p - a.p0, glyphy_perpendicular (v));
+-    ...
+-    return line_d + r;
+-  }
++  if (abs (a.d) <= .01)
++    return glyphy_arc_wedge_signed_dist_shallow (a, p);
+   vec2 c = glyphy_arc_center (a);
+   return sign (a.d) * (distance (a.p0, c) - distance (p, c));
+ }
+""")
 
-Image gallery.  Spooky etc.
-"""
+slide("<b>Case study</b>\nIntel+Linux")
+commit_slide("""
+commit 137c5ece7d22bcbb017e52f00273b42a191f496d
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Apr 11 13:24:22 2012 -0700
+
+    i965: Convert live interval computation to using live variable analysis.
+    
+    Our previous live interval analysis just said that anything in a loop
+    was live for the whole loop.  If you had to spill a reg in a loop,
+    then we would consider the unspilled value live across the loop too,
+    so you never made progress by spilling.  Eventually it would consider
+    everything in the loop unspillable and fail out.
+    
+    With the new analysis, things completely deffed and used inside the
+    loop won't be marked live across the loop, so even if you
+    spill/unspill something that used to be live across the loop, you
+    reduce register pressure.  But you usually don't even have to spill
+    any more, since our intervals are smaller than before.
+    
+    This fixes assertion failure trying to compile the shader for the
+    "glyphy" text rasterier and piglit glsl-fs-unroll-explosion.
+    
+    Improves Unigine Tropics performance 1.3% +/- 0.2% (n=5), by allowing
+    more shaders to be compiled in 16-wide mode.
+""")
+slide("60+fps\ni965 Thinkpad")
+
+slide("<b>Case study</b>\niPod 3G")
+source_slide("""
+  "Demo runs SLOW on my iPod 3G. ~3 FPS"  
+""")
+
+slide("<b>Case study</b>\nAndroid 4.3+LGE")
+patch_slide("""
+ int
+ test()
+ {
+-   float f = 1.0;
+-   return int(f);
++   float f = 1.0;
++   int cx = int(f);
++   return cx;
+ }
+""")
+
+slide("<b>Case study</b>\nAndroid 4.4+LGE")
+patch_slide("""
+diff --git a/src/glyphy-sdf.glsl b/src/glyphy-sdf.glsl
+index a46c0d4..6cc827c 100644
+--- a/src/glyphy-sdf.glsl
++++ b/src/glyphy-sdf.glsl
+@@ -36,7 +36,7 @@
+ #define GLYPHY_SDF_TEXTURE1D_EXTRA_ARGS GLYPHY_TEXTURE1D_EXTRA_ARGS
+ #endif
+ #ifndef GLYPHY_SDF_TEXTURE1D
+-#define GLYPHY_SDF_TEXTURE1D(offset) GLYPHY_RGBA (GLYPHY_SDF_TEXTURE1D_FUNC (...))
++#define GLYPHY_SDF_TEXTURE1D(offset) GLYPHY_RGBA(GLYPHY_SDF_TEXTURE1D_FUNC (...))
+ #endif
+ 
+ #ifndef GLYPHY_MAX_NUM_ENDPOINTS
+""")
+slide("25fps\nNexus 4/5")
+
+list_slide ([
+		"<b>Code: libglyphy</b>",
+		"• ~400 lines *.h",
+		"• ~2500 lines *.cc *.hh",
+		"• ~370 lines *.glsl",
+		"• No dependencies",
+	    ], data={'align': pango.ALIGN_LEFT})
+list_slide ([
+		"<b>Code: glyphy-demo</b>",
+		"• ~2800 lines *.cc *.h",
+		"• ~150 lines *.glsl",
+		"• FreeType, GLUT",
+	    ], data={'align': pango.ALIGN_LEFT})
+list_slide ([
+		"<b>More work</b>",
+		"• Subpixel-rendering",
+		"• Anisotropic-antialiasing",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+slide("<b>Gallery!</b>")
+
+@slide
+def GReal1(r):
+	glyphy_demo (r, "q.png")
 
 if __name__ == "__main__":
 	import slippy
