@@ -361,6 +361,7 @@ slide_noone("<b>Demo\ntime!</b>")
 # Demo!
 
 slide_noone("<b>Limitations</b>")
+slide("Memory\nfootprint")
 slide("Speed+memory\nfont-dependent")
 @slide
 def A(r):
@@ -372,16 +373,208 @@ def A(r):
 def Arcano(r):
 	glyphy_demo (r, "arcano.png")
 
-slide_noone("<b>Practicality</b>")
+slide_noone("<b>Advantages</b>")
+slide("Memory\nfootprint")
+slide("Subpixel\npositioning")
+slide("Pinch-to-zoom")
 
-slide_noone("<b>Challenges</b>")
+list_slide ([
+		"<b>Challenges</b>",
+		"• Shader size / complexity",
+		"• Pixel cost",
+		"• Dependent texture lookups",
+		"• Variable loop iterations",
+		"• Interpolation accuracy",
+	    ], data={'align': pango.ALIGN_LEFT})
+
+def source_slide(s):
+	s = s.replace("&", "&amp;").replace("<", "&lt;")
+        s = "<span font_desc='monospace'>" + s + "</span>"
+	slide_noone (s, data={'align': pango.ALIGN_LEFT})
+
+source_slide("""
+varying vec3 lightDir,normal;
+uniform sampler2D tex,l3d;
+ 
+void main()
+{
+    vec3 ct,cf,c;
+    vec4 texel;
+    float intensity,at,af,a;
+ 
+    intensity = max(dot(lightDir,normalize(normal)),0.0);
+ 
+    cf = intensity * (gl_FrontMaterial.diffuse).rgb +
+                      gl_FrontMaterial.ambient.rgb;
+    af = gl_FrontMaterial.diffuse.a;
+ 
+    texel = texture2D(tex,gl_TexCoord[0].st);
+ 
+    ct = texel.rgb;
+    at = texel.a;
+ 
+    c = cf * ct;
+    a = af * at;
+ 
+    float coef = smoothstep(1.0,0.2,intensity);
+    c += coef *  vec3(texture2D(l3d,gl_TexCoord[0].st));
+ 
+    gl_FragColor = vec4(c, a);
+}
+""")
+@slide_noone
+def TexGlow(r):
+	r.set_source_rgb (1, 1, 1)
+	r.paint ()
+	draw_image (r, "texGlow.jpg", width=600, imgheight=150)
+
+source_slide("""
+/*
+ * Copyright 2012 Google, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Google Author(s): Behdad Esfahbod, Maysum Panju
+ */
+""")
+source_slide("""
+#ifndef GLYPHY_TEXTURE1D_FUNC
+#define GLYPHY_TEXTURE1D_FUNC glyphy_texture1D_func
+#endif
+#ifndef GLYPHY_TEXTURE1D_EXTRA_DECLS
+#define GLYPHY_TEXTURE1D_EXTRA_DECLS
+#endif
+#ifndef GLYPHY_TEXTURE1D_EXTRA_ARGS
+#define GLYPHY_TEXTURE1D_EXTRA_ARGS
+#endif
+
+#ifndef GLYPHY_SDF_TEXTURE1D_FUNC
+#define GLYPHY_SDF_TEXTURE1D_FUNC GLYPHY_TEXTURE1D_FUNC
+#endif
+#ifndef GLYPHY_SDF_TEXTURE1D_EXTRA_DECLS
+#define GLYPHY_SDF_TEXTURE1D_EXTRA_DECLS GLYPHY_TEXTURE1D_EXTRA_DECLS
+#endif
+#ifndef GLYPHY_SDF_TEXTURE1D_EXTRA_ARGS
+#define GLYPHY_SDF_TEXTURE1D_EXTRA_ARGS GLYPHY_TEXTURE1D_EXTRA_ARGS
+#endif
+#ifndef GLYPHY_SDF_TEXTURE1D
+#define GLYPHY_SDF_TEXTURE1D(offset) GLYPHY_RGBA(GLYPHY_SDF_TEXTURE1D_FUNC (offset GLYPHY_TEXTURE1D_EXTRA_ARGS))
+#endif
+
+#ifndef GLYPHY_MAX_NUM_ENDPOINTS
+#define GLYPHY_MAX_NUM_ENDPOINTS 32
+#endif
+""")
+source_slide("""
+glyphy_arc_list_t
+glyphy_arc_list (const vec2 p, const ivec2 nominal_size GLYPHY_SDF_TEXTURE1D_EXTRA_DECLS)
+{
+  int cell_offset = glyphy_arc_list_offset (p, nominal_size);
+  vec4 arc_list_data = GLYPHY_SDF_TEXTURE1D (cell_offset);
+  return glyphy_arc_list_decode (arc_list_data, nominal_size);
+}
+""")
+source_slide("""
+float
+glyphy_sdf (const vec2 p, const ivec2 nominal_size GLYPHY_SDF_TEXTURE1D_EXTRA_DECLS)
+{
+  glyphy_arc_list_t arc_list = glyphy_arc_list (p, nominal_size  GLYPHY_SDF_TEXTURE1D_EXTRA_ARGS);
+
+  /* Short-circuits */
+  if (arc_list.num_endpoints == 0) {
+    /* far-away cell */
+    return GLYPHY_INFINITY * float(arc_list.side);
+  } if (arc_list.num_endpoints == -1) {
+    /* single-line */
+    float angle = arc_list.line_angle;
+    vec2 n = vec2 (cos (angle), sin (angle));
+    return dot (p - (vec2(nominal_size) * .5), n) - arc_list.line_distance;
+  }
+""")
+source_slide("""
+  float side = float(arc_list.side);
+  float min_dist = GLYPHY_INFINITY;
+  glyphy_arc_t closest_arc;
+
+  glyphy_arc_endpoint_t endpoint_prev, endpoint;
+  endpoint_prev = glyphy_arc_endpoint_decode (GLYPHY_SDF_TEXTURE1D (arc_list.offset), nominal_size);
+""")
+source_slide("""
+  for (int i = 1; i < GLYPHY_MAX_NUM_ENDPOINTS; i++)
+  {
+    if (i >= arc_list.num_endpoints) {
+      break;
+    }
+    endpoint = glyphy_arc_endpoint_decode (GLYPHY_SDF_TEXTURE1D (arc_list.offset + i), nominal_size);
+    glyphy_arc_t a = glyphy_arc_t (endpoint_prev.p, endpoint.p, endpoint.d);
+    endpoint_prev = endpoint;
+    if (glyphy_isinf (a.d)) continue;
+""")
+source_slide("""
+    if (glyphy_arc_wedge_contains (a, p))
+    {
+      float sdist = glyphy_arc_wedge_signed_dist (a, p);
+      float udist = abs (sdist) * (1. - GLYPHY_EPSILON);
+      if (udist <= min_dist) {
+	min_dist = udist;
+	side = sdist <= 0. ? -1. : +1.;
+      }
+    }
+""")
+source_slide("""
+    else
+    {
+      float udist = min (distance (p, a.p0), distance (p, a.p1));
+      if (udist < min_dist) {
+	min_dist = udist;
+	side = 0.; /* unsure */
+	closest_arc = a;
+      } else if (side == 0. && udist == min_dist) {
+	/* If this new distance is the same as the current minimum,
+	 * compare extended distances.  Take the sign from the arc
+	 * with larger extended distance. */
+	float old_ext_dist = glyphy_arc_extended_dist (closest_arc, p);
+	float new_ext_dist = glyphy_arc_extended_dist (a, p);
+
+	float ext_dist = abs (new_ext_dist) <= abs (old_ext_dist) ?
+			 old_ext_dist : new_ext_dist;
+
+	side = sign (ext_dist);
+      }
+    }
+  }
+""")
+source_slide("""
+  if (side == 0.) {
+    // Technically speaking this should not happen, but it does.  So try to fix it.
+    float ext_dist = glyphy_arc_extended_dist (closest_arc, p);
+    side = sign (ext_dist);
+  }
+
+  return min_dist * side;
+}
+""")
+@slide
+def GReal2(r):
+	glyphy_demo (r, "g-real.png")
+
+slide_noone("<b>Drivers</b>")
+
+slide("<b>Case study</b>\nNvidia")
+
+slide("<b>Case study</b>\nNvidia")
 
 """
-Sample shaders
-
-Mobile GPU perf unheard of.  Old Tegra had one fetch one add...
-http://venturebeat.com/2014/01/05/nvidia-announces-tegra-k1-a-super-mobile-chip-with-192-cores/
-
 Bugs w drivers
 
 Image gallery.  Spooky etc.
