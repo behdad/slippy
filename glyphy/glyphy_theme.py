@@ -79,12 +79,13 @@ def prepare_page (renderer):
 
 	# Cartoon icons for speakers
 	who = renderer.data.get ('who', None)
-	if who < 0:
-		cr.move_to (p, height-p)
-		renderer.put_image ("behdad.png", width = a-p2, valign=-1, halign=+1)
-	elif who > 0:
-		cr.move_to (width-p, height-p)
-		renderer.put_image ("keithp.png", width = a-p2, valign=-1, halign=-1)
+	if who:
+		if who < 0:
+			cr.move_to (p, height-p)
+			renderer.put_image ("behdad.png", width = a-p2, valign=-1, halign=+1)
+		else:
+			cr.move_to (width-p, height-p)
+			renderer.put_image (who, width = a-p2, valign=-1, halign=-1)
 
 	# Compute rectangle available for slide content
 	w = width - s - s - p * 2

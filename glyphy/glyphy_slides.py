@@ -34,7 +34,6 @@ import pango, pangocairo, cairo, os, signal
 # We use slide data to tell the theme who's speaking.
 # That is, which side the bubble should point to.
 behdad = -1
-keithp = +1
 whois = 0
 def who(name):
 	global whois
@@ -57,17 +56,19 @@ def slide_noone(f, data=None):
 # Slides start here
 #
 
+who (behdad)
+
 @slide_noone
 def title_slide (r):
 	r.move_to (400, 100)
-	r.put_text (
-"""Generating perfectly\ntext-extractable\nPDFs""", width=800, valign=1)
+	r.put_text ("<b>GLyphy</b>", width=800, valign=1)
 
 	r.move_to (0, 450)
-	r.put_text ("""Behdad Esfahbod\n<span font_desc="16">besfahbo@<span foreground="#c00">redhat</span>.com</span>""",
+	r.put_text ("""Behdad Esfahbod\n<span font_desc="monospace 16">behdad@google.com</span>""",
 		    desc="20", halign=1, valign=-1)
-
-who (behdad)
+	r.move_to (800, 450)
+	r.put_text ("""<span font_desc="monospace 16">glyphy.org\nbehdad.org</span>""",
+		    desc="20", halign=-1, valign=-1)
 
 def list_slide (l, data=None):
 	def s (r):
@@ -78,106 +79,84 @@ def list_slide (l, data=None):
 	s.__name__ = l[0]
 	slide (s, data)
 
-slide_noone("Terminology 101")
+slide_noone("Getting your CFP\nabstract accepted:\n<i>A case study (or 2)</i>")
 
 list_slide ([
-		"• Character",
-		"• Glyph",
-		"• <i>Codepoint</i>",
+		"<b>Helps if…</b>",
+		"• Established",
+		"• ~100s millions users",
+		"• <i>Has</i> changed the world",
+		"• Thriving community",
+		"• Many high-profile users",
+		"• Booming",
 	    ], data={'align': pango.ALIGN_LEFT})
-list_slide ([
-		"• Input text",
-		"• Output glyph",
-		"• <i>Encoded codepoints</i>",
-	    ], data={'align': pango.ALIGN_LEFT})
-list_slide ([
-		'• "Hello"',
-		"• 〈1,2,3,3,4〉",
-		"• 〈0102030304〉",
-	    ], data={'align': pango.ALIGN_LEFT})
-		
-slide_noone('<span size="larger">Overview of\nPDF Fonts</span>\n<span size="smaller">(subsetted,\ncustom encoding)</span>')
-
-who (keithp)
+slide_noone("<b>HarfBuzz</b>")
 
 list_slide ([
-		'• Simple',
-		'• Composite',
+		"<b>But if…</b>",
+		"• Experimental",
+		"• Unused so far",
+		"• <i>Will</i> change the world",
+		"• No community",
+		"• No users",
+		"• Stale",
 	    ], data={'align': pango.ALIGN_LEFT})
+slide_noone("<b>GLyphy</b>")
 
+slide_noone("Submit!")
+
+slide_noone("<b>How to\n<i>keynote</i>\nLCA</b>")
+
+who ("mjg59.png")
+slide("Just cut\nthe jokes\nout <i>dude</i>!")
 who (behdad)
 
-slide ('<b>Simple Fonts</b>\neach byte of\nencoded codepoints\nrepresents one codepoint')
-list_slide ([
-		'<b>Simple Fonts</b>',
-		'• Type1',
-		'• TrueType',
-		'• Type3',
-	    ], data={'align': pango.ALIGN_LEFT})
+#
+# Real thing starts here
+#
 
-slide ('<b>Composite Fonts</b>\ncomplex mapping of\nencoded codepoints\nto codepoints')
-list_slide ([
-		'<b>Composite Fonts</b>',
-		'<b>(CID-keyed Fonts)</b>',
-		'• Type0 (CFF)',
-		'• Type2 (TrueType)',
-	    ], data={'align': pango.ALIGN_LEFT})
-
-slide ('A CID is exactly\nwhat we called\na codepoint')
-
-slide ('<b>Observation</b>\nAll PDF fonts can\nhave arbitrary\ncodepoint-to-glyph\nmapping')
-slide ('<b>ToUnicode</b>\nAll PDF fonts can\nhave a codepoint-to-\nsequence-of-characters\nmapping')
-slide ('ToUnicode mapping\nis the only\nstandard way for\ntext extraction')
-
-slide ("<b>Broken Practice</b>\nUse original font's\ncharacter-to-glyph\nmapping to generate\nToUnicode mapping")
-slide ('Assumes\nreversible\nchar-to-glyph\nmapping')
-
-slide_noone('What\nTo Do?')
-slide('Admit that\nchar-to-glyph\nmapping is\n not 1-to-1')
-slide('<b>Corollary</b>\noutput glyphs\nare not enough\nto produce\ngood PDF text')
-
-
-slide_noone("Terminology 201")
+slide_noone("<b>GLyphy</b>\nAn <i>experiment</i> in\nGPU-accelerated\ntext rendering")
 
 list_slide ([
-		"• Cluster",
+		"<b>Status quo</b>",
+		"• Hint",
+		"• Rasterize",
+		"• Upload to GPU texture",
+		"• Blit",
 	    ], data={'align': pango.ALIGN_LEFT})
+slide_noone("<b>Transformation\ndependent</b>")
+
+slide_noone("<span font_desc='Comic Sans MS'><b>Lets make\ntext beautiful!\n<span font_desc='24'>lolz</span></b></span>")
+
+slide_noone("What would you do\nif you knew <span strikethrough='true'>you\ncould not fail</span> have a\nhigh-resolution display?")
+slide_noone("<span strikethrough='true'>200+ppi (160 even)</span>\n300+ppi (450 even)")
+
+who ("keithp.png")
+slide("<b>It's insane!</b>")
+who (behdad)
+
+
+"""
+Make ten times faster, thought Im insane.
+Now Keith thinks the code is insane.
+Have to make it another 5 times faster, now I think I'm becoming insane.
+
+Mobile GPU perf unheard of.  Old Tegra had one fetch one add...
+http://venturebeat.com/2014/01/05/nvidia-announces-tegra-k1-a-super-mobile-chip-with-192-cores/
+
+bugs w drivers
+
+Image gallery.  Spooky etc.
+
+bilinear comparison
+freetype-gl comparison
+"""
+
 @slide_noone
 def cluster_image (r):
 	r.move_to (400, 300)
 	r.set_allocation (200, 0, 400, 600)
 	yield ""
-list_slide ([
-		"<b>Cluster</b>",
-		"• Grapheme cluster: ö",
-		"• Ligature cluster:",
-		'  - Typographical: 〈<span font_desc="Doulos SIL">f</span>,<span font_desc="Doulos SIL">i</span>〉 → 〈<span font_desc="Doulos SIL">fi</span>〉',
-		'  - Orthographical: 〈‎<span font_desc="Nazli">ﻟ</span>,<span font_desc="Nazli">ﺎ</span>‎〉 → 〈<span font_desc="Nazli">ﻻ</span>〉',
-	    ], data={'align': pango.ALIGN_LEFT})
-list_slide ([
-		"<b>Cluster</b>",
-		"• M input character",
-		"• N output glyphs",
-		"• M→N cluster"
-	    ], data={'align': pango.ALIGN_LEFT})
-list_slide ([
-		"• Cluster mapping",
-	    ], data={'align': pango.ALIGN_LEFT})
-slide ('Any good\nPDF generator\nshould take\ninput text,\noutput glyphs,\n<i>and</i>\ncluster mapping')
-
-slide_noone("What To Do\nWith Them?")
-slide ("M→1")
-slide ("M→0")
-slide ("M→N")
-
-slide_noone("Issues")
-slide ("0→1")
-slide ("How to\nbreak?")
-slide ("<i>Cursor</i>\npositions")
-slide ("Run\norder")
-slide ("Bidi")
-
-slide_noone ('<span font_desc="Doulos SIL">~fin~</span>')
 
 if __name__ == "__main__":
 	import slippy
