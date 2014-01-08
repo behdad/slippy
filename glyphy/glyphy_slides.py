@@ -132,7 +132,7 @@ slide_noone("<b>Transformation\ndependent</b>")
 
 slide_noone("<span font_desc='Comic Sans MS'><b>Lets make\ntext beautiful!\n<span font_desc='24'>lolz</span></b></span>")
 
-slide_noone("What would you do\nif you knew <span strikethrough='true'>you\ncould not fail</span> have a\nhigh-resolution display?")
+slide_noone("What would you do\nif you <span strikethrough='true'>knew you\ncould not fail</span> have a\nhigh-resolution display?")
 slide_noone("<span strikethrough='true'>200+ppi (160 even)</span>\n300+ppi (450 even)")
 
 def image_slide (f, width=600, height=600, imgwidth=0, imgheight=0, xoffset=0, yoffset=0, data=None):
@@ -349,7 +349,7 @@ slide_noone("<b><i>You're</i> insane!</b>")
 
 list_slide ([
 		"<b>Corner cases</b>",
-		"• Overlappingcontours",
+		"• Overlapping contours",
 		"• Tangent arcs",
 		"• Float preceision",
 	    ], data={'align': pango.ALIGN_LEFT})
@@ -410,6 +410,7 @@ list_slide ([
 		"<b>Challenges</b>",
 		"• Shader size / complexity",
 		"• Pixel cost",
+		"• Conditionals",
 		"• Dependent texture lookups",
 		"• Variable loop iterations",
 		"• Interpolation accuracy",
@@ -676,9 +677,8 @@ index 5e969c2..c9349b7 100644
 --- a/src/glyphy-common.glsl
 +++ b/src/glyphy-common.glsl
 @@ -151,25 +151,30 @@ glyphy_arc_wedge_contains (const glyphy_arc_t a, const vec2 p)
- }
  
- float
++float
 +glyphy_arc_wedge_signed_dist_shallow (const glyphy_arc_t a, const vec2 p)
 +{
 +  vec2 v = normalize (a.p1 - a.p0);
@@ -687,7 +687,7 @@ index 5e969c2..c9349b7 100644
 +  return line_d + r;
 +}
 +
-+float
+ float
  glyphy_arc_wedge_signed_dist (const glyphy_arc_t a, const vec2 p)
  {
 -  if (abs (a.d) <= .01)
@@ -745,8 +745,8 @@ patch_slide("""
 -   float f = 1.0;
 -   return int(f);
 +   float f = 1.0;
-+   int cx = int(f);
-+   return cx;
++   int i = int(f);
++   return i;
  }
 """)
 
@@ -757,14 +757,11 @@ index a46c0d4..6cc827c 100644
 --- a/src/glyphy-sdf.glsl
 +++ b/src/glyphy-sdf.glsl
 @@ -36,7 +36,7 @@
- #define GLYPHY_SDF_TEXTURE1D_EXTRA_ARGS GLYPHY_TEXTURE1D_EXTRA_ARGS
  #endif
  #ifndef GLYPHY_SDF_TEXTURE1D
 -#define GLYPHY_SDF_TEXTURE1D(offset) GLYPHY_RGBA (GLYPHY_SDF_TEXTURE1D_FUNC (...))
 +#define GLYPHY_SDF_TEXTURE1D(offset) GLYPHY_RGBA(GLYPHY_SDF_TEXTURE1D_FUNC (...))
  #endif
- 
- #ifndef GLYPHY_MAX_NUM_ENDPOINTS
 """)
 slide("25fps\nNexus 4/5")
 
