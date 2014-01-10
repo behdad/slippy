@@ -77,7 +77,24 @@ def highlight(snippet, lang):
     print('Language %s is not supported.' % lang)
     return snippet
 
-  return pygments.highlight(snippet, __LEXERS[lang](), PangoFormatter())
+  # Pygments messes up initial and final newlines; fix up
+  begin = ''
+  if snippet[0] == '\n':
+	  begin = '\n'
+	  snippet = snippet[1:]
+  end = ''
+  if snippet[-1] == '\n':
+	  end = '\n'
+	  snippet = snippet[:-1]
+
+  snippet = pygments.highlight(snippet, __LEXERS[lang](), PangoFormatter())
+
+  if snippet[0] == '\n' and start == '\n':
+	  start = ''
+  if snippet[-1] == '\n' and end == '\n':
+	  end = ''
+
+  return begin + snippet + end
 
 if __name__ == '__main__':
   code = 'print "Hello World"'

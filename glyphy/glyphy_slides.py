@@ -645,7 +645,7 @@ def commit_slide(s, who=None):
 slide_noone("<b>Drivers</b>")
 
 slide("<b>Case study</b>\nMesa\nsoftware\nrenderer")
-source_slide("""  "Infinite loop detected in fragment program"  """)
+source_slide("""\n  "Infinite loop detected in fragment program"  \n""")
 
 slide("<b>Case study</b>\nNvidia+Mac")
 patch_slide("""
@@ -739,7 +739,7 @@ Date:   Wed Apr 11 13:24:22 2012 -0700
 slide("60+fps\ni965 Thinkpad")
 
 slide("<b>Case study</b>\niPod 3G")
-source_slide("""  "Demo runs SLOW on my iPod 3G. ~3 FPS"  """)
+source_slide("""\n  "Demo runs SLOW on my iPod 3G. ~3 FPS"  \n""")
 
 slide("<b>Case study</b>\nAndroid 4.3+LGE")
 patch_slide("""
