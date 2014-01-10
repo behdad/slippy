@@ -419,8 +419,8 @@ list_slide ([
 		"• Interpolation accuracy",
 	    ], data={'align': pango.ALIGN_LEFT})
 
-def source_slide(s):
-	s = highlight(s, 'c')
+def source_slide(s, lang="c"):
+	s = highlight(s, lang)
 	s = "<span font_desc='monospace'>" + s + "</span>"
 	slide_noone (s, data={'align': pango.ALIGN_LEFT})
 
@@ -453,7 +453,7 @@ void main()
 
   gl_FragColor = vec4(c, a);
 }
-""")
+""", lang="glsl")
 @slide_noone
 def TexGlow(r):
 	r.set_source_rgb (1, 1, 1)
@@ -478,7 +478,7 @@ source_slide("""
  *
  * Google Author(s): Behdad Esfahbod, Maysum Panju
  */
-""")
+""", lang="glsl")
 source_slide("""
 #ifndef GLYPHY_TEXTURE1D_FUNC
 #define GLYPHY_TEXTURE1D_FUNC glyphy_texture1D_func
@@ -506,7 +506,7 @@ source_slide("""
 #ifndef GLYPHY_MAX_NUM_ENDPOINTS
 #define GLYPHY_MAX_NUM_ENDPOINTS 32
 #endif
-""")
+""", lang="glsl")
 source_slide("""
 glyphy_arc_list_t
 glyphy_arc_list (const vec2 p, const ivec2 nominal_size GLYPHY_SDF_TEXTURE1D_EXTRA_DECLS)
@@ -515,7 +515,7 @@ glyphy_arc_list (const vec2 p, const ivec2 nominal_size GLYPHY_SDF_TEXTURE1D_EXT
   vec4 arc_list_data = GLYPHY_SDF_TEXTURE1D (cell_offset);
   return glyphy_arc_list_decode (arc_list_data, nominal_size);
 }
-""")
+""", lang="glsl")
 source_slide("""
 float
 glyphy_sdf (const vec2 p, const ivec2 nominal_size GLYPHY_SDF_TEXTURE1D_EXTRA_DECLS)
@@ -532,7 +532,7 @@ glyphy_sdf (const vec2 p, const ivec2 nominal_size GLYPHY_SDF_TEXTURE1D_EXTRA_DE
     vec2 n = vec2 (cos (angle), sin (angle));
     return dot (p - (vec2(nominal_size) * .5), n) - arc_list.line_distance;
   }
-""")
+""", lang="glsl")
 source_slide("""
   float side = float(arc_list.side);
   float min_dist = GLYPHY_INFINITY;
@@ -540,7 +540,7 @@ source_slide("""
 
   glyphy_arc_endpoint_t endpoint_prev, endpoint;
   endpoint_prev = glyphy_arc_endpoint_decode (GLYPHY_SDF_TEXTURE1D (arc_list.offset), nominal_size);
-""")
+""", lang="glsl")
 source_slide("""
   for (int i = 1; i < GLYPHY_MAX_NUM_ENDPOINTS; i++)
   {
@@ -551,7 +551,7 @@ source_slide("""
     glyphy_arc_t a = glyphy_arc_t (endpoint_prev.p, endpoint.p, endpoint.d);
     endpoint_prev = endpoint;
     if (glyphy_isinf (a.d)) continue;
-""")
+""", lang="glsl")
 source_slide("""
     if (glyphy_arc_wedge_contains (a, p))
     {
@@ -562,7 +562,7 @@ source_slide("""
 	side = sdist <= 0. ? -1. : +1.;
       }
     }
-""")
+""", lang="glsl")
 source_slide("""
     else
     {
@@ -585,7 +585,7 @@ source_slide("""
       }
     }
   }
-""")
+""", lang="glsl")
 source_slide("""
   if (side == 0.) {
     // Technically speaking this should not happen, but it does.  So try to fix it.
@@ -595,7 +595,7 @@ source_slide("""
 
   return min_dist * side;
 }
-""")
+""", lang="glsl")
 @slide
 def GReal2(r):
 	glyphy_demo (r, "g-real.png")

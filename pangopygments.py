@@ -69,6 +69,7 @@ __LEXERS = {
     'go': lexers.GoLexer,
     'py': lexers.PythonLexer,
     'scala': lexers.ScalaLexer,
+    'glsl': lexers.GLShaderLexer,
     }
 
 def highlight(snippet, lang):
