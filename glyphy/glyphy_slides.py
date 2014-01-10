@@ -301,7 +301,9 @@ image_slide("g-texture-sdf.png")
 # TODO bilinear effects on texture raster
 # TODO bilinear effects on texture sdf
 
-slide_noone("<i>Vector\nall the\nglyphs!</i>")
+who("allthethings.png")
+slide("<i>Vector\nall the\nglyphs!</i>")
+who(behdad)
 
 slide("Distance\nto Bézier")
 
