@@ -32,7 +32,7 @@ class Viewer:
 		pass
 
 class ViewerGTK (Viewer):
-	
+
 	def __init__(self, fullscreen=False, decorate=True, repeat=False, slideshow=False, delay=5., geometry=''):
 		self.__fullscreen = fullscreen
 		self.__decorate = decorate
@@ -150,7 +150,7 @@ class ViewerGTK (Viewer):
 			self.stop_slideshow()
 		else:
 			self.start_slideshow()
-	
+
 	def get_slideshow_delay(self):
 		return self.__delay
 
@@ -381,7 +381,7 @@ class Slide:
 		self.texts = [x for x in self.get_items (renderer)]
 		self.extents = renderer.extents
 		self.text = ''.join (self.texts)
-	
+
 	def get_items (self, renderer):
 		items = self.slide
 		if isinstance (items, types.FunctionType):
@@ -394,7 +394,7 @@ class Slide:
 
 	def __len__ (self):
 		return len (self.texts)
-	
+
 	def show_page (self, renderer, pageno, theme=None):
 		viewer = self.viewer
 		renderer.viewer = viewer
@@ -466,7 +466,7 @@ class Slide:
 		cr.show_page()
 		
 def _extents_union (ex1, ex2):
-	
+
 	if not ex1:
 		return ex2
 	else:
@@ -477,7 +477,7 @@ def _extents_union (ex1, ex2):
 		return [x1, y1, x2 - x1, y2 - y1]
 
 def _extents_intersect (ex1, ex2):
-	
+
 	if not ex1:
 		return ex2
 	else:
@@ -489,7 +489,7 @@ def _extents_intersect (ex1, ex2):
 
 
 class Renderer:
-	
+
 	def __init__ (self, cr=None, width=0, height=0):
 		if not cr:
 			cr = pangocairo.CairoContext (cairo.Context (cairo.ImageSurface (0, 0, 0)))
@@ -518,7 +518,7 @@ class Renderer:
 		w = max (X) - x
 		h = max (Y) - y
 		return x, y, w, h
-	
+
 	def allocate (self, x, y, w, h):
 		x, y, w, h = self._user_to_device_box (x, y, w, h)
 		self.extents = _extents_union (self.extents, [x, y, w, h])
