@@ -397,7 +397,7 @@ slide("Speed+memory\nfont-dependent")
 def A(r):
 	glyphy_demo (r, "A.png")
 @slide
-def A(r):
+def Adebug(r):
 	glyphy_demo (r, "A-debug.png")
 @slide
 def Arcano(r):
@@ -793,6 +793,7 @@ for filename in file("gallery.txt").read().split('\n'):
 	def closure(filename):
 		def slideFunc(r):
 			glyphy_demo (r, filename)
+		slideFunc.__name__ = filename
 		return slideFunc
 	slide(closure(filename))
 
