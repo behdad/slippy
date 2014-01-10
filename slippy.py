@@ -388,7 +388,7 @@ class Slide:
 			items = items(renderer)
 		if items == None:
 			items = ("",)
-		if isinstance (items, str):
+		if isinstance (items, basestring):
 			items = (items,)
 		return items
 
