@@ -420,37 +420,37 @@ list_slide ([
 
 def source_slide(s):
 	s = s.replace("&", "&amp;").replace("<", "&lt;")
-        s = "<span font_desc='monospace'>" + s + "</span>"
+	s = "<span font_desc='monospace'>" + s + "</span>"
 	slide_noone (s, data={'align': pango.ALIGN_LEFT})
 
 source_slide("""
 varying vec3 lightDir,normal;
 uniform sampler2D tex,l3d;
- 
+
 void main()
 {
-    vec3 ct,cf,c;
-    vec4 texel;
-    float intensity,at,af,a;
- 
-    intensity = max(dot(lightDir,normalize(normal)),0.0);
- 
-    cf = intensity * (gl_FrontMaterial.diffuse).rgb +
-                      gl_FrontMaterial.ambient.rgb;
-    af = gl_FrontMaterial.diffuse.a;
- 
-    texel = texture2D(tex,gl_TexCoord[0].st);
- 
-    ct = texel.rgb;
-    at = texel.a;
- 
-    c = cf * ct;
-    a = af * at;
- 
-    float coef = smoothstep(1.0,0.2,intensity);
-    c += coef *  vec3(texture2D(l3d,gl_TexCoord[0].st));
- 
-    gl_FragColor = vec4(c, a);
+  vec3 ct,cf,c;
+  vec4 texel;
+  float intensity,at,af,a;
+
+  intensity = max(dot(lightDir,normalize(normal)),0.0);
+
+  cf = intensity * (gl_FrontMaterial.diffuse).rgb +
+                    gl_FrontMaterial.ambient.rgb;
+  af = gl_FrontMaterial.diffuse.a;
+
+  texel = texture2D(tex,gl_TexCoord[0].st);
+
+  ct = texel.rgb;
+  at = texel.a;
+
+  c = cf * ct;
+  a = af * at;
+
+  float coef = smoothstep(1.0,0.2,intensity);
+  c += coef *  vec3(texture2D(l3d,gl_TexCoord[0].st));
+
+  gl_FragColor = vec4(c, a);
 }
 """)
 @slide_noone
@@ -615,7 +615,7 @@ def patch_slide(s):
 		new_lines.append (s)
 
 	s = '\n'.join (new_lines)
-        s = "<span font_desc='monospace'>" + s + "</span>"
+	s = "<span font_desc='monospace'>" + s + "</span>"
 	slide_noone (s, data={'align': pango.ALIGN_LEFT})
 
 def commit_slide(s, who=None):
@@ -630,7 +630,7 @@ def commit_slide(s, who=None):
 		new_lines.append (s)
 
 	s = '\n'.join (new_lines)
-        s = "<span font_desc='monospace'>" + s + "</span>"
+	s = "<span font_desc='monospace'>" + s + "</span>"
 	if who:
 		slide_noone (s, data={'align': pango.ALIGN_LEFT, 'who': who})
 	else:
@@ -639,9 +639,7 @@ def commit_slide(s, who=None):
 slide_noone("<b>Drivers</b>")
 
 slide("<b>Case study</b>\nMesa\nsoftware\nrenderer")
-source_slide("""
-  "Infinite loop detected in fragment program"  
-""")
+source_slide("""  "Infinite loop detected in fragment program"  """)
 
 slide("<b>Case study</b>\nNvidia+Mac")
 patch_slide("""
@@ -735,9 +733,7 @@ Date:   Wed Apr 11 13:24:22 2012 -0700
 slide("60+fps\ni965 Thinkpad")
 
 slide("<b>Case study</b>\niPod 3G")
-source_slide("""
-  "Demo runs SLOW on my iPod 3G. ~3 FPS"  
-""")
+source_slide("""  "Demo runs SLOW on my iPod 3G. ~3 FPS"  """)
 
 slide("<b>Case study</b>\nAndroid 4.3+LGE")
 patch_slide("""
