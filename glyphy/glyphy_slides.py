@@ -89,7 +89,6 @@ list_slide ([
 		"<b>Helps if…</b>",
 		"• Established",
 		"• ~100s millions users",
-		"• <i>Has</i> changed the world",
 		"• Thriving community",
 		"• Many high-profile users",
 		"• Booming",
@@ -100,14 +99,11 @@ list_slide ([
 		"<b>But if…</b>",
 		"• Experimental",
 		"• Unused so far",
-		"• <i>Will</i> change the world",
 		"• No community",
 		"• No users",
 		"• Stale",
 	    ], data={'align': pango.ALIGN_LEFT})
 slide_noone("<b>GLyphy</b>")
-
-slide_noone("Submit!")
 
 slide_noone("<b>How to\n<i>keynote</i>\nLCA</b>")
 
