@@ -581,7 +581,7 @@ class Renderer:
 		layout = self.create_layout (text, markup=markup)
 		if desc:
 			layout.set_font_description (pango.FontDescription (desc))
-		if align != None:
+		if align is not None:
 			layout.set_alignment (align)
 		elif halign < 0:
 			layout.set_alignment (pango.ALIGN_RIGHT)
