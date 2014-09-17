@@ -1,0 +1,16 @@
+  <cmap raw="1">
+    <!-- Hand-coded format13 table mapping all Unicode
+         characters to glyph00001. -->
+    <hexdata>
+      0000 0001 <!-- version numTables -->
+        0003 000A <!-- platformID encodingID -->
+        0000000C  <!-- offset -->
+          000D 0000 <!-- format reserved -->
+          0000001C  <!-- length -->
+          00000000  <!-- language -->
+          00000001  <!-- nGroups -->
+            00000001  <!-- startCharCode -->
+            0010FFFE  <!-- endCharCode -->
+            00000001  <!-- glyphID -->
+    </hexdata>
+  </cmap>

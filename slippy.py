@@ -441,6 +441,7 @@ class Slide:
 
 		layout = renderer.create_layout (self.text)
 		layout.set_alignment (self.data.get ('align', pango.ALIGN_CENTER))
+		layout.set_font_description (pango.FontDescription(self.data.get ('desc', "Sans")))
 		lw, lh = renderer.fit_layout (layout, w, h)
 
 		ext = self.extents

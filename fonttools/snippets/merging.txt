@@ -1,0 +1,11 @@
+$ pyftmerge NotoSansDevanagari-Regular.ttf NotoSansBengali-Regular.ttf
+$ ls -l
+-rw-r--r-- 1 behdad eng 266580 Sep 17 08:19 merged.ttf
+-rw-r--r-- 1 behdad eng 188664 Sep 17 08:18 NotoSansBengali-Regular.ttf
+-rw-r--r-- 1 behdad eng 177672 Sep 17 08:18 NotoSansDevanagari-Regular.ttf
+
+$ pyftmerge NotoSansBengali-Regular.ttf NotoSansDevanagari-Regular.ttf
+$ ls -l
+-rw-r--r-- 1 behdad eng 293276 Sep 17 08:21 merged.ttf
+-rw-r--r-- 1 behdad eng 188664 Sep 17 08:18 NotoSansBengali-Regular.ttf
+-rw-r--r-- 1 behdad eng 177672 Sep 17 08:18 NotoSansDevanagari-Regular.ttf

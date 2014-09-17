@@ -1,0 +1,32 @@
+$ pyftsubset Lobster.ttf --text=Lobster --glyph-names --verbose
+Text: 'Lobster'
+Unicodes: []
+Glyphs: []
+Gids: []
+cmap pruned
+glyf pruned
+...
+Added gid0 to subset
+Closing glyph list over 'GSUB': 8 glyphs before
+Glyph names: ['.notdef', 'L', 'b', 'e', 'o', 'r', 's', 't']
+Closed  glyph list over 'GSUB': 16 glyphs after
+Glyph names: ['.notdef', 'L', 'b', 'b_s', 'b_s.end', 'e', 'e.end', 'o',
+              'o.end', 'o_s', 'o_s.end', 'r', 's', 's.end', 't', 't.end']
+Retaining 16 glyphs: 
+head subsetting not needed
+...
+hmtx subsetted
+cmap subsetted
+glyf subsetted
+kern subsetted to empty; dropped
+name subsetting not needed
+GDEF subsetted
+GPOS subsetted
+GSUB subsetted
+...
+glyf pruned
+GDEF pruned
+GPOS pruned
+GSUB pruned
+Input  font: 140856 bytes: Lobster.ttf
+Subset font:   4648 bytes: Lobster.ttf.subset

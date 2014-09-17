@@ -20,7 +20,7 @@ import cairo
 
 avatar_margin = .10
 logo_margin = .01
-footer_margin = .04
+footer_margin = .05
 padding = .000
 bubble_rad = .25
 
@@ -76,7 +76,7 @@ def prepare_page (renderer):
 	cr.move_to (.5 * width, height-p2)
 	b = 150.
 	cr.set_source_rgb (0x9b/b, 0x84/b, 0x66/b)
-	renderer.put_text ("ATypI Barcelona, 17 September 2014", height=f-p2, valign=-1, desc="bold")
+	renderer.put_text ("ATypI Barcelona, 17 September 2014", height=f-p2, valign=-1, desc="cinzel")
 
 	# Cartoon icons for speakers
 	who = renderer.data.get ('who', None)
@@ -135,7 +135,7 @@ def draw_bubble (renderer, x, y, w, h, data={}):
 	cr.restore ()
 
 	cr.clip ()
-	cr.set_source_rgba (1, 1, 1, .95)
+	cr.set_source_rgba (1, 1, 1, .94)
 	cr.paint ()
 
 	b = 700.
