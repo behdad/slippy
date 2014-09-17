@@ -437,6 +437,7 @@ bullet_list_slide("Community", [
 bullet_list_slide("Future work", [
 	"More font optimization",
 	"Better input: .fea / UFO",
+	"ttx2ufo",
 	"Lint tool",
 	"TrueType / CFF conversion",
 	"Subsetting more tables",
