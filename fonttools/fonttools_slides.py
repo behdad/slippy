@@ -454,6 +454,7 @@ bullet_list_slide("Future work: optimization", [
 slide("<b>Q?</b>", data={"desc":title_font})
 python_slide('')
 
+python_slide(open("snippets/drop_glyphnames_cff.py").read())
 xml_slide(open("snippets/tofu.ttx").read())
 
 if __name__ == "__main__":
