@@ -24,8 +24,9 @@
 # set_allocation.  See their pydocs.
 
 title_font="Impact"
-head_font="Bold"
-body_font="Roboto"
+head_font="Oswald Bold"
+body_font="PT Sans"
+mono_font="Consolas, monospace"
 
 slides = []
 def slide_add(f, data=None, width=1920, height=1200):
@@ -98,7 +99,7 @@ def draw_image (r, f, width=600, height=600, imgwidth=0, imgheight=0, xoffset=0,
 
 def source_slide(s, lang):
 	s = highlight(s, lang)
-	s = "<span font_desc='monospace'>" + s + "</span>"
+	s = "<span font_desc='"+mono_font+"'>" + s + "</span>"
 	slide_heading (s, data={'align': pango.ALIGN_LEFT})
 
 def python_slide(s):
@@ -123,7 +124,7 @@ def patch_slide(s):
 		new_lines.append (s)
 
 	s = '\n'.join (new_lines)
-	s = "<span font_desc='monospace'>" + s + "</span>"
+	s = "<span font_desc='"+mono_font+"'>" + s + "</span>"
 	slide_heading (s, data={'align': pango.ALIGN_LEFT})
 
 def commit_slide(s, who=None):
@@ -138,7 +139,7 @@ def commit_slide(s, who=None):
 		new_lines.append (s)
 
 	s = '\n'.join (new_lines)
-	s = "<span font_desc='monospace'>" + s + "</span>"
+	s = "<span font_desc='"+mono_font+"'>" + s + "</span>"
 	if who:
 		slide_heading (s, data={'align': pango.ALIGN_LEFT, 'who': who})
 	else:
@@ -153,15 +154,14 @@ who (behdad)
 
 @slide
 def title_slide (r):
-	r.move_to (400, 250)
-	r.put_text ("<span font_desc='"+title_font+"'>FontTools</span>\n"+
-		    "<span font_desc='"+head_font+" 30'>"+
-		    "reviving an Open Source project,\n"+
-		    "<span strikethrough='true'>re</span>building a thriving community"+
-		    "</span>", valign=0, halign=0, desc=title_font+" 100")
+	r.move_to (960, 400)
+	r.put_text ("<span font_desc='"+title_font+"' font_size='large'>OpenType GX</span>\n"+
+		    "<span font_desc='"+head_font+"' font_size='xx-small'>an exploratory proposal</span>",
+		    valign=0, halign=0, desc=title_font+" 200")
 
-	r.move_to (400, 550)
-	r.put_text ("""Behdad Esfahbod""", desc=body_font+" 20", halign=0, valign=-1)
+	r.move_to (960, 800)
+	r.put_text ("<span font_size='large' font_desc='"+mono_font+"' foreground='blue'>https://goo.gl/0N3zLy</span>\n\n"+
+		    "Behdad Esfahbod\n<span font_size='x-small' font_desc='"+mono_font+"'>behdad@google.com</span>", desc=body_font+" 50", halign=0, valign=+1)
 
 bullet_list_slide("History", [
 	"Started in 1999ish",
@@ -301,7 +301,7 @@ xml_slide("""
 """)
 
 slide_heading("fontTools")
-bullet_list_slide("<span font_desc='monospace' foreground='#080'>from <span foreground='#00f'><b>fontTools</b></span> import</span>", [
+bullet_list_slide("<span font_desc='"+mono_font+"' foreground='#080'>from <span foreground='#00f'><b>fontTools</b></span> import</span>", [
 	"afmLib",
 	"cffLib",
 	"<span strikethrough='true'>fondLib</span>",
