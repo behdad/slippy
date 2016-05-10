@@ -24,8 +24,9 @@
 # set_allocation.  See their pydocs.
 
 title_font="Impact"
-head_font="Oswald Bold"
-body_font="PT Sans"
+subtitle_font="Oswald Bold"
+head_font="sans Bold" # "Oswald Bold"
+body_font="sans" # "PT Sans"
 mono_font="Consolas, monospace"
 
 slides = []
@@ -156,307 +157,160 @@ who (behdad)
 def title_slide (r):
 	r.move_to (960, 400)
 	r.put_text ("<span font_desc='"+title_font+"' font_size='large'>OpenType GX</span>\n"+
-		    "<span font_desc='"+head_font+"' font_size='xx-small'>an exploratory proposal</span>",
+		    "<span font_desc='"+subtitle_font+"' font_size='xx-small'>an exploratory proposal</span>",
 		    valign=0, halign=0, desc=title_font+" 200")
 
 	r.move_to (960, 800)
 	r.put_text ("<span font_size='large' font_desc='"+mono_font+"' foreground='blue'>https://goo.gl/0N3zLy</span>\n\n"+
 		    "Behdad Esfahbod\n<span font_size='x-small' font_desc='"+mono_font+"'>behdad@google.com</span>", desc=body_font+" 50", halign=0, valign=+1)
 
-bullet_list_slide("History", [
-	"Started in 1999ish",
-	"by Just van Rossum",
-	"of LettError fame",
-	"Slowed down by 2004",
-	"I picked it up last year"])
-bullet_list_slide("What is it?", [
-	"Two things: TTX and fontTools",
-	"TTX converts fonts to XML and back",
-	"fontTools is a Python library",
-	"Font engineer's calculator",
-	"Closely reflecting OpenType tables",
-	"Minimum abstractions"])
+def agenda(i=None):
+	items = [
+	"Background",
+	"Architecture",
+	"Practicalities",
+	"Proposal",
+	"Implementation",
+	"Discussion"
+	]
+	if i is not None:
+		i = items.index(i)
+		items[i] = "<span foreground='red'>%s</span>" % items[i]
+	bullet_list_slide("Agenda", items)
 
-slide_heading("TTX")
-xml_slide("""
-<?xml version="1.0" encoding="utf-8"?>
-<ttFont sfntVersion="\\x00\\x01\\x00\\x00" ttLibVersion="2.5">
+agenda()
 
-  <GlyphOrder>
-    <!-- The 'id' attribute is only for humans; it is ignored when parsed. -->
-    <GlyphID id="0" name=".notdef"/>
-    <GlyphID id="1" name="T"/>
-    <GlyphID id="2" name="X"/>
-  </GlyphOrder>
-
-  <head>
-    <!-- Most of this table will be recalculated by the compiler -->
-    <tableVersion value="1.0"/>
-    <fontRevision value="1.001"/>
-    <checkSumAdjustment value="0x22ff1f02"/>
-    <magicNumber value="0x5f0f3cf5"/>
-    <flags value="00000000 00001011"/>
-    <unitsPerEm value="1000"/>
-    ...
-  </head>
-
-  <hhea>
-    <tableVersion value="1.0"/>
-    <ascent value="863"/>
-    <descent value="-228"/>
-    <lineGap value="0"/>
-    ...
-  </hhea>
-""")
-xml_slide("""
-  <maxp>
-    <!-- Most of this table will be recalculated by the compiler -->
-    <tableVersion value="0x10000"/>
-    <numGlyphs value="3"/>
-    <maxPoints value="68"/>
-    <maxContours value="7"/>
-    ...
-  </maxp>
-
-  <OS_2>
-    <version value="3"/>
-    <xAvgCharWidth value="560"/>
-    <usWeightClass value="400"/>
-    <usWidthClass value="5"/>
-    <fsType value="00000000 00000000"/>
-    ...
-  </OS_2>
-""")
-xml_slide("""
-  <hmtx>
-    <mtx name=".notdef" width="260" lsb="0"/>
-    <mtx name="T" width="576" lsb="22"/>
-    <mtx name="X" width="584" lsb="26"/>
-  </hmtx>
-
-  <cmap>
-    <tableVersion version="0"/>
-    <cmap_format_4 platformID="3" platEncID="1" language="0">
-      <map code="0x54" name="T"/><!-- LATIN CAPITAL LETTER T -->
-      <map code="0x58" name="X"/><!-- LATIN CAPITAL LETTER X -->
-    </cmap_format_4>
-  </cmap>
-
-  <loca>
-    <!-- The 'loca' table will be calculated by the compiler -->
-  </loca>
-""")
-xml_slide("""
-  <glyf>
-
-    <!-- The xMin, yMin, xMax and yMax values
-         will be recalculated by the compiler. -->
-
-    <TTGlyph name=".notdef"/><!-- contains no outline data -->
-
-    <TTGlyph name="T" xMin="22" yMin="0" xMax="554" yMax="715">
-      <contour>
-        <pt x="264" y="673" on="1"/>
-        <pt x="22" y="673" on="1"/>
-        <pt x="22" y="715" on="1"/>
-        <pt x="554" y="715" on="1"/>
-        <pt x="554" y="673" on="1"/>
-        <pt x="312" y="673" on="1"/>
-        <pt x="312" y="0" on="1"/>
-        <pt x="264" y="0" on="1"/>
-      </contour>
-      <instructions><assembly>
-        </assembly></instructions>
-    </TTGlyph>
-
-    <TTGlyph name="X" xMin="26" yMin="0" xMax="558" yMax="715">
-      ...
-    </TTGlyph>
-
-  </glyf>
-""")
-xml_slide("""
-  <name>
-    <namerecord nameID="1" platformID="3" platEncID="1" langID="0x409">
-      Julius Sans One
-    </namerecord>
-    <namerecord nameID="2" platformID="3" platEncID="1" langID="0x409">
-      Regular
-    </namerecord>
-  </name>
-
-  <post>
-    <formatType value="3.0"/>
-    <italicAngle value="0.0"/>
-    <underlinePosition value="-75"/>
-    <underlineThickness value="50"/>
-    <isFixedPitch value="0"/>
-    <minMemType42 value="0"/>
-    <maxMemType42 value="0"/>
-    <minMemType1 value="0"/>
-    <maxMemType1 value="0"/>
-  </post>
-
-</ttFont>
-""")
-
-slide_heading("fontTools")
-bullet_list_slide("<span font_desc='"+mono_font+"' foreground='#080'>from <span foreground='#00f'><b>fontTools</b></span> import</span>", [
-	"afmLib",
-	"cffLib",
-	"<span strikethrough='true'>fondLib</span>",
-	"<span strikethrough='true'>nfntLib</span>",
-	"t1Lib",
-	"<b>ttLib</b>",
+agenda('Background')
+bullet_list_slide("Background", [
+	"ATypI 2014 Barcelona",
+	"Noto Phase III",
+	"FontTools + Sascha = gvar",
+	"FreeType + Adam = IUP",
+	"Skia graphics + Skia font",
+	"ATypI 2015: OpenType 2.0",
+	"OpenType GX, the proposal",
 	])
-python_slide(open("snippets/unencoded.py").read())
-python_slide("""
-set(['A.salt',
-     'B.salt',
-     'E.salt',
-     'E_x',
-     'F_i',
-     'N.salt',
-     'NULL',
-     'T_h',
-     'T_i',
-     'a.end',
-     ...
-     'y_z'])
-""")
 
-bullet_list_slide("Framework", [
-	"Compiler / decompiler",
-	"XML serialization",
-	"Optimizer",
-	"Library",
-	"A tool to build products with",
-	"Not an end product",
-])
-bullet_list_slide("Philosophy", [
-	"Minimal abstraction",
-	"Hide byte layout, redundancy, etc",
-	"Platform to build on",
-])
-bullet_list_slide("Why?", [
-	"Free Software",
-	"Python (2.7+ &amp; 3.x)",
-	"Portable",
-	"No dependencies",
-	"Non-destructive",
-	"Batch-friendly",
-])
-bullet_list_slide("What for?", [
-	"Figuring out what's inside a font",
-	"Diff'ing font versions",
-	"Final steps of producing fonts",
-	"Hotfixing existing fonts",
-	"Reporting and analysis over <i>many</i> fonts",
-	"Server-side reporting and manipulation",
-	"Readable VCS-friendly font source code",
-	"Subsetting and merging fonts",
-])
-bullet_list_slide("Hotfixing", [
-	"XML and back",
-	"Python recipes",
-	"Interactive Python",
-])
-python_slide(open("snippets/drop_glyphnames.py").read())
-python_slide(open("snippets/rename_glyphs.py").read())
+agenda('Architecture')
+bullet_list_slide("Architecture", [
+	"MM vs TrueType GX",
+	"Copy some tables over",
+	"Possibly extend (later)",
+	"Extend OpenType tables",
+	])
+bullet_list_slide("Architecture", [
+	"Non-invasive",
+	"Existing workflows...\n"
+	"  → Glyphs\n"
+	"  → UFO+.designspace\n"
+	"  → FontLab?"
+	])
 
-bullet_list_slide("New work", [
-	"Bitmap tables, color tables, misc tables",
-	"WOFF1 read and write",
-	"More stable XML format",
-	"More optimized font files",
-	"Bug fixes; many of them",
-	"Major speed-up",
-	"New tools",
-])
+agenda('Practicalities')
+bullet_list_slide("Practicalities", [
+	"Overlap removal",
+	"Cubic-to-quadratic",
+	"CFF point numbers",
+	"Extrapolation",
+	])
 
-bullet_list_slide("Tools", [
-	"pyftsubset",
-	"pyftmerge",
-	"pyftinspect",
-])
-bullet_list_slide("pyftsubset", [
-	"OpenType font subsetter &amp; optimizer",
-	"TrueType and CFF flavored",
-	"SFNT and WOFF1",
-	"Full OpenType Layout support",
-	"File-size optimizations",
-	"Designed for webfont productions",
-	"Used for sub-family instantiation",
-])
-source_slide(open("snippets/subsetting.txt").read(), "text")
-bullet_list_slide("pyftmerge", [
-	"Font merging tool",
-	"Very early prototype",
-	"Fonts having same format, upem",
-	"TrueType-flavored only",
-	"Retains hinting from one font",
-	"Handles conflicting characters",
-	"Designed for Noto",
-	"Used for merging Latin and non-Latin",
-])
-source_slide(open("snippets/merging.txt").read(), "text")
+agenda('Proposal')
+bullet_list_slide("Proposal", [
+	"Font variation metadata",
+	"Glyph shape variation",
+	"Font metrics variation",
+	"Positioning variation",
+	"Conditional subst &amp; pos",
+	"Glyph metrics variation",
+	"Hinting data variation",
+	])
 
-# 1. Feel free to mention in your talk Yannis Haralambous' book "Fonts & Encodings" [1], simply because it can be seen as a "user manual for TTX". It talks extensively about the various SFNT tables, and illustrates them using TTX XML structures. So, while fontTools itself has very lacking documentation*, the book is actually a great companion. When I read the book and I look at the .ttx XML representation of a font, I have good chances to actually understand how it all works. 
+bullet_list_slide("Font var metadata", [
+	"Apple 'fvar' table\n"
+	"  → Arbitrary axes\n"
+	"  → Named instances",
+	"Apple 'avar' table\n"
+	"  → Luc(as) curve\n"
+	"  → Pablo curve\n"
+	"  → etc",
+	"Clarify standard axes",
+	])
 
-slide_heading("FontTools")
-bullet_list_slide("Strengths", [
-	"Supports wide array of tables",
-	"Low-level, non-destructive",
-	"Python",
-	"Self-documenting",
-	"Optimized output",
-	"Extensible",
-	"Supports all color tables",
-])
-bullet_list_slide("Weaknesses", [
-	"Supports wide array of tables",
-	"Low-level, non-destructive",
-	"Python",
-	"Undocumented",
-	"Always optimizes output",
-	"Not well-extensible",
-	"Supports many legacy tables",
-])
-bullet_list_slide("Users", [
-	"Google Fonts; misc foundries",
-	"Font Bakery, AFDKO, etc",
-	"Adam Twardoch; others",
-	"...",
-])
-bullet_list_slide("Community", [
-	"https://github.com/behdad/fonttools/",
+bullet_list_slide("Glyph shape var", [
+	"Apple 'gvar' table\n"
+	"  → Arbitrary masters\n"
+	"  → per glyph",
+	"Apply to 'glyf' / CFF",
+	])
+
+bullet_list_slide("Font metrics var", [
+	"Apple 'fmtx' table",
+	"'fmtx' 2.0 for OS/2, etc",
+	"No UPEM var allowed",
+	])
+
+bullet_list_slide("Positioning var", [
+	"GPOS / GDEF",
+	"Value / Anchor / Caret",
+	"Device table\n"
+	"  → VariationDevice",
+	"Merger script",
+	])
+
+bullet_list_slide("Condi'nal subst &amp; pos", [
+	"GSUB / GPOS",
+	"Alternate lookups\n"
+	"  → MutatorMath subst\n"
+	"  → Glyphs 'bracket' trick",
+	])
+
+bullet_list_slide("Glyph metrics var", [
+	"Needed for layout",
+	"Performance",
+	"New table for\n"
+	"  → 'hmtx' vars\n"
+	"  → 'vmtx' vars\n"
+	"  → 'VORG' vars",
+	])
+
+bullet_list_slide("Hinting: TrueType", [
+	"Apple 'cvar' table",
+	"Extend ttfautohint",
+	"FreeType autohinter",
+	])
+bullet_list_slide("Hinting: CFF", [
+	"Hint op vars",
+	"Extend AFDKO autohinter",
+	"Run-time AFDKO hinter",
+	])
+
+agenda('Implementation')
+bullet_list_slide("Implementation", [
+	])
+bullet_list_slide("", [
+	])
+
+agenda('Discussion')
+bullet_list_slide("Discussion", [
+	])
+bullet_list_slide("", [
+	])
+
+bullet_list_slide("", [
+	])
+
+agenda('Demos')
+
+#python_slide(open("snippets/drop_glyphnames.py").read())
+#source_slide(open("snippets/merging.txt").read(), "text")
+
+bullet_list_slide("Links", [
+	"https://github.com/behdad/fonttools",
+	"https://github.com/googlei18n/fontmake",
 	"https://groups.google.com/forum/#!forum/fonttools",
-	"http://sourceforge.net/projects/fonttools/",
-])
-
-bullet_list_slide("Future work", [
-	"More font optimization",
-	"Better input: .fea / UFO",
-	"ttx2ufo",
-	"Lint tool",
-	"TrueType / CFF conversion",
-	"Subsetting more tables",
-	"Better merging",
-])
-bullet_list_slide("Future work: optimization", [
-	"Optimal packing: glyf flags / PUSH / etc",
-	"CFF outline operation specializer",
-	"CFF subroutinizer",
-	"TrueType outline optimizer? (fontcrunch)",
-	"TrueType bytecode analysis",
-	"UPEM reduction",
 ])
 
 slide("<b>Q?</b>", data={"desc":title_font})
-python_slide('')
-
-python_slide(open("snippets/drop_glyphnames_cff.py").read())
-xml_slide(open("snippets/tofu.ttx").read())
 
 if __name__ == "__main__":
 	import slippy

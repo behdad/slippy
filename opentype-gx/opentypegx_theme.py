@@ -20,7 +20,7 @@ import cairo
 
 avatar_margin = .10
 logo_margin = .01
-footer_margin = .05
+footer_margin = .06
 padding = .000
 bubble_rad = .25
 
