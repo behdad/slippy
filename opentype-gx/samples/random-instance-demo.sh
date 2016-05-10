@@ -15,6 +15,6 @@ while read tag min default max; do
 	echo "$tag=$rnd"
 done | tee | (
 	xargs python varLib/mutator.py "$font" &&
-	hb-view "$outfont" "$text" > "$outpng" &&
+	hb-view "$outfont" "$text" --font-size 800 > "$outpng" &&
 	(display "$outpng" &)
 )

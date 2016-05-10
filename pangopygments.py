@@ -65,6 +65,7 @@ class PangoFormatter(Formatter):
 __LEXERS = {
     'c': lexers.CLexer,
     'cpp': lexers.CppLexer,
+    'css': lexers.CssLexer,
     'java': lexers.JavaLexer,
     'go': lexers.GoLexer,
     'py': lexers.PythonLexer,

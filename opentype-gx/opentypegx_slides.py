@@ -72,6 +72,13 @@ def slide_heading(f, data=None):
 	else:
 		return slide_who (f, 0, data=data)
 
+def slide_title (title, text):
+	def s (r):
+		ts = "<span font_desc='"+head_font+"'>"+title+"</span>\n"
+		return ts + text
+	s.__name__ = title
+	data={'desc': body_font, 'align': pango.ALIGN_LEFT}
+	slide (s, data)
 def bullet_list_slide (title, items):
 	def s (r):
 		ts = "<span font_desc='"+head_font+"'>"+title+"</span>\n"
@@ -171,11 +178,13 @@ def agenda(i=None):
 	"Practicalities",
 	"Proposal",
 	"Implementation",
-	"Discussion"
+	"Possibilities",
+	"Demos",
+	"Discussion",
 	]
 	if i is not None:
 		i = items.index(i)
-		items[i] = "<span foreground='red'>%s</span>" % items[i]
+		items[i] = "<span foreground='#444488'>%s</span>" % items[i]
 	bullet_list_slide("Agenda", items)
 
 agenda()
@@ -230,9 +239,9 @@ bullet_list_slide("Font var metadata", [
 	"  → Arbitrary axes\n"
 	"  → Named instances",
 	"Apple 'avar' table\n"
+	"  → MutatorMath Bender\n"
 	"  → Luc(as) curve\n"
-	"  → Pablo curve\n"
-	"  → etc",
+	"  → Pablo curve",
 	"Clarify standard axes",
 	])
 
@@ -285,24 +294,61 @@ bullet_list_slide("Hinting: CFF", [
 	])
 
 agenda('Implementation')
-bullet_list_slide("Implementation", [
-	])
-bullet_list_slide("", [
-	])
+slide_title("Implementation", (
+	"fvar / avar / gvar / cvar\n"
+	"  → Apple: OS X, iOS?\n"
+	"  → FreeType (bug fixes)"
+	))
+slide_title("Implementation", (
+	"fvar / avar / gvar / cvar\n"
+	"  → FontTools\n"
+	"    → varLib.__init__\n"
+	"    → varLib.mutator"
+	))
+slide_title("Implementation", (
+	"Combined with other tools\n"
+	"  → UFO + .designspace\n"
+	"  → Glyphs"
+	))
+slide_title("Implementation", (
+	"GSUB / GPOS / GDEF\n"
+	"  → Design\n"
+	"  → Prototype"
+	))
 
-agenda('Discussion')
-bullet_list_slide("Discussion", [
-	])
-bullet_list_slide("", [
-	])
-
-bullet_list_slide("", [
+agenda('Possibilities')
+source_slide("""
+@font-face {
+	font-family: MyFont;
+	font-weight: 700;
+	font-stretch: condensed;
+	src: url("fonts/myvar.ttc#2,wght=1.4,wdth=0.7")
+		format(collection,variation),
+	     url("fonts/fallback-bold-cond.ttf"),
+		format(truetype);
+}
+""", "css")
+source_slide("""
+@font-family {
+	font-family: MyFont;
+	src: url("myvar.ttf") format(truetype);
+	font-weight-min: 100;
+	font-weight-max: 500;
+	font-stretch-min: 70;
+	font-stretch-max: 130;
+}
+""", "css")
+bullet_list_slide("Possibilities", [
+	"Justification",
+	"Animation",
+	"Grading",
+	"Tickling",
+	"...",
 	])
 
 agenda('Demos')
 
-#python_slide(open("snippets/drop_glyphnames.py").read())
-#source_slide(open("snippets/merging.txt").read(), "text")
+agenda('Discussion')
 
 bullet_list_slide("Links", [
 	"https://github.com/behdad/fonttools",
