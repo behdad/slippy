@@ -168,7 +168,7 @@ def title_slide (r):
 		    valign=0, halign=0, desc=title_font+" 200")
 
 	r.move_to (960, 800)
-	r.put_text ("<span font_size='large' font_desc='"+mono_font+"' foreground='blue'>https://goo.gl/0N3zLy</span>\n\n"+
+	r.put_text ("<span font_size='large' font_desc='"+mono_font+"' foreground='#0f007e'>https://goo.gl/0N3zLy</span>\n\n"+
 		    "Behdad Esfahbod\n<span font_size='x-small' font_desc='"+mono_font+"'>behdad@google.com</span>", desc=body_font+" 50", halign=0, valign=+1)
 
 def agenda(i=None):
@@ -184,7 +184,7 @@ def agenda(i=None):
 	]
 	if i is not None:
 		i = items.index(i)
-		items[i] = "<span foreground='#444488'>%s</span>" % items[i]
+		items[i] = "<span foreground='#0f007e'>%s</span>" % items[i]
 	bullet_list_slide("Agenda", items)
 
 agenda()
