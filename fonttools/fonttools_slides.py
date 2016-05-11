@@ -28,7 +28,7 @@ head_font="Julius Sans One Bold"
 body_font="Merriweather Sans Light"
 
 slides = []
-def slide_add(f, data=None, width=800, height=600):
+def slide_add(f, data=None, width=960, height=600):
 	if data is None:
 		data = {}
 	if "desc" not in data:
@@ -461,4 +461,4 @@ xml_slide(open("snippets/tofu.ttx").read())
 if __name__ == "__main__":
 	import slippy
 	import fonttools_theme
-	slippy.main (slides, fonttools_theme)
+	slippy.main (slides, fonttools_theme, args=['--geometry', '1920x1200'])
