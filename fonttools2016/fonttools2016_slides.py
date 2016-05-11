@@ -24,7 +24,6 @@
 # set_allocation.  See their pydocs.
 
 title_font="Impact"
-subtitle_font="Oswald Bold"
 head_font="sans Bold" # "Oswald Bold"
 body_font="sans" # "PT Sans"
 mono_font="Consolas, monospace"
@@ -38,25 +37,15 @@ def slide_add(f, data=None, width=1920, height=1200):
 	slides.append ((f, data, width, height))
 	return f
 
-import pango, pangocairo, cairo, os, signal
-from pangopygments import highlight
-
-# We use slide data to tell the theme who's speaking.
-# That is, which side the bubble should point to.
-behdad = -1
-whois = 0
-def who(name):
-	global whois
-	whois = name
+import pango, pangocairo, cairo
 
 # And convenience functions to add a slide.  Can be
 # used as a function decorator, or called directly.
-def slide_who(f, who, data=None, scale=None):
+def slide(f, data=None, scale=None):
 	if data:
 		data = dict (data)
 	else:
 		data = {}
-	data['who'] = who
 	if not scale: scale = 1.4
 	def slider(r):
 		r.move_to (100, 80)
@@ -66,19 +55,6 @@ def slide_who(f, who, data=None, scale=None):
 	if isinstance(f, basestring):
 		return slide_add (slider, data)
 	return slide_add (f, data)
-
-def slide(f, data=None, scale=None):
-	return slide_who (f, whois, data=data, scale=scale)
-
-def slide_heading(f, data=None):
-	if data is None:
-		data = {}
-	if 'desc' not in data:
-		data['desc'] = head_font
-	if data and 'who' in data:
-		return slide_who (f, data['who'], data=data)
-	else:
-		return slide_who (f, 0, data=data)
 
 def slide_title (title, text, scale=None):
 	ts = '' if not title else "<span font_desc='"+head_font+"'>"+title+"</span>\n\n"
@@ -104,67 +80,9 @@ def image_slide (f, width=1920, height=1200, imgwidth=0, imgheight=0, xoffset=0,
 	slide (s, data)
 	return s
 
-def draw_image (r, f, width=600, height=600, imgwidth=0, imgheight=0, xoffset=0, yoffset=0, data=None):
-	r.move_to (400+xoffset, 300+yoffset)
-	r.put_image (f, width=imgwidth, height=imgheight)
-	x = (800 - width) * .5
-	y = (600 - height) * .5
-	r.set_allocation (x, y, width, height)
-
-def source_slide(s, lang):
-	s = highlight(s, lang)
-	s = "<span font_desc='"+mono_font+"'>" + s + "</span>"
-	slide_heading (s, data={'align': pango.ALIGN_LEFT})
-
-def python_slide(s):
-	source_slide(s, lang="py")
-
-def xml_slide(s):
-	source_slide(s, lang="xml")
-
-def patch_slide(s):
-	lines = s.split ("\n")
-	new_lines = []
-	for s in lines:
-		s = s.replace("&", "&amp;").replace("<", "&lt;")
-		if not s: s = ' '
-		if s[0] == '-':
-			s = "<span fgcolor='#d00'>%s</span>" % s
-		elif s[0] == '+':
-			s = "<span fgcolor='#0a0'>%s</span>" % s
-		elif s[0] != ' ':
-			s = "<b>%s</b>" % s
-
-		new_lines.append (s)
-
-	s = '\n'.join (new_lines)
-	s = "<span font_desc='"+mono_font+"'>" + s + "</span>"
-	slide_heading (s, data={'align': pango.ALIGN_LEFT})
-
-def commit_slide(s, who=None):
-	lines = s.split ("\n")
-	new_lines = []
-	for s in lines:
-		s = s.replace("&", "&amp;").replace("<", "&lt;")
-		if not s: s = ' '
-		if s[0] != ' ':
-			s = "<b>%s</b>" % s
-
-		new_lines.append (s)
-
-	s = '\n'.join (new_lines)
-	s = "<span font_desc='"+mono_font+"'>" + s + "</span>"
-	if who:
-		slide_heading (s, data={'align': pango.ALIGN_LEFT, 'who': who})
-	else:
-		slide_heading (s, data={'align': pango.ALIGN_LEFT})
-
-
 #
 # Slides start here
 #
-
-who (behdad)
 
 @slide
 def title_slide (r):
@@ -176,15 +94,6 @@ def title_slide (r):
 	r.move_to (300, 600)
 	r.scale(1.4, 1.4)
 	r.put_text ("Part 1: Just van Rossum\nPart 2: Behdad Esfahbod\nPart 3: Q&amp;A\n\n<span font_desc='"+mono_font+"'>github.com/behdad/fonttools</span>", halign=1, valign=+1)
-
-def agenda(i=None):
-	items = [
-	]
-	if i is not None:
-		i = items.index(i)
-		items[i] = "<span foreground='#0f007e'>%s</span>" % items[i]
-	bullet_list_slide("Agenda", items)
-
 
 bullet_list_slide("Background: 2003", [
 	"FarsiWeb days",

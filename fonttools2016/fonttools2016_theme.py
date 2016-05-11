@@ -57,7 +57,7 @@ def prepare_page (renderer):
 	cr.set_source_rgb (*fg_color)
 
 	cr.move_to (.5 * width, height-p2)
-	text = unicode("Behdad Esfahbod | FontTools/TTX|TYPO Labs Berlin | 11 may 2016")
+	text = unicode("Behdad Esfahbod | FontTools/TTX | TYPO Labs Berlin | 11 may 2016")
 	letters = []
 	global j
 	for i,c in enumerate(text):
