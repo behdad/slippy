@@ -619,11 +619,42 @@ class Renderer:
 				else:
 					content = cairo.CONTENT_COLOR_ALPHA
 				surface = self.get_target().create_similar (content, w, h)
+
 				gcr = gtk.gdk.CairoContext (cairo.Context (surface))
 				gcr.set_source_pixbuf (pix, 0, 0)
 				if opaque:
 					gcr.set_operator (cairo.OPERATOR_SOURCE)
 				gcr.paint ()
+
+				mime_type = None
+				if filename.endswith (".jpg"):
+					mime_type = "image/jpeg"
+
+				if mime_type:
+					data = open(filename, 'rb').read()
+
+					# Hack around lack of cairo_surface_set_mime_data() bindings
+					import ctypes as ct
+					class PycairoSurface(ct.Structure):
+						_fields_ = [
+							("PyObject_HEAD", ct.c_byte * object.__basicsize__),
+							("surface", ct.c_void_p),
+							("base", ct.c_void_p),
+						]
+					_cairo_so = ct.CDLL("libcairo.so.2")
+					_cairo_so.cairo_surface_set_mime_data.argtypes = [ ct.c_void_p,
+											   ct.c_char_p,
+											   ct.c_void_p,
+											   ct.c_long,
+											   ct.c_void_p,
+											   ct.c_void_p ]
+					_cairo_so.cairo_surface_set_mime_data(PycairoSurface.from_address(id(surface)).surface,
+									      mime_type,
+									      data, len(data),
+									      None, None)
+					global mimecache
+					mimecache[filename] = data # retain it
+
 				pix = surface
 
 		pixcache[filename] = (pix, w, h)
@@ -657,6 +688,7 @@ class Renderer:
 		return w * r, h * r
 
 pixcache = {}
+mimecache = {}
 
 class NullTheme:
 	def prepare_page (self, renderer):
