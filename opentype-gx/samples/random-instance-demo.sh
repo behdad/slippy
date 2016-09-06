@@ -6,7 +6,7 @@ if test $# -lt 2; then
 fi
 font=$1
 outfont=${font%.ttf}-instance.ttf
-outpng=${outfont%.ttf}.png
+outimg=${outfont%.ttf}.svg
 text=$2
 
 python list-axes.py $font |
@@ -15,6 +15,6 @@ while read tag min default max; do
 	echo "$tag=$rnd"
 done | tee | (
 	xargs python varLib/mutator.py "$font" &&
-	hb-view "$outfont" "$text" --font-size 800 > "$outpng" &&
-	(display "$outpng" &)
+	hb-view "$outfont" "$text" --font-size 300 --output-file "$outimg" &&
+	(display "$outimg" &)
 )
