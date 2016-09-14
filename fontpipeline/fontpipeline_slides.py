@@ -24,8 +24,9 @@
 # set_allocation.  See their pydocs.
 
 title_font="Impact"
-head_font="sans Bold" # "Oswald Bold"
-body_font="sans" # "PT Sans"
+head_font="noto sans" # "Oswald Bold"
+body_font="noto sans light 50" # "PT Sans"
+xbody_font="noto sans thin 200" # "PT Sans"
 mono_font="Consolas, monospace"
 
 slides = []
@@ -46,11 +47,26 @@ def slide(f, data=None, scale=None):
 		data = dict (data)
 	else:
 		data = {}
-	if not scale: scale = 1.4
+	if not scale: scale = 1.
 	def slider(r):
 		r.move_to (50, 30)
 		r.scale(scale, scale)
 		r.put_text (f, valign=1, halign=1, desc=body_font)
+		#r.set_allocation (x, y, width, height)
+	if isinstance(f, basestring):
+		return slide_add (slider, data)
+	return slide_add (f, data)
+
+def slide_big(f, data=None, scale=None):
+	if data:
+		data = dict (data)
+	else:
+		data = {}
+	if not scale: scale = 1
+	def slider(r):
+		r.move_to (960, 512)
+		r.scale(scale, scale)
+		r.put_text (f, valign=0, halign=0, desc=xbody_font)
 		#r.set_allocation (x, y, width, height)
 	if isinstance(f, basestring):
 		return slide_add (slider, data)
@@ -97,6 +113,13 @@ def title_slide (r):
 	r.move_to (1890, 1000)
 	r.scale(1.4, 1.4)
 	r.put_text ("Marek Jeziorek\nBehdad Esfahbod\nGoogle", halign=-1, valign=-1)
+
+slide_big("FontTools")
+slide_big("UFO")
+slide_big("ATypI 2014")
+slide_big("FontTools")
+slide_big("AFDKO")
+slide_big("Noto")
 
 bullet_list_slide("Noto pipeline", [
 	"glyphs2ufo",
@@ -178,6 +201,19 @@ bullet_list_slide("Noto pipeline: compreffor", [
 	"compreffor",
 	])
 
+bullet_list_slide("Noto pipeline: ttfautohint", [
+	"glyphs2ufo",
+	"ufoLib",
+	"defcon",
+	"MutatorMath",
+	"ufo2fdk → ufo2ft",
+	"fontTools.feaLib",
+	"booleanOperations",
+	"cu2qu",
+	"compreffor",
+	"ttfautohint",
+	])
+
 bullet_list_slide("Noto pipeline: fontmake", [
 	"glyphs2ufo",
 	"ufoLib",
@@ -188,30 +224,11 @@ bullet_list_slide("Noto pipeline: fontmake", [
 	"booleanOperations",
 	"cu2qu",
 	"compreffor",
+	"ttfautohint",
 	"fontmake",
 	])
 
-bullet_list_slide("Noto pipeline: noto-source", [
-	"glyphs2ufo",
-	"ufoLib",
-	"defcon",
-	"MutatorMath",
-	"ufo2fdk → ufo2ft",
-	"fontTools.feaLib",
-	"booleanOperations",
-	"cu2qu",
-	"compreffor",
-	"fontmake",
-	"noto-source",
-	])
-
-bullet_list_slide("Noto pipeline: TODO", [
-	"fontTools.varLib",
-	"CFF operator specializer",
-	"FDK hinter",
-])
-
-#image_slide("jenga1.jpg")
+image_slide("pipeline.png", imgwidth=1900, imgheight=1000)
 image_slide("jenga2.jpg")
 
 bullet_list_slide("Noto pipeline: challenges", [
@@ -219,6 +236,12 @@ bullet_list_slide("Noto pipeline: challenges", [
 	"Stability",
 	"Speed",
 	"Flexibility",
+])
+
+bullet_list_slide("Noto pipeline: TODO", [
+	"fontTools.varLib",
+	"CFF operator specializer",
+	"FDK hinter",
 ])
 
 slide_title("", """
@@ -233,10 +256,11 @@ github.com/typemytype/booleanOperations
 github.com/googlei18n/cu2qu
 github.com/googlei18n/compreffor
 github.com/behdad/fonttools
+github.com/googlei18n/noto-source
 www.freetype.org/ttfautohint/
 """)
 
-slide_title("Q&amp;A", '')
+slide_big("Q&amp;A")
 
 if __name__ == "__main__":
 	import slippy
