@@ -24,21 +24,8 @@ footer_margin = .03
 padding = .000
 bubble_rad = .25
 
-fg_color = (.2,.2,.2)
-palette = [
-(0x0f,0x00,0x7e),
-(0x74,0x00,0xa5),
-(0xae,0x00,0x92),
-(0xdf,0x00,0x4e),
-(0xff,0x1a,0x0f),
-(0xff,0x42,0x04),
-(0xf1,0x90,0x00),
-(0xff,0xbc,0x00),
-]
-palette = palette + list(reversed(palette[1:-1]))
-palette_cairo = [tuple(c/1. for c in color) for color in palette]
-palette = ["#%02x%02x%02x" % color for color in palette]
-j = 0
+fg_color = (.3,.3,.3)
+bg_color = (0xf6/255., 0x48/255., 0x48/255.)
 
 def prepare_page (renderer):
 	cr = renderer.cr
@@ -52,20 +39,17 @@ def prepare_page (renderer):
 	p = padding * min (width, height)
 	p2 = 2 * p
 
-	cr.set_source_rgb (.9, .9, .9)
+	cr.set_source_rgb (1, 1, 1)
 	cr.paint ()
 	cr.set_source_rgb (*fg_color)
 
 	cr.move_to (.5 * width, height-p2)
-	text = unicode("Behdad Esfahbod | FontTools/TTX | TYPO Labs Berlin | 11 may 2016")
-	letters = []
-	global j
-	for i,c in enumerate(text):
-		color = palette[(i+j) % len(palette)]
-		letters.append('<span foreground="%s">%s</span>' % (color, c))
-	j -= 1
-	markup = ''.join(letters)
-	renderer.put_text (markup, height=f-p2, valign=-1, desc="")
+	text = unicode("Behdad Esfahbod | Pipeline | ATypI 2016 Warsaw | September 14, 2016")
+	renderer.save()
+	renderer.set_source_rgb (*bg_color)
+	renderer.put_text (text, height=f-p2, valign=-1, desc="")
+	renderer.restore()
+
 
 	# Compute rectangle available for slide content
 	w = width - s - s - p * 2
