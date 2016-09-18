@@ -1,4 +1,4 @@
-name = fontpipeline2016
+name = fontpipeline
 ARGS = --geometry 1920x1024
 
 all: $(name)_slides.pdf
