@@ -122,18 +122,18 @@ slide_big("AFDKO")
 slide_big("Noto")
 
 bullet_list_slide("Noto pipeline", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"robofab vs extractor",
 	])
 
 bullet_list_slide("Noto pipeline", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"robofab",
 	"ufo2fdk",
 	])
 
 bullet_list_slide("Noto pipeline: feaLib", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"robofab",
 	"ufo2fdk → ufo2ft",
 	"fontTools.feaLib",
@@ -141,7 +141,7 @@ bullet_list_slide("Noto pipeline: feaLib", [
 	])
 
 bullet_list_slide("Noto pipeline: mtiLib", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"robofab",
 	"ufo2fdk → ufo2ft",
 	"fontTools.feaLib / fontTools.mtiLib",
@@ -149,7 +149,7 @@ bullet_list_slide("Noto pipeline: mtiLib", [
 	])
 
 bullet_list_slide("Noto pipeline: MutatorMath", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"robofab",
 	"MutatorMath",
 	"ufo2fdk → ufo2ft",
@@ -158,7 +158,7 @@ bullet_list_slide("Noto pipeline: MutatorMath", [
 	])
 
 bullet_list_slide("Noto pipeline: cu2qu", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"robofab",
 	"MutatorMath",
 	"ufo2fdk → ufo2ft",
@@ -168,7 +168,7 @@ bullet_list_slide("Noto pipeline: cu2qu", [
 	])
 
 bullet_list_slide("Noto pipeline: defcon", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"ufoLib",
 	"<span strikethrough='true'>robofab</span> → defcon",
 	"MutatorMath",
@@ -179,7 +179,7 @@ bullet_list_slide("Noto pipeline: defcon", [
 	])
 
 bullet_list_slide("Noto pipeline", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"ufoLib",
 	"defcon",
 	"MutatorMath",
@@ -190,7 +190,7 @@ bullet_list_slide("Noto pipeline", [
 	])
 
 bullet_list_slide("Noto pipeline: compreffor", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"ufoLib",
 	"defcon",
 	"MutatorMath",
@@ -202,7 +202,7 @@ bullet_list_slide("Noto pipeline: compreffor", [
 	])
 
 bullet_list_slide("Noto pipeline: ttfautohint", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"ufoLib",
 	"defcon",
 	"MutatorMath",
@@ -215,7 +215,7 @@ bullet_list_slide("Noto pipeline: ttfautohint", [
 	])
 
 bullet_list_slide("Noto pipeline: fontmake", [
-	"glyphs2ufo",
+	"glyphsLib",
 	"ufoLib",
 	"defcon",
 	"MutatorMath",
