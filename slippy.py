@@ -333,8 +333,7 @@ class ViewerGTK (Viewer):
 
 class ViewerFile (Viewer):
 
-	def __init__ (self, filename, width=8.5*4/3*72, height=8.5*72):
-		self.width, self.height = width, height
+	def __init__ (self, filename, **settings):
 		if filename.endswith (".pdf"):
 			Klass = cairo.PDFSurface
 		elif filename.endswith (".ps"):
@@ -344,6 +343,13 @@ class ViewerFile (Viewer):
 		else:
 			raise Exception ("Donno how to save as %s" % filename)
 
+		parts = settings.get('geometry', '').split ("+")
+		if parts[0]:
+			width, height = [int(x) for x in parts[0].split('x')]
+		else:
+			width, height = 8.5*4*72, 8.5*72
+
+		self.width, self.height = width, height
 		self.surface = Klass (filename, self.width, self.height)
 
 	def run (self, slides, theme=None):
@@ -813,7 +819,7 @@ Usage: slippy.py [--output output.pdf/ps/svg] [--theme theme.py] \\
 		usage ()
 
 	if outputfile:
-		viewer = ViewerFile (outputfile)
+		viewer = ViewerFile (outputfile, **settings)
 	else:
 		viewer = ViewerGTK (**settings)
 	viewer.run (slides, theme=theme)
